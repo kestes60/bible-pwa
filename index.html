@@ -19,6 +19,23 @@
 
   <!-- Basic styling -->
   <style>
+    /* ========================================
+       Yahtsar Theme - CSS Custom Properties
+       Dark navy background with teal/cyan accents
+       Adjust these hex values to fine-tune the theme
+       ======================================== */
+    :root {
+      --yt-bg: #0a1929;                    /* Dark navy main background */
+      --yt-header-grad-start: #14b8a6;     /* Teal gradient start */
+      --yt-header-grad-end: #06b6d4;       /* Cyan gradient end */
+      --yt-card-bg: #1e293b;               /* Slightly lighter navy for cards */
+      --yt-card-border: #334155;           /* Subtle slate border */
+      --yt-accent: #14b8a6;                /* Teal accent for buttons/links */
+      --yt-accent-soft: #0d9488;           /* Darker teal for hover states */
+      --yt-text-main: #e2e8f0;             /* Light slate text */
+      --yt-text-muted: #94a3b8;            /* Muted slate for secondary text */
+    }
+
     html {
       scroll-behavior: smooth;
     }
@@ -31,16 +48,16 @@
       font-family: system-ui, -apple-system, sans-serif;
       margin: 0;
       padding: 0;
-      color: #2c3e50;
-      background-color: #f8f9fa;
+      color: var(--yt-text-main);
+      background-color: var(--yt-bg);
     }
 
     header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, var(--yt-header-grad-start) 0%, var(--yt-header-grad-end) 100%);
       color: white;
       padding: 1.5rem;
       text-align: center;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
       margin-bottom: 1rem;
     }
 
@@ -61,7 +78,7 @@
     button {
       padding: 0.7rem 1.5rem;
       font-size: 1rem;
-      background-color: #667eea;
+      background-color: var(--yt-accent);
       color: white;
       border: none;
       border-radius: 6px;
@@ -76,13 +93,13 @@
     }
 
     button:hover:not(:disabled) {
-      background-color: #764ba2;
+      background-color: var(--yt-accent-soft);
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      box-shadow: 0 4px 12px rgba(20, 184, 166, 0.4);
     }
 
     button:focus-visible {
-      outline: 3px solid #764ba2;
+      outline: 3px solid var(--yt-accent);
       outline-offset: 2px;
     }
 
@@ -100,16 +117,17 @@
       margin-bottom: 1.5rem;
       font-size: 1.2rem;
       font-weight: 600;
-      color: #667eea;
+      color: var(--yt-accent);
     }
 
     .verses-container {
       max-width: 700px;
       margin: 0 auto;
       padding: 2rem 1.5rem;
-      background: white;
+      background: var(--yt-card-bg);
+      border: 1px solid var(--yt-card-border);
       border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
       line-height: 1.8;
       font-size: 1.1rem;
       scroll-behavior: smooth;
@@ -122,21 +140,21 @@
 
     .verse-number {
       font-size: 0.85rem;
-      color: #999;
+      color: var(--yt-text-muted);
       margin-right: 0.3rem;
       font-weight: 600;
       vertical-align: super;
     }
 
     .verse-text {
-      color: #2c3e50;
+      color: var(--yt-text-main);
     }
 
     .loading {
       text-align: center;
       padding: 2rem;
       font-size: 1.1rem;
-      color: #667eea;
+      color: var(--yt-accent);
       animation: pulse 1.5s ease-in-out infinite;
     }
 
@@ -210,19 +228,20 @@
     }
 
     .book-modal {
-      background-color: #f5f2e8;
+      background-color: var(--yt-card-bg);
+      border: 1px solid var(--yt-card-border);
       border-radius: 8px;
       max-width: 600px;
       width: 90%;
       max-height: 80vh;
       overflow-y: auto;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
       display: flex;
       flex-direction: column;
     }
 
     .book-modal-header {
-      background-color: #5b728a;
+      background: linear-gradient(135deg, var(--yt-header-grad-start) 0%, var(--yt-header-grad-end) 100%);
       color: white;
       padding: 1.5rem;
       display: flex;
@@ -263,7 +282,7 @@
 
     .testament-tabs {
       display: flex;
-      border-bottom: 1px solid #ddd;
+      border-bottom: 1px solid var(--yt-card-border);
       flex-shrink: 0;
     }
 
@@ -276,24 +295,24 @@
       cursor: pointer;
       font-size: 0.95rem;
       font-weight: 600;
-      color: #666;
+      color: var(--yt-text-muted);
       transition: all 0.3s ease;
     }
 
     .testament-tab:hover {
-      background-color: #eee;
+      background-color: rgba(20, 184, 166, 0.1);
       transform: none;
       box-shadow: none;
     }
 
     .testament-tab:focus-visible {
-      outline: 2px solid #5b728a;
+      outline: 2px solid var(--yt-accent);
       outline-offset: -2px;
     }
 
     .testament-tab.active {
-      color: #5b728a;
-      border-bottom-color: #5b728a;
+      color: var(--yt-accent);
+      border-bottom-color: var(--yt-accent);
     }
 
     .books-grid {
@@ -314,27 +333,27 @@
 
     .book-button {
       padding: 0.9rem 0.5rem;
-      background-color: white;
-      border: 1px solid #ddd;
+      background-color: var(--yt-bg);
+      border: 1px solid var(--yt-card-border);
       border-radius: 4px;
       cursor: pointer;
       font-size: 0.9rem;
-      color: #333;
+      color: var(--yt-text-main);
       transition: all 0.2s ease;
       text-align: center;
       font-weight: 500;
     }
 
     .book-button:hover {
-      background-color: #5b728a;
+      background-color: var(--yt-accent);
       color: white;
-      border-color: #5b728a;
+      border-color: var(--yt-accent);
       transform: translateY(-2px);
-      box-shadow: 0 2px 8px rgba(91, 114, 138, 0.3);
+      box-shadow: 0 2px 8px rgba(20, 184, 166, 0.4);
     }
 
     .book-button:focus-visible {
-      outline: 2px solid #5b728a;
+      outline: 2px solid var(--yt-accent);
       outline-offset: 2px;
       border-radius: 4px;
     }
@@ -362,19 +381,20 @@
     }
 
     .chapter-modal {
-      background-color: #f5f2e8;
+      background-color: var(--yt-card-bg);
+      border: 1px solid var(--yt-card-border);
       border-radius: 8px;
       max-width: 500px;
       width: 90%;
       max-height: 80vh;
       overflow-y: auto;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
       display: flex;
       flex-direction: column;
     }
 
     .chapter-modal-header {
-      background-color: #5b728a;
+      background: linear-gradient(135deg, var(--yt-header-grad-start) 0%, var(--yt-header-grad-end) 100%);
       color: white;
       padding: 1.5rem;
       display: flex;
@@ -430,12 +450,12 @@
 
     .chapter-button {
       padding: 1rem 0.5rem;
-      background-color: white;
-      border: 1px solid #ddd;
+      background-color: var(--yt-bg);
+      border: 1px solid var(--yt-card-border);
       border-radius: 4px;
       cursor: pointer;
       font-size: 1rem;
-      color: #333;
+      color: var(--yt-text-main);
       transition: all 0.2s ease;
       text-align: center;
       font-weight: 500;
@@ -446,15 +466,15 @@
     }
 
     .chapter-button:hover {
-      background-color: #5b728a;
+      background-color: var(--yt-accent);
       color: white;
-      border-color: #5b728a;
+      border-color: var(--yt-accent);
       transform: translateY(-2px);
-      box-shadow: 0 2px 8px rgba(91, 114, 138, 0.3);
+      box-shadow: 0 2px 8px rgba(20, 184, 166, 0.4);
     }
 
     .chapter-button:focus-visible {
-      outline: 2px solid #5b728a;
+      outline: 2px solid var(--yt-accent);
       outline-offset: 2px;
       border-radius: 4px;
     }
@@ -500,7 +520,7 @@
       bottom: 0;
       left: 0;
       right: 0;
-      background-color: #f39c12;
+      background-color: #f59e0b;
       color: white;
       padding: 1rem;
       text-align: center;
