@@ -20,11 +20,13 @@
   <!-- Basic styling -->
   <style>
     /* ========================================
-       Yahtsar Theme - CSS Custom Properties
-       Dark navy background with teal/cyan accents
-       Adjust these hex values to fine-tune the theme
+       Theme System - CSS Custom Properties
+       Supports dark (default) and light themes
        ======================================== */
-    :root {
+
+    /* Dark Theme (Yahtsar - Default) */
+    :root,
+    body.theme-dark {
       --yt-bg: #0a1929;                    /* Dark navy main background */
       --yt-header-grad-start: #14b8a6;     /* Teal gradient start */
       --yt-header-grad-end: #06b6d4;       /* Cyan gradient end */
@@ -34,6 +36,19 @@
       --yt-accent-soft: #0d9488;           /* Darker teal for hover states */
       --yt-text-main: #e2e8f0;             /* Light slate text */
       --yt-text-muted: #94a3b8;            /* Muted slate for secondary text */
+    }
+
+    /* Light Theme (Reading Mode) */
+    body.theme-light {
+      --yt-bg: #f8f9fa;                    /* Light gray background */
+      --yt-header-grad-start: #14b8a6;     /* Teal gradient (brand consistency) */
+      --yt-header-grad-end: #06b6d4;       /* Cyan gradient (brand consistency) */
+      --yt-card-bg: #ffffff;               /* White cards */
+      --yt-card-border: #dee2e6;           /* Light gray border */
+      --yt-accent: #14b8a6;                /* Teal accent (brand consistency) */
+      --yt-accent-soft: #0d9488;           /* Darker teal for hover */
+      --yt-text-main: #2c3e50;             /* Dark text */
+      --yt-text-muted: #6c757d;            /* Gray secondary text */
     }
 
     html {
@@ -59,12 +74,42 @@
       text-align: center;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
       margin-bottom: 1rem;
+      position: relative;
     }
 
     header h1 {
       margin: 0;
       font-size: 1.8rem;
       font-weight: 700;
+    }
+
+    .theme-toggle {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      min-height: 36px;
+      min-width: 36px;
+    }
+
+    .theme-toggle:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-50%) translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .theme-toggle:focus-visible {
+      outline: 2px solid white;
+      outline-offset: 2px;
     }
 
     .chapter-nav {
@@ -596,6 +641,12 @@
         font-size: 1.5rem;
       }
 
+      .theme-toggle {
+        padding: 0.4rem 0.7rem;
+        font-size: 0.85rem;
+        right: 0.5rem;
+      }
+
       .verses-container {
         border-radius: 0;
         box-shadow: none;
@@ -628,6 +679,7 @@
   <header role="banner">
     <button class="menu-button" onclick="openBookSelector()" title="Open book selector" aria-label="Open book and chapter navigation">☰</button>
     <h1>Bible Reader</h1>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle" title="Toggle theme" aria-label="Toggle light/dark theme">☀ Light</button>
   </header>
 
   <div class="chapter-indicator" id="chapterIndicator" role="region" aria-live="polite" aria-label="Current chapter">Loading...</div>
@@ -678,7 +730,75 @@
   </div>
 
   <script>
+    // ========================================
+    // Theme Management
+    // ========================================
+    const THEME_STORAGE_KEY = 'bibleReaderTheme';
+    const THEME_DARK = 'theme-dark';
+    const THEME_LIGHT = 'theme-light';
+
+    /**
+     * Get saved theme from localStorage
+     * @returns {string} Theme name or null if not saved
+     */
+    function getSavedTheme() {
+      return localStorage.getItem(THEME_STORAGE_KEY);
+    }
+
+    /**
+     * Save theme preference to localStorage
+     * @param {string} theme - Theme name to save
+     */
+    function saveTheme(theme) {
+      localStorage.setItem(THEME_STORAGE_KEY, theme);
+    }
+
+    /**
+     * Apply theme to the document
+     * @param {string} theme - Theme name (theme-dark or theme-light)
+     */
+    function applyTheme(theme) {
+      // Remove both theme classes first
+      document.body.classList.remove(THEME_DARK, THEME_LIGHT);
+      // Add the selected theme
+      document.body.classList.add(theme);
+
+      // Update toggle button text and aria-label
+      const toggleBtn = document.getElementById('themeToggle');
+      if (theme === THEME_DARK) {
+        toggleBtn.textContent = '☀ Light';
+        toggleBtn.setAttribute('aria-label', 'Switch to light theme');
+      } else {
+        toggleBtn.textContent = '🌙 Dark';
+        toggleBtn.setAttribute('aria-label', 'Switch to dark theme');
+      }
+    }
+
+    /**
+     * Toggle between light and dark themes
+     */
+    function toggleTheme() {
+      const currentTheme = document.body.classList.contains(THEME_LIGHT) ? THEME_LIGHT : THEME_DARK;
+      const newTheme = currentTheme === THEME_DARK ? THEME_LIGHT : THEME_DARK;
+      applyTheme(newTheme);
+      saveTheme(newTheme);
+    }
+
+    /**
+     * Initialize theme on page load
+     */
+    function initTheme() {
+      const savedTheme = getSavedTheme();
+      const theme = savedTheme || THEME_DARK; // Default to dark theme
+      applyTheme(theme);
+    }
+
+    // Initialize theme immediately
+    initTheme();
+
+    // ========================================
     // Bible reader state
+    // ========================================
     let bookData = null;
     let currentChapter = 1;
     let totalChapters = 21; // John has 21 chapters (will be updated per book)
