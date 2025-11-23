@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Bible" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'none'; frame-ancestors 'none';" />
+
+  <title>Bible PWA</title>
+
+  <!-- Link to the Web App Manifest -->
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="/icons/icon-192x192.png" />
+  <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+
+  <!-- Basic styling -->
+  <style>
+    html {
+      scroll-behavior: smooth;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 0;
+      color: #2c3e50;
+      background-color: #f8f9fa;
+    }
+
+    header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 1rem;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .chapter-nav {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding: 0 1rem;
+    }
+
+    button {
+      padding: 0.7rem 1.5rem;
+      font-size: 1rem;
+      background-color: #667eea;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      min-height: 44px;
+      min-width: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    button:hover:not(:disabled) {
+      background-color: #764ba2;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    button:focus-visible {
+      outline: 3px solid #764ba2;
+      outline-offset: 2px;
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .chapter-indicator {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #667eea;
+    }
+
+    .verses-container {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      line-height: 1.8;
+      font-size: 1.1rem;
+      scroll-behavior: smooth;
+    }
+
+    .verse {
+      margin-bottom: 1.2rem;
+      padding-left: 1.5rem;
+    }
+
+    .verse-number {
+      font-size: 0.85rem;
+      color: #999;
+      margin-right: 0.3rem;
+      font-weight: 600;
+      vertical-align: super;
+    }
+
+    .verse-text {
+      color: #2c3e50;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      font-size: 1.1rem;
+      color: #667eea;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.6;
+      }
+    }
+
+    .error {
+      color: #e74c3c;
+      background-color: #fadbd8;
+      padding: 1rem;
+      border-radius: 6px;
+      margin: 1rem;
+    }
+
+    .menu-button {
+      position: absolute;
+      left: 1.5rem;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .menu-button:hover {
+      transform: scale(1.1);
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: none;
+    }
+
+    .menu-button:focus-visible {
+      outline: 2px solid white;
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    header {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Book Selector Modal Styles */
+    .book-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+    }
+
+    .book-modal-overlay.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .book-modal {
+      background-color: #f5f2e8;
+      border-radius: 8px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .book-modal-header {
+      background-color: #5b728a;
+      color: white;
+      padding: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .book-modal-header h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .book-modal-close {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .book-modal-close:hover {
+      opacity: 0.8;
+    }
+
+    .book-modal-close:focus-visible {
+      outline: 2px solid white;
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    .testament-tabs {
+      display: flex;
+      border-bottom: 1px solid #ddd;
+      flex-shrink: 0;
+    }
+
+    .testament-tab {
+      flex: 1;
+      padding: 1rem;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #666;
+      transition: all 0.3s ease;
+    }
+
+    .testament-tab:hover {
+      background-color: #eee;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .testament-tab:focus-visible {
+      outline: 2px solid #5b728a;
+      outline-offset: -2px;
+    }
+
+    .testament-tab.active {
+      color: #5b728a;
+      border-bottom-color: #5b728a;
+    }
+
+    .books-grid {
+      padding: 1.5rem;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .books-grid.hidden {
+      display: none;
+    }
+
+    .books-3col {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.8rem;
+    }
+
+    .book-button {
+      padding: 0.9rem 0.5rem;
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: #333;
+      transition: all 0.2s ease;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .book-button:hover {
+      background-color: #5b728a;
+      color: white;
+      border-color: #5b728a;
+      transform: translateY(-2px);
+      box-shadow: 0 2px 8px rgba(91, 114, 138, 0.3);
+    }
+
+    .book-button:focus-visible {
+      outline: 2px solid #5b728a;
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    .book-button:active {
+      transform: translateY(0);
+    }
+
+    /* Chapter Selector Modal Styles */
+    .chapter-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+    }
+
+    .chapter-modal-overlay.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chapter-modal {
+      background-color: #f5f2e8;
+      border-radius: 8px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chapter-modal-header {
+      background-color: #5b728a;
+      color: white;
+      padding: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .chapter-modal-header h2 {
+      margin: 0;
+      font-size: 1.3rem;
+      font-weight: 600;
+      flex: 1;
+      text-align: center;
+    }
+
+    .chapter-modal-back {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: auto;
+    }
+
+    .chapter-modal-back:hover {
+      opacity: 0.8;
+    }
+
+    .chapter-modal-back:focus-visible {
+      outline: 2px solid white;
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    .chapters-grid {
+      padding: 1.5rem;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .chapters-5col {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.8rem;
+    }
+
+    .chapter-button {
+      padding: 1rem 0.5rem;
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      color: #333;
+      transition: all 0.2s ease;
+      text-align: center;
+      font-weight: 500;
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chapter-button:hover {
+      background-color: #5b728a;
+      color: white;
+      border-color: #5b728a;
+      transform: translateY(-2px);
+      box-shadow: 0 2px 8px rgba(91, 114, 138, 0.3);
+    }
+
+    .chapter-button:focus-visible {
+      outline: 2px solid #5b728a;
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    .chapter-button:active {
+      transform: translateY(0);
+    }
+
+    @media (max-width: 600px) {
+      .chapters-5col {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.6rem;
+      }
+
+      .chapter-button {
+        padding: 0.9rem 0.3rem;
+        font-size: 0.95rem;
+        min-height: 45px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .chapters-5col {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+      }
+
+      .chapter-button {
+        padding: 0.8rem 0.2rem;
+        font-size: 0.9rem;
+        min-height: 40px;
+      }
+
+      .chapter-modal-header h2 {
+        font-size: 1.1rem;
+      }
+    }
+
+    /* Offline Indicator Styles */
+    .offline-indicator {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: #f39c12;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.95rem;
+      z-index: 999;
+      animation: slideUp 0.3s ease;
+      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .offline-indicator.active {
+      display: block;
+    }
+
+    .offline-indicator.hidden {
+      animation: slideDown 0.3s ease;
+      display: none;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideDown {
+      from {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      to {
+        transform: translateY(100%);
+        opacity: 0;
+      }
+    }
+
+    /* Offline error message styling */
+    .offline-error {
+      color: #e74c3c;
+      background-color: #fadbd8;
+      padding: 1.5rem;
+      border-radius: 6px;
+      margin: 1rem;
+      border-left: 4px solid #e74c3c;
+    }
+
+    @media (max-width: 600px) {
+      .menu-button {
+        left: 1rem;
+      }
+
+      .book-modal {
+        width: 95%;
+        max-height: 90vh;
+      }
+
+      .books-3col {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.6rem;
+      }
+
+      .book-button {
+        padding: 0.8rem 0.4rem;
+        font-size: 0.85rem;
+      }
+
+      header h1 {
+        font-size: 1.5rem;
+      }
+
+      .verses-container {
+        border-radius: 0;
+        box-shadow: none;
+        padding: 1rem;
+      }
+
+      .chapter-nav {
+        flex-wrap: wrap;
+        padding: 0 0.5rem;
+      }
+
+      button {
+        padding: 0.6rem 1rem;
+        font-size: 0.95rem;
+      }
+
+      .offline-indicator {
+        padding: 0.8rem;
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Offline Indicator Banner -->
+  <div class="offline-indicator" id="offlineIndicator" role="status" aria-live="polite" aria-label="Connection status">
+    📡 You're offline - showing cached content
+  </div>
+
+  <header role="banner">
+    <button class="menu-button" onclick="openBookSelector()" title="Open book selector" aria-label="Open book and chapter navigation">☰</button>
+    <h1>Bible Reader</h1>
+  </header>
+
+  <div class="chapter-indicator" id="chapterIndicator" role="region" aria-live="polite" aria-label="Current chapter">Loading...</div>
+
+  <nav class="chapter-nav" aria-label="Chapter navigation">
+    <button id="prevBtn" onclick="previousChapter()" aria-label="Go to previous chapter">← Previous</button>
+    <button id="nextBtn" onclick="nextChapter()" aria-label="Go to next chapter">Next →</button>
+  </nav>
+
+  <main class="verses-container" id="versesContainer" role="main" aria-label="Bible verses">
+    <div class="loading">Loading the book of John...</div>
+  </main>
+
+  <!-- Book Selector Modal -->
+  <div class="book-modal-overlay" id="bookModalOverlay" onclick="closeBookSelector(event)" role="dialog" aria-labelledby="bookModalTitle" aria-modal="true">
+    <div class="book-modal" onclick="event.stopPropagation()">
+      <div class="book-modal-header">
+        <h2 id="bookModalTitle">Quick Nav</h2>
+        <button class="book-modal-close" onclick="closeBookSelector()" aria-label="Close book navigation">×</button>
+      </div>
+
+      <div class="testament-tabs" role="tablist" aria-label="Bible testaments">
+        <button class="testament-tab active" onclick="switchTestament('OT')" data-testament="OT" role="tab" aria-selected="true" aria-controls="otBooksGrid">OLD TESTAMENT</button>
+        <button class="testament-tab" onclick="switchTestament('NT')" data-testament="NT" role="tab" aria-selected="false" aria-controls="ntBooksGrid">NEW TESTAMENT</button>
+      </div>
+
+      <div class="books-grid" id="otBooksGrid" role="tabpanel" aria-labelledby="OT">
+        <div class="books-3col" id="otBooks"></div>
+      </div>
+
+      <div class="books-grid hidden" id="ntBooksGrid" role="tabpanel" aria-labelledby="NT">
+        <div class="books-3col" id="ntBooks"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chapter Selector Modal -->
+  <div class="chapter-modal-overlay" id="chapterModalOverlay" onclick="closeChapterSelector(event)" role="dialog" aria-labelledby="chapterModalTitle" aria-modal="true">
+    <div class="chapter-modal" onclick="event.stopPropagation()">
+      <div class="chapter-modal-header">
+        <h2 id="chapterModalTitle">Chapters</h2>
+        <button class="chapter-modal-back" onclick="closeChapterSelector()" aria-label="Close chapter selection">←</button>
+      </div>
+      <div class="chapters-grid" role="region" aria-label="Chapter selection">
+        <div class="chapters-5col" id="chaptersContainer"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Bible reader state
+    let bookData = null;
+    let currentChapter = 1;
+    let totalChapters = 21; // John has 21 chapters (will be updated per book)
+    let currentBook = 'John'; // Track current book
+    let booksJson = null; // Cache books data
+    let currentBookData = null; // Store current book info for chapter selector
+
+    // Keyboard event handling for accessibility
+    document.addEventListener('keydown', function(event) {
+      // ESC key closes modals
+      if (event.key === 'Escape') {
+        const bookModal = document.getElementById('bookModalOverlay');
+        const chapterModal = document.getElementById('chapterModalOverlay');
+
+        if (bookModal.classList.contains('active')) {
+          closeBookSelector();
+          event.preventDefault();
+        } else if (chapterModal.classList.contains('active')) {
+          closeChapterSelector();
+          event.preventDefault();
+        }
+      }
+    });
+
+    // Offline detection and management
+    function updateOfflineIndicator() {
+      const indicator = document.getElementById('offlineIndicator');
+      if (!navigator.onLine) {
+        indicator.classList.add('active');
+        indicator.classList.remove('hidden');
+      } else {
+        indicator.classList.remove('active');
+        indicator.classList.add('hidden');
+        // Remove hidden class after animation completes
+        setTimeout(() => {
+          indicator.classList.remove('hidden');
+        }, 300);
+      }
+    }
+
+    // Listen for online/offline events
+    window.addEventListener('online', () => {
+      updateOfflineIndicator();
+      console.log('Connection restored');
+    });
+
+    window.addEventListener('offline', () => {
+      updateOfflineIndicator();
+      console.log('Connection lost');
+    });
+
+    // Check initial connection status on page load
+    window.addEventListener('load', () => {
+      updateOfflineIndicator();
+    });
+
+    // Load books list from books.json
+    async function loadBooksJson() {
+      try {
+        const response = await fetch('/data/books.json');
+        if (!response.ok) throw new Error('Failed to load books data');
+        booksJson = await response.json();
+        populateBookLists();
+      } catch (error) {
+        console.error('Error loading books data:', error);
+      }
+    }
+
+    // Populate the OT and NT book lists in the modal
+    function populateBookLists() {
+      if (!booksJson) return;
+
+      const otBooks = booksJson.books.filter(book => book.testament === 'OT');
+      const ntBooks = booksJson.books.filter(book => book.testament === 'NT');
+
+      const otContainer = document.getElementById('otBooks');
+      const ntContainer = document.getElementById('ntBooks');
+
+      otContainer.innerHTML = '';
+      ntContainer.innerHTML = '';
+
+      otBooks.forEach(book => {
+        const button = document.createElement('button');
+        button.className = 'book-button';
+        button.textContent = book.name;
+        button.onclick = () => selectBook(book);
+        otContainer.appendChild(button);
+      });
+
+      ntBooks.forEach(book => {
+        const button = document.createElement('button');
+        button.className = 'book-button';
+        button.textContent = book.name;
+        button.onclick = () => selectBook(book);
+        ntContainer.appendChild(button);
+      });
+    }
+
+    // Open the book selector modal
+    function openBookSelector() {
+      document.getElementById('bookModalOverlay').classList.add('active');
+      // Focus first book button for keyboard navigation
+      setTimeout(() => {
+        const firstButton = document.querySelector('.book-button');
+        if (firstButton) firstButton.focus();
+      }, 0);
+    }
+
+    // Close the book selector modal
+    function closeBookSelector(event) {
+      // If event exists and target is not the overlay, don't close
+      if (event && event.target.id !== 'bookModalOverlay') {
+        return;
+      }
+      document.getElementById('bookModalOverlay').classList.remove('active');
+      // Return focus to menu button
+      document.querySelector('.menu-button').focus();
+    }
+
+    // Switch between OT and NT tabs
+    function switchTestament(testament) {
+      const otGrid = document.getElementById('otBooksGrid');
+      const ntGrid = document.getElementById('ntBooksGrid');
+      const tabs = document.querySelectorAll('.testament-tab');
+
+      tabs.forEach(tab => {
+        tab.classList.remove('active');
+        tab.setAttribute('aria-selected', 'false');
+        if (tab.getAttribute('data-testament') === testament) {
+          tab.classList.add('active');
+          tab.setAttribute('aria-selected', 'true');
+        }
+      });
+
+      if (testament === 'OT') {
+        otGrid.classList.remove('hidden');
+        ntGrid.classList.add('hidden');
+      } else {
+        otGrid.classList.add('hidden');
+        ntGrid.classList.remove('hidden');
+      }
+    }
+
+    // Handle book selection
+    async function selectBook(book) {
+      try {
+        // Update current book
+        currentBook = book.name;
+        currentBookData = book;
+        totalChapters = book.chapters;
+
+        // Load the book data
+        const response = await fetch(`/data/${book.filename}`);
+        if (!response.ok) {
+          // Enhanced error handling for offline scenarios
+          if (!navigator.onLine) {
+            throw new Error('offline');
+          }
+          throw new Error(`Failed to load ${book.name}`);
+        }
+        bookData = await response.json();
+
+        // Close book selector and open chapter selector
+        closeBookSelector();
+        openChapterSelector();
+
+        window.scrollTo(0, 0);
+
+        // Save the reading state when switching to a new book (will save final chapter when selected)
+        saveReadingState(currentBook, 1);
+      } catch (error) {
+        console.error('Error loading book:', error);
+
+        // Provide context-aware error messages using safe DOM methods
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'offline-error';
+
+        const titleStrong = document.createElement('strong');
+        const titleText = document.createTextNode(error.message === 'offline' || !navigator.onLine ? '⚠️ Offline Mode' : '⚠️ Error Loading Book');
+        titleStrong.appendChild(titleText);
+        errorDiv.appendChild(titleStrong);
+
+        const lineBreak = document.createElement('br');
+        errorDiv.appendChild(lineBreak);
+
+        let messagePart1 = '';
+        let messagePart2 = '';
+        if (error.message === 'offline' || !navigator.onLine) {
+          messagePart1 = `"${book.name}" is not available offline. `;
+          messagePart2 = `Please connect to the internet to load this book.`;
+        } else {
+          messagePart1 = `Could not load "${book.name}". `;
+          messagePart2 = `Please check your connection and try again.`;
+        }
+
+        const messageText = document.createTextNode(messagePart1 + messagePart2);
+        errorDiv.appendChild(messageText);
+
+        const container = document.getElementById('versesContainer');
+        container.innerHTML = '';
+        container.appendChild(errorDiv);
+      }
+    }
+
+    // Open the chapter selector modal
+    function openChapterSelector() {
+      if (!currentBookData) return;
+
+      // Update modal title
+      document.getElementById('chapterModalTitle').textContent = currentBook;
+
+      // Populate chapters
+      populateChapters(currentBookData.chapters);
+
+      // Show the modal
+      document.getElementById('chapterModalOverlay').classList.add('active');
+      // Focus first chapter button for keyboard navigation
+      setTimeout(() => {
+        const firstChapter = document.querySelector('.chapter-button');
+        if (firstChapter) firstChapter.focus();
+      }, 0);
+    }
+
+    // Close the chapter selector modal
+    function closeChapterSelector(event) {
+      // If event exists and target is not the overlay, don't close
+      if (event && event.target.id !== 'chapterModalOverlay') {
+        return;
+      }
+      document.getElementById('chapterModalOverlay').classList.remove('active');
+      // Return focus to main content area
+      document.getElementById('versesContainer').focus();
+    }
+
+    // Populate chapter buttons
+    function populateChapters(chapterCount) {
+      const container = document.getElementById('chaptersContainer');
+      container.innerHTML = '';
+
+      for (let i = 1; i <= chapterCount; i++) {
+        const button = document.createElement('button');
+        button.className = 'chapter-button';
+        button.textContent = i;
+        button.onclick = () => selectChapter(i);
+        container.appendChild(button);
+      }
+    }
+
+    // Handle chapter selection
+    function selectChapter(chapterNum) {
+      currentChapter = chapterNum;
+
+      // Update UI
+      updateChapterIndicator();
+      updateNavigationButtons();
+      displayChapter(currentChapter);
+
+      // Close modal
+      closeChapterSelector();
+
+      window.scrollTo(0, 0);
+
+      // Save the reading state
+      saveReadingState(currentBook, currentChapter);
+    }
+
+    // Load the Bible data
+    async function loadBibleData() {
+      try {
+        const response = await fetch('/data/John.json');
+        if (!response.ok) throw new Error('Failed to load Bible data');
+        bookData = await response.json();
+        displayChapter(currentChapter);
+      } catch (error) {
+        console.error('Error loading Bible data:', error);
+        document.getElementById('versesContainer').innerHTML =
+          '<div class="error">Error loading Bible data. Please refresh the page.</div>';
+      }
+    }
+
+    // Display verses for the current chapter
+    function displayChapter(chapterNum) {
+      if (!bookData || !bookData[chapterNum]) {
+        console.error('Chapter not found:', chapterNum);
+        return;
+      }
+
+      currentChapter = chapterNum;
+      const verses = bookData[chapterNum];
+      const container = document.getElementById('versesContainer');
+
+      // Clear previous content
+      container.innerHTML = '';
+
+      // Create header div safely
+      const headerDiv = document.createElement('div');
+      headerDiv.style.marginBottom = '1.5rem';
+      headerDiv.style.fontWeight = '600';
+      headerDiv.style.fontSize = '1.3rem';
+      headerDiv.style.color = '#667eea';
+      headerDiv.textContent = `${currentBook} ${chapterNum}`;
+      container.appendChild(headerDiv);
+
+      // Render all verses in the chapter
+      for (const verseNum in verses) {
+        const verseText = verses[verseNum];
+        const verseDiv = document.createElement('div');
+        verseDiv.className = 'verse';
+
+        const verseNumberSpan = document.createElement('span');
+        verseNumberSpan.className = 'verse-number';
+        verseNumberSpan.textContent = verseNum;
+
+        const verseTextSpan = document.createElement('span');
+        verseTextSpan.className = 'verse-text';
+        verseTextSpan.textContent = verseText;
+
+        verseDiv.appendChild(verseNumberSpan);
+        verseDiv.appendChild(verseTextSpan);
+        container.appendChild(verseDiv);
+      }
+
+      if (!document.getElementById('chapterIndicator').textContent.includes('of')) {
+        updateChapterIndicator();
+      }
+      updateNavigationButtons();
+      window.scrollTo(0, 0);
+
+      // Save the reading state after displaying
+      saveReadingState(currentBook, currentChapter);
+    }
+
+    // Update the chapter indicator text
+    function updateChapterIndicator(book = null) {
+      const bookName = book ? book.name : currentBook;
+      const chapters = book ? book.chapters : totalChapters;
+      document.getElementById('chapterIndicator').textContent = `${bookName} ${currentChapter} of ${chapters}`;
+    }
+
+    // Update navigation button states
+    function updateNavigationButtons() {
+      const chapters = Object.keys(bookData || {}).length || totalChapters;
+      document.getElementById('prevBtn').disabled = currentChapter === 1;
+      document.getElementById('nextBtn').disabled = currentChapter === chapters;
+    }
+
+    // Navigation functions
+    function previousChapter() {
+      if (currentChapter > 1) {
+        displayChapter(currentChapter - 1);
+      }
+    }
+
+    function nextChapter() {
+      if (currentChapter < totalChapters) {
+        displayChapter(currentChapter + 1);
+      }
+    }
+
+    // ============================
+    // Reading State Persistence
+    // ============================
+
+    // localStorage key for reading state
+    const READING_STATE_KEY = 'bibleReadingState';
+
+    /**
+     * Save the current reading state to localStorage
+     * @param {string} book - The book name (e.g., "John")
+     * @param {number} chapter - The chapter number
+     */
+    function saveReadingState(book, chapter) {
+      try {
+        if (typeof localStorage !== 'undefined') {
+          const state = {
+            book: book || currentBook,
+            chapter: chapter || currentChapter,
+            timestamp: new Date().toISOString()
+          };
+          localStorage.setItem(READING_STATE_KEY, JSON.stringify(state));
+          console.log('Reading state saved:', state);
+        }
+      } catch (error) {
+        // Silently fail if localStorage is unavailable (private browsing, quota exceeded, etc.)
+        console.warn('localStorage not available:', error.message);
+      }
+    }
+
+    /**
+     * Load the reading state from localStorage
+     * @returns {Object|null} The saved state {book, chapter} or null if not found
+     */
+    function loadReadingState() {
+      try {
+        if (typeof localStorage !== 'undefined') {
+          const stateJson = localStorage.getItem(READING_STATE_KEY);
+          if (stateJson) {
+            const state = JSON.parse(stateJson);
+            console.log('Reading state loaded:', state);
+            return state;
+          }
+        }
+      } catch (error) {
+        // Handle corrupted localStorage data or parsing errors
+        console.warn('Failed to load reading state:', error.message);
+        try {
+          // Clear corrupted data
+          localStorage.removeItem(READING_STATE_KEY);
+        } catch (e) {
+          // Ignore errors when trying to clear
+        }
+      }
+      return null;
+    }
+
+    /**
+     * Restore reading state on app initialization
+     * - Attempts to load saved book and chapter
+     * - Validates that book exists in booksJson before loading
+     * - Falls back to John 1 if validation fails
+     */
+    async function restoreReadingState() {
+      const savedState = loadReadingState();
+
+      if (savedState && savedState.book && savedState.chapter) {
+        // Wait for booksJson to be loaded
+        if (!booksJson) {
+          // booksJson not ready yet, retry after a short delay
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+
+        // Validate that the book exists in our books list
+        const bookExists = booksJson && booksJson.books.some(b => b.name === savedState.book);
+
+        if (bookExists) {
+          // Find the book object and load it
+          const bookObj = booksJson.books.find(b => b.name === savedState.book);
+          try {
+            // Update current state
+            currentBook = bookObj.name;
+            currentBookData = bookObj;
+            totalChapters = bookObj.chapters;
+
+            // Validate chapter number is within range
+            if (savedState.chapter >= 1 && savedState.chapter <= bookObj.chapters) {
+              currentChapter = savedState.chapter;
+            } else {
+              currentChapter = 1;
+            }
+
+            // Load the book data
+            const response = await fetch(`/data/${bookObj.filename}`);
+            if (!response.ok) {
+              throw new Error('Failed to load book');
+            }
+            bookData = await response.json();
+
+            // Display the saved chapter
+            displayChapter(currentChapter);
+            console.log(`Restored: ${currentBook} ${currentChapter}`);
+          } catch (error) {
+            console.warn('Failed to restore reading state, using default:', error);
+            // Fall back to loading John 1
+            loadBibleData();
+          }
+        } else {
+          console.warn('Saved book not found in books list, using default');
+          // Fall back to loading John 1
+          loadBibleData();
+        }
+      } else {
+        // No saved state, load default (John 1)
+        loadBibleData();
+      }
+    }
+
+
+    // Initialize the app
+    loadBooksJson();
+    // Restore reading state instead of always loading John 1
+    restoreReadingState();
+
+    // Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js')
+        .then(() => console.log('Service Worker registered'))
+        .catch(err => console.error('SW registration failed', err));
+    }
+  </script>
+</body>
+</html>
