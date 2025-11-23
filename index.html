@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Bible" />
   <meta name="theme-color" content="#ffffff" />
@@ -983,9 +984,8 @@
         container.appendChild(verseDiv);
       }
 
-      if (!document.getElementById('chapterIndicator').textContent.includes('of')) {
-        updateChapterIndicator();
-      }
+      // Always update chapter indicator to reflect current state
+      updateChapterIndicator();
       updateNavigationButtons();
       window.scrollTo(0, 0);
 
