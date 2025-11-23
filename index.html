@@ -717,7 +717,8 @@
     // Load books list from books.json
     async function loadBooksJson() {
       try {
-        const response = await fetch('/data/books.json');
+        const response = await fetch('./data/books.json');
+        console.log('Loading books.json from:', new URL('./data/books.json', window.location.href).href);
         if (!response.ok) throw new Error('Failed to load books data');
         booksJson = await response.json();
         populateBookLists();
@@ -810,7 +811,8 @@
         totalChapters = book.chapters;
 
         // Load the book data
-        const response = await fetch(`/data/${book.filename}`);
+        const response = await fetch(`./data/${book.filename}`);
+        console.log('Loading book from:', new URL(`./data/${book.filename}`, window.location.href).href);
         if (!response.ok) {
           // Enhanced error handling for offline scenarios
           if (!navigator.onLine) {
@@ -927,7 +929,8 @@
     // Load the Bible data
     async function loadBibleData() {
       try {
-        const response = await fetch('/data/John.json');
+        const response = await fetch('./data/John.json');
+        console.log('Loading John.json from:', new URL('./data/John.json', window.location.href).href);
         if (!response.ok) throw new Error('Failed to load Bible data');
         bookData = await response.json();
         displayChapter(currentChapter);
@@ -1109,7 +1112,8 @@
             }
 
             // Load the book data
-            const response = await fetch(`/data/${bookObj.filename}`);
+            const response = await fetch(`./data/${bookObj.filename}`);
+            console.log('Restoring book from:', new URL(`./data/${bookObj.filename}`, window.location.href).href);
             if (!response.ok) {
               throw new Error('Failed to load book');
             }

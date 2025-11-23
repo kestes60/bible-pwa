@@ -1,26 +1,33 @@
 // Cache version constant - increment this to bust the cache
-const CACHE_VERSION = "bible-pwa-v2";
+const CACHE_VERSION = "bible-pwa-v3";
+
+// Get the base path from the service worker's own location
+// e.g., if SW is at /bible-pwa/sw.js, base is /bible-pwa/
+const SW_PATH = self.location.pathname;
+const BASE_PATH = SW_PATH.substring(0, SW_PATH.lastIndexOf('/') + 1);
+
+console.log('Service Worker base path:', BASE_PATH);
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_VERSION).then((cache) => {
       return cache.addAll([
         // App shell
-        "/",
-        "/index.html",
-        "/manifest.json",
+        `${BASE_PATH}`,
+        `${BASE_PATH}index.html`,
+        `${BASE_PATH}manifest.json`,
         // Books manifest - needed for offline book list
-        "/data/books.json",
+        `${BASE_PATH}data/books.json`,
         // Icons
-        "/icons/icon-72x72.png",
-        "/icons/icon-96x96.png",
-        "/icons/icon-128x128.png",
-        "/icons/icon-144x144.png",
-        "/icons/icon-152x152.png",
-        "/icons/icon-192x192.png",
-        "/icons/icon-256x256.png",
-        "/icons/icon-384x384.png",
-        "/icons/icon-512x512.png"
+        `${BASE_PATH}icons/icon-72x72.png`,
+        `${BASE_PATH}icons/icon-96x96.png`,
+        `${BASE_PATH}icons/icon-128x128.png`,
+        `${BASE_PATH}icons/icon-144x144.png`,
+        `${BASE_PATH}icons/icon-152x152.png`,
+        `${BASE_PATH}icons/icon-192x192.png`,
+        `${BASE_PATH}icons/icon-256x256.png`,
+        `${BASE_PATH}icons/icon-384x384.png`,
+        `${BASE_PATH}icons/icon-512x512.png`
       ]);
     })
   );
@@ -42,9 +49,15 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
+  // Normalize pathname to handle both root and subpath deployments
+  // Check if pathname contains /data/ and ends with .json
+  const isDataRequest = url.pathname.includes('/data/') && url.pathname.endsWith('.json');
+
+  console.log('SW fetch:', url.pathname, 'isData:', isDataRequest);
+
   // Smart caching strategy for Bible data files
   // Pattern: /data/*.json files (books and individual books)
-  if (url.pathname.startsWith("/data/") && url.pathname.endsWith(".json")) {
+  if (isDataRequest) {
     event.respondWith(cacheFirstWithNetworkUpdate(event.request));
   } else {
     // Default strategy for all other requests: cache-first with network fallback
