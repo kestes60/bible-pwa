@@ -1,5 +1,5 @@
 // Cache version constant - increment this to bust the cache
-const CACHE_VERSION = "bible-pwa-v3";
+const CACHE_VERSION = "bible-pwa-v4";
 
 // Get the base path from the service worker's own location
 // e.g., if SW is at /bible-pwa/sw.js, base is /bible-pwa/
@@ -8,16 +8,87 @@ const BASE_PATH = SW_PATH.substring(0, SW_PATH.lastIndexOf('/') + 1);
 
 console.log('Service Worker base path:', BASE_PATH);
 
+// Complete list of Bible data files to precache
+// All 66 Bible books + books.json manifest (67 total files)
+const PRECACHE_FILES = [
+  `${BASE_PATH}data/books.json`,
+  `${BASE_PATH}data/1_Chronicles.json`,
+  `${BASE_PATH}data/1_Corinthians.json`,
+  `${BASE_PATH}data/1_John.json`,
+  `${BASE_PATH}data/1_Kings.json`,
+  `${BASE_PATH}data/1_Peter.json`,
+  `${BASE_PATH}data/1_Samuel.json`,
+  `${BASE_PATH}data/1_Thessalonians.json`,
+  `${BASE_PATH}data/1_Timothy.json`,
+  `${BASE_PATH}data/2_Chronicles.json`,
+  `${BASE_PATH}data/2_Corinthians.json`,
+  `${BASE_PATH}data/2_John.json`,
+  `${BASE_PATH}data/2_Kings.json`,
+  `${BASE_PATH}data/2_Peter.json`,
+  `${BASE_PATH}data/2_Samuel.json`,
+  `${BASE_PATH}data/2_Thessalonians.json`,
+  `${BASE_PATH}data/2_Timothy.json`,
+  `${BASE_PATH}data/3_John.json`,
+  `${BASE_PATH}data/Acts.json`,
+  `${BASE_PATH}data/Amos.json`,
+  `${BASE_PATH}data/Colossians.json`,
+  `${BASE_PATH}data/Daniel.json`,
+  `${BASE_PATH}data/Deuteronomy.json`,
+  `${BASE_PATH}data/Ecclesiastes.json`,
+  `${BASE_PATH}data/Ephesians.json`,
+  `${BASE_PATH}data/Esther.json`,
+  `${BASE_PATH}data/Exodus.json`,
+  `${BASE_PATH}data/Ezekiel.json`,
+  `${BASE_PATH}data/Ezra.json`,
+  `${BASE_PATH}data/Galatians.json`,
+  `${BASE_PATH}data/Genesis.json`,
+  `${BASE_PATH}data/Habakkuk.json`,
+  `${BASE_PATH}data/Haggai.json`,
+  `${BASE_PATH}data/Hebrews.json`,
+  `${BASE_PATH}data/Hosea.json`,
+  `${BASE_PATH}data/Isaiah.json`,
+  `${BASE_PATH}data/James.json`,
+  `${BASE_PATH}data/Jeremiah.json`,
+  `${BASE_PATH}data/Job.json`,
+  `${BASE_PATH}data/Joel.json`,
+  `${BASE_PATH}data/John.json`,
+  `${BASE_PATH}data/Jonah.json`,
+  `${BASE_PATH}data/Joshua.json`,
+  `${BASE_PATH}data/Jude.json`,
+  `${BASE_PATH}data/Judges.json`,
+  `${BASE_PATH}data/Lamentations.json`,
+  `${BASE_PATH}data/Leviticus.json`,
+  `${BASE_PATH}data/Luke.json`,
+  `${BASE_PATH}data/Malachi.json`,
+  `${BASE_PATH}data/Mark.json`,
+  `${BASE_PATH}data/Matthew.json`,
+  `${BASE_PATH}data/Micah.json`,
+  `${BASE_PATH}data/Nahum.json`,
+  `${BASE_PATH}data/Nehemiah.json`,
+  `${BASE_PATH}data/Numbers.json`,
+  `${BASE_PATH}data/Obadiah.json`,
+  `${BASE_PATH}data/Philemon.json`,
+  `${BASE_PATH}data/Philippians.json`,
+  `${BASE_PATH}data/Proverbs.json`,
+  `${BASE_PATH}data/Psalms.json`,
+  `${BASE_PATH}data/Revelation.json`,
+  `${BASE_PATH}data/Romans.json`,
+  `${BASE_PATH}data/Ruth.json`,
+  `${BASE_PATH}data/Song_of_Solomon.json`,
+  `${BASE_PATH}data/Titus.json`,
+  `${BASE_PATH}data/Zechariah.json`,
+  `${BASE_PATH}data/Zephaniah.json`
+];
+
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_VERSION).then((cache) => {
-      return cache.addAll([
+      // Combine app shell files with all precached Bible data files
+      const allFiles = [
         // App shell
         `${BASE_PATH}`,
         `${BASE_PATH}index.html`,
         `${BASE_PATH}manifest.json`,
-        // Books manifest - needed for offline book list
-        `${BASE_PATH}data/books.json`,
         // Icons
         `${BASE_PATH}icons/icon-72x72.png`,
         `${BASE_PATH}icons/icon-96x96.png`,
@@ -27,8 +98,12 @@ self.addEventListener("install", (event) => {
         `${BASE_PATH}icons/icon-192x192.png`,
         `${BASE_PATH}icons/icon-256x256.png`,
         `${BASE_PATH}icons/icon-384x384.png`,
-        `${BASE_PATH}icons/icon-512x512.png`
-      ]);
+        `${BASE_PATH}icons/icon-512x512.png`,
+        // Bible data files (66 books + books.json manifest = 67 files)
+        ...PRECACHE_FILES
+      ];
+
+      return cache.addAll(allFiles);
     })
   );
 });
