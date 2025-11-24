@@ -67,43 +67,78 @@
       background-color: var(--yt-bg);
     }
 
-    header {
+    /* Header flex layout */
+    header.app-header {
       background: linear-gradient(135deg, var(--yt-header-grad-start) 0%, var(--yt-header-grad-end) 100%);
       color: white;
-      padding: 1.5rem;
-      text-align: center;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
       margin-bottom: 1rem;
-      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.75rem 1rem;
     }
 
-    header h1 {
+    .header-left {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+    }
+
+    .header-center {
+      flex: 1 1 auto;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .app-title {
       margin: 0;
-      font-size: 1.8rem;
+      font-size: 1.6rem;
       font-weight: 700;
+      line-height: 1.2;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    .app-subtitle {
+      margin-top: 0.15rem;
+      font-size: 0.8rem;
+      opacity: 0.9;
+      font-weight: 400;
+    }
+
+    .header-right {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
     .theme-toggle {
-      position: absolute;
-      right: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
       background-color: rgba(255, 255, 255, 0.2);
       color: white;
       border: 1px solid rgba(255, 255, 255, 0.3);
-      padding: 0.5rem 1rem;
-      font-size: 0.9rem;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.85rem;
       border-radius: 6px;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
       font-weight: 600;
-      min-height: 36px;
-      min-width: 36px;
+      min-height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .theme-toggle:hover {
       background-color: rgba(255, 255, 255, 0.3);
-      transform: translateY(-50%) translateY(-1px);
+      transform: translateY(-1px);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
 
@@ -112,20 +147,24 @@
       outline-offset: 2px;
     }
 
+    .font-size-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: white;
+      margin-right: 0.2rem;
+    }
+
     #fontSizeControl {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
       background-color: rgba(255, 255, 255, 0.2);
       color: white;
       border: 1px solid rgba(255, 255, 255, 0.3);
-      padding: 0.5rem 0.8rem;
-      font-size: 0.9rem;
-      border-radius: 6px;
+      padding: 0.2rem 0.4rem;
+      font-size: 0.8rem;
+      border-radius: 4px;
       cursor: pointer;
-      transition: all 0.3s ease;
-      font-weight: 600;
-      min-height: 36px;
+      transition: all 0.2s ease;
+      font-weight: 500;
+      min-height: 32px;
     }
 
     #fontSizeControl:hover {
@@ -613,19 +652,20 @@
 
     /* Bookmarks Header Button */
     .bookmarks-header-btn {
-      position: absolute;
-      right: 4.5rem;
       background-color: rgba(255, 255, 255, 0.2);
       color: white;
       border: 1px solid rgba(255, 255, 255, 0.3);
-      padding: 0.5rem 1rem;
+      padding: 0.3rem 0.6rem;
       font-size: 0.9rem;
       border-radius: 6px;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
       font-weight: 600;
-      min-height: 36px;
-      min-width: 36px;
+      min-height: 32px;
+      min-width: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .bookmarks-header-btn:hover {
@@ -957,10 +997,49 @@
         max-height: 90vh;
       }
 
+      header.app-header {
+        flex-wrap: wrap;
+        row-gap: 0.5rem;
+      }
+
+      .header-center {
+        order: 1;
+        width: 100%;
+      }
+
+      .header-left {
+        order: 0;
+      }
+
+      .header-right {
+        order: 2;
+        gap: 0.4rem;
+      }
+
+      .app-title {
+        font-size: 1.4rem;
+      }
+
+      .app-subtitle {
+        font-size: 0.75rem;
+      }
+
+      #fontSizeControl {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.3rem;
+      }
+
       .bookmarks-header-btn {
-        right: 4.2rem;
-        padding: 0.4rem 0.7rem;
+        padding: 0.3rem 0.5rem;
         font-size: 0.85rem;
+        min-height: 28px;
+        min-width: 28px;
+      }
+
+      .theme-toggle {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.8rem;
+        min-height: 28px;
       }
 
       .bookmark-item {
@@ -982,16 +1061,28 @@
     📡 You're offline - showing cached content
   </div>
 
-  <header role="banner">
-    <button class="menu-button" onclick="openBookSelector()" title="Open book selector" aria-label="Open book and chapter navigation">☰</button>
-    <h1>Bible Reader</h1>
-    <select id="fontSizeControl" onchange="changeFontSize(this.value)" title="Adjust text size" aria-label="Adjust font size">
-      <option value="small">Small</option>
-      <option value="medium">Medium</option>
-      <option value="large">Large</option>
-    </select>
-    <button class="bookmarks-header-btn" onclick="openBookmarksModal()" title="View bookmarks" aria-label="Open bookmarks">★</button>
-    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle" title="Toggle theme" aria-label="Toggle light/dark theme">☀ Light</button>
+  <header role="banner" class="app-header">
+    <div class="header-left">
+      <button class="menu-button" onclick="openBookSelector()" title="Open book selector" aria-label="Open book and chapter navigation">☰</button>
+    </div>
+
+    <div class="header-center">
+      <h1 class="app-title">Bible Reader</h1>
+      <div class="app-subtitle">by Yahtsar</div>
+    </div>
+
+    <div class="header-right">
+      <label class="font-size-label" for="fontSizeControl">A</label>
+      <select id="fontSizeControl" onchange="changeFontSize(this.value)" title="Adjust text size" aria-label="Adjust font size">
+        <option value="small">Small</option>
+        <option value="medium">Medium</option>
+        <option value="large">Large</option>
+      </select>
+
+      <button class="bookmarks-header-btn" onclick="openBookmarksModal()" title="View bookmarks" aria-label="Open bookmarks">★</button>
+
+      <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle" title="Toggle theme" aria-label="Toggle light/dark theme">☀ Light</button>
+    </div>
   </header>
 
   <div class="chapter-indicator" id="chapterIndicator" role="region" aria-live="polite" aria-label="Current chapter">Loading...</div>
