@@ -112,6 +112,37 @@
       outline-offset: 2px;
     }
 
+    #fontSizeControl {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 0.5rem 0.8rem;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      min-height: 36px;
+    }
+
+    #fontSizeControl:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    #fontSizeControl:focus-visible {
+      outline: 2px solid white;
+      outline-offset: 2px;
+    }
+
+    #fontSizeControl option {
+      background-color: var(--yt-bg);
+      color: var(--yt-text-main);
+    }
+
     .chapter-nav {
       display: flex;
       justify-content: center;
@@ -176,6 +207,19 @@
       line-height: 1.8;
       font-size: 1.1rem;
       scroll-behavior: smooth;
+    }
+
+    /* Font size variants */
+    body[data-font-size="small"] .verses-container {
+      font-size: 0.95rem;
+    }
+
+    body[data-font-size="medium"] .verses-container {
+      font-size: 1.1rem;
+    }
+
+    body[data-font-size="large"] .verses-container {
+      font-size: 1.3rem;
     }
 
     .verse {
@@ -528,6 +572,246 @@
       transform: translateY(0);
     }
 
+    /* Bookmark Button Styles */
+    .bookmark-button {
+      padding: 0.5rem 0.8rem;
+      font-size: 1.2rem;
+      background-color: var(--yt-accent);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      min-height: 44px;
+      min-width: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .bookmark-button:hover:not(:disabled) {
+      background-color: var(--yt-accent-soft);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(20, 184, 166, 0.4);
+    }
+
+    .bookmark-button:focus-visible {
+      outline: 3px solid var(--yt-accent);
+      outline-offset: 2px;
+    }
+
+    .bookmark-button:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    #bookmarkIcon {
+      display: inline-block;
+      font-size: 1.2rem;
+      transition: all 0.2s ease;
+    }
+
+    /* Bookmarks Header Button */
+    .bookmarks-header-btn {
+      position: absolute;
+      right: 4.5rem;
+      background-color: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      min-height: 36px;
+      min-width: 36px;
+    }
+
+    .bookmarks-header-btn:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .bookmarks-header-btn:focus-visible {
+      outline: 2px solid white;
+      outline-offset: 2px;
+    }
+
+    /* Bookmarks Modal Overlay */
+    .bookmarks-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.6);
+      z-index: 1000;
+    }
+
+    .bookmarks-modal-overlay.active {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Bookmarks Modal */
+    .bookmarks-modal {
+      background-color: var(--yt-card-bg);
+      border: 1px solid var(--yt-card-border);
+      border-radius: 8px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .bookmarks-modal-header {
+      background: linear-gradient(135deg, var(--yt-header-grad-start) 0%, var(--yt-header-grad-end) 100%);
+      color: white;
+      padding: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .bookmarks-modal-header h2 {
+      margin: 0;
+      font-size: 1.3rem;
+      font-weight: 600;
+      flex: 1;
+    }
+
+    .bookmarks-modal-close {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: auto;
+    }
+
+    .bookmarks-modal-close:hover {
+      opacity: 0.8;
+    }
+
+    .bookmarks-modal-close:focus-visible {
+      outline: 2px solid white;
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    /* Bookmarks List */
+    #bookmarksContainer {
+      padding: 1.5rem;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .bookmarks-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .no-bookmarks {
+      text-align: center;
+      color: var(--yt-text-muted);
+      padding: 2rem 1rem;
+      font-size: 1rem;
+    }
+
+    /* Bookmark Item */
+    .bookmark-item {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      background-color: var(--yt-bg);
+      border: 1px solid var(--yt-card-border);
+      border-radius: 6px;
+      padding: 0.8rem;
+      transition: all 0.2s ease;
+    }
+
+    .bookmark-item:hover {
+      background-color: rgba(20, 184, 166, 0.1);
+      border-color: var(--yt-accent);
+    }
+
+    /* Bookmark Link Button */
+    .bookmark-link {
+      flex: 1;
+      background: none;
+      border: none;
+      color: var(--yt-text-main);
+      text-align: left;
+      cursor: pointer;
+      padding: 0.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      min-height: auto;
+      min-width: auto;
+      display: block;
+    }
+
+    .bookmark-link:hover {
+      color: var(--yt-accent);
+      transform: none;
+      box-shadow: none;
+      background-color: transparent;
+    }
+
+    .bookmark-link:focus-visible {
+      outline: 2px solid var(--yt-accent);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    .bookmark-text {
+      display: inline-block;
+    }
+
+    /* Bookmark Delete Button */
+    .bookmark-delete {
+      background-color: transparent;
+      border: 1px solid var(--yt-text-muted);
+      color: var(--yt-text-muted);
+      padding: 0.4rem 0.6rem;
+      font-size: 1.2rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-height: 36px;
+      min-width: 36px;
+      flex-shrink: 0;
+    }
+
+    .bookmark-delete:hover {
+      background-color: #e74c3c;
+      color: white;
+      border-color: #e74c3c;
+      transform: none;
+      box-shadow: 0 2px 8px rgba(231, 76, 60, 0.4);
+    }
+
+    .bookmark-delete:focus-visible {
+      outline: 2px solid #e74c3c;
+      outline-offset: 2px;
+    }
+
     @media (max-width: 600px) {
       .chapters-5col {
         grid-template-columns: repeat(4, 1fr);
@@ -667,6 +951,28 @@
         padding: 0.8rem;
         font-size: 0.85rem;
       }
+
+      .bookmarks-modal {
+        width: 95%;
+        max-height: 90vh;
+      }
+
+      .bookmarks-header-btn {
+        right: 4.2rem;
+        padding: 0.4rem 0.7rem;
+        font-size: 0.85rem;
+      }
+
+      .bookmark-item {
+        flex-wrap: wrap;
+        padding: 0.6rem;
+      }
+
+      .bookmark-delete {
+        min-height: 32px;
+        min-width: 32px;
+        padding: 0.3rem 0.5rem;
+      }
     }
   </style>
 </head>
@@ -679,6 +985,12 @@
   <header role="banner">
     <button class="menu-button" onclick="openBookSelector()" title="Open book selector" aria-label="Open book and chapter navigation">☰</button>
     <h1>Bible Reader</h1>
+    <select id="fontSizeControl" onchange="changeFontSize(this.value)" title="Adjust text size" aria-label="Adjust font size">
+      <option value="small">Small</option>
+      <option value="medium">Medium</option>
+      <option value="large">Large</option>
+    </select>
+    <button class="bookmarks-header-btn" onclick="openBookmarksModal()" title="View bookmarks" aria-label="Open bookmarks">★</button>
     <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle" title="Toggle theme" aria-label="Toggle light/dark theme">☀ Light</button>
   </header>
 
@@ -686,6 +998,9 @@
 
   <nav class="chapter-nav" aria-label="Chapter navigation">
     <button id="prevBtn" onclick="previousChapter()" aria-label="Go to previous chapter">← Previous</button>
+    <button class="bookmark-button" onclick="toggleBookmark()" title="Bookmark this chapter" aria-label="Toggle bookmark for current chapter">
+      <span id="bookmarkIcon">☆</span>
+    </button>
     <button id="nextBtn" onclick="nextChapter()" aria-label="Go to next chapter">Next →</button>
   </nav>
 
@@ -729,6 +1044,19 @@
     </div>
   </div>
 
+  <!-- Bookmarks Modal -->
+  <div class="bookmarks-modal-overlay" id="bookmarksModalOverlay" onclick="closeBookmarksModal(event)" role="dialog" aria-labelledby="bookmarksModalTitle" aria-modal="true">
+    <div class="bookmarks-modal" onclick="event.stopPropagation()">
+      <div class="bookmarks-modal-header">
+        <h2 id="bookmarksModalTitle">Bookmarks</h2>
+        <button class="bookmarks-modal-close" onclick="closeBookmarksModal()" aria-label="Close bookmarks">×</button>
+      </div>
+      <div id="bookmarksContainer" class="bookmarks-list">
+        <p class="no-bookmarks">No bookmarks yet. Tap the star icon to bookmark a chapter.</p>
+      </div>
+    </div>
+  </div>
+
   <script>
     // ========================================
     // Theme Management
@@ -736,6 +1064,19 @@
     const THEME_STORAGE_KEY = 'bibleReaderTheme';
     const THEME_DARK = 'theme-dark';
     const THEME_LIGHT = 'theme-light';
+
+    // ========================================
+    // Font Size Management
+    // ========================================
+    const FONT_SIZE_STORAGE_KEY = 'bibleReader.fontSize';
+    const FONT_SIZE_SMALL = 'small';
+    const FONT_SIZE_MEDIUM = 'medium';
+    const FONT_SIZE_LARGE = 'large';
+
+    // ========================================
+    // Bookmark Management
+    // ========================================
+    const BOOKMARKS_STORAGE_KEY = 'bibleReader.bookmarks';
 
     /**
      * Get saved theme from localStorage
@@ -793,8 +1134,234 @@
       applyTheme(theme);
     }
 
+    /**
+     * Get saved font size from localStorage
+     * @returns {string} Font size or FONT_SIZE_MEDIUM if not saved
+     */
+    function getSavedFontSize() {
+      return localStorage.getItem(FONT_SIZE_STORAGE_KEY) || FONT_SIZE_MEDIUM;
+    }
+
+    /**
+     * Save font size preference to localStorage
+     * @param {string} size - Font size to save (small, medium, or large)
+     */
+    function saveFontSize(size) {
+      localStorage.setItem(FONT_SIZE_STORAGE_KEY, size);
+    }
+
+    /**
+     * Apply font size to the document
+     * @param {string} size - Font size to apply
+     */
+    function applyFontSize(size) {
+      document.body.setAttribute('data-font-size', size);
+      const control = document.getElementById('fontSizeControl');
+      if (control) control.value = size;
+    }
+
+    /**
+     * Change font size and persist preference
+     * @param {string} size - Font size to apply
+     */
+    function changeFontSize(size) {
+      applyFontSize(size);
+      saveFontSize(size);
+    }
+
+    /**
+     * Initialize font size on page load
+     */
+    function initFontSize() {
+      const savedSize = getSavedFontSize();
+      applyFontSize(savedSize);
+    }
+
+    // ========================================
+    // Bookmark Data Functions
+    // ========================================
+
+    /**
+     * Load bookmarks from localStorage
+     * @returns {Array} Array of bookmark objects
+     */
+    function loadBookmarks() {
+      try {
+        const bookmarksJson = localStorage.getItem(BOOKMARKS_STORAGE_KEY);
+        if (bookmarksJson) {
+          return JSON.parse(bookmarksJson);
+        }
+      } catch (e) {
+        console.error('Error loading bookmarks:', e);
+      }
+      return [];
+    }
+
+    /**
+     * Save bookmarks to localStorage
+     * @param {Array} bookmarks - Array of bookmark objects to save
+     */
+    function saveBookmarks(bookmarks) {
+      try {
+        localStorage.setItem(BOOKMARKS_STORAGE_KEY, JSON.stringify(bookmarks));
+      } catch (e) {
+        console.error('Error saving bookmarks:', e);
+      }
+    }
+
+    /**
+     * Check if current chapter is bookmarked
+     * @returns {boolean} True if current chapter has a bookmark
+     */
+    function isCurrentChapterBookmarked() {
+      const bookmarks = loadBookmarks();
+      return bookmarks.some(b => b.bookId === currentBook && b.chapter === currentChapter);
+    }
+
+    /**
+     * Get bookmark ID for current chapter
+     * @returns {string|null} Bookmark ID or null if not found
+     */
+    function getCurrentBookmarkId() {
+      const bookmarks = loadBookmarks();
+      const bookmark = bookmarks.find(b => b.bookId === currentBook && b.chapter === currentChapter);
+      return bookmark ? bookmark.id : null;
+    }
+
+    /**
+     * Add bookmark for current chapter
+     */
+    function addBookmark() {
+      const bookmarks = loadBookmarks();
+      const id = `${currentBook}-${currentChapter}-${Date.now()}`;
+      const newBookmark = {
+        id,
+        bookId: currentBook,
+        bookName: currentBook,
+        chapter: currentChapter,
+        createdAt: new Date().toISOString()
+      };
+      bookmarks.unshift(newBookmark); // Add to beginning (most recent first)
+      saveBookmarks(bookmarks);
+      updateBookmarkButton();
+    }
+
+    /**
+     * Remove bookmark by ID
+     * @param {string} id - The bookmark ID to remove
+     */
+    function removeBookmark(id) {
+      let bookmarks = loadBookmarks();
+      bookmarks = bookmarks.filter(b => b.id !== id);
+      saveBookmarks(bookmarks);
+      updateBookmarkButton();
+    }
+
+    /**
+     * Toggle bookmark for current chapter
+     */
+    function toggleBookmark() {
+      if (isCurrentChapterBookmarked()) {
+        const id = getCurrentBookmarkId();
+        if (id) removeBookmark(id);
+      } else {
+        addBookmark();
+      }
+    }
+
+    /**
+     * Update bookmark button icon based on current chapter
+     */
+    function updateBookmarkButton() {
+      const icon = document.getElementById('bookmarkIcon');
+      if (icon) {
+        icon.textContent = isCurrentChapterBookmarked() ? '★' : '☆';
+      }
+    }
+
+    /**
+     * Open bookmarks modal
+     */
+    function openBookmarksModal() {
+      renderBookmarksList();
+      document.getElementById('bookmarksModalOverlay').classList.add('active');
+      setTimeout(() => {
+        const firstBookmark = document.querySelector('.bookmark-link');
+        if (firstBookmark) firstBookmark.focus();
+      }, 0);
+    }
+
+    /**
+     * Close bookmarks modal
+     * @param {Event} event - Optional event object from click handler
+     */
+    function closeBookmarksModal(event) {
+      if (!event || event.target === event.currentTarget) {
+        document.getElementById('bookmarksModalOverlay').classList.remove('active');
+      }
+    }
+
+    /**
+     * Render bookmarks list in modal
+     */
+    function renderBookmarksList() {
+      const bookmarks = loadBookmarks();
+      const container = document.getElementById('bookmarksContainer');
+
+      if (bookmarks.length === 0) {
+        container.innerHTML = '<p class="no-bookmarks">No bookmarks yet. Tap the star icon to bookmark a chapter.</p>';
+        return;
+      }
+
+      let html = '';
+      bookmarks.forEach(bookmark => {
+        html += `
+          <div class="bookmark-item">
+            <button class="bookmark-link" onclick="navigateToBookmark('${bookmark.id}')" aria-label="Go to ${bookmark.bookName} chapter ${bookmark.chapter}">
+              <span class="bookmark-text">${bookmark.bookName} ${bookmark.chapter}</span>
+            </button>
+            <button class="bookmark-delete" onclick="removeBookmark('${bookmark.id}'); event.stopPropagation();" aria-label="Remove bookmark for ${bookmark.bookName} chapter ${bookmark.chapter}" title="Remove bookmark">×</button>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    /**
+     * Navigate to a bookmarked chapter
+     * @param {string} bookmarkId - The ID of the bookmark to navigate to
+     */
+    async function navigateToBookmark(bookmarkId) {
+      const bookmarks = loadBookmarks();
+      const bookmark = bookmarks.find(b => b.id === bookmarkId);
+
+      if (!bookmark) return;
+
+      // Close bookmarks modal
+      closeBookmarksModal();
+
+      // Load the book if different from current
+      if (bookmark.bookId !== currentBook) {
+        try {
+          const bookInfo = booksJson.books.find(b => b.name === bookmark.bookId);
+          if (bookInfo) {
+            await selectBook(bookInfo);
+          }
+        } catch (e) {
+          console.error('Error loading bookmarked book:', e);
+          return;
+        }
+      }
+
+      // Navigate to the chapter
+      selectChapter(bookmark.chapter);
+    }
+
     // Initialize theme immediately
     initTheme();
+    // Initialize font size immediately
+    initFontSize();
 
     // ========================================
     // Bible reader state
@@ -812,12 +1379,16 @@
       if (event.key === 'Escape') {
         const bookModal = document.getElementById('bookModalOverlay');
         const chapterModal = document.getElementById('chapterModalOverlay');
+        const bookmarksModal = document.getElementById('bookmarksModalOverlay');
 
         if (bookModal.classList.contains('active')) {
           closeBookSelector();
           event.preventDefault();
         } else if (chapterModal.classList.contains('active')) {
           closeChapterSelector();
+          event.preventDefault();
+        } else if (bookmarksModal.classList.contains('active')) {
+          closeBookmarksModal();
           event.preventDefault();
         }
       }
@@ -1065,6 +1636,9 @@
 
       // Save the reading state
       saveReadingState(currentBook, currentChapter);
+
+      // Update bookmark button
+      updateBookmarkButton();
     }
 
     // Load the Bible data
