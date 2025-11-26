@@ -194,7 +194,13 @@
       justify-content: center;
       gap: 1rem;
       margin-bottom: 1.5rem;
-      padding: 0 1rem;
+      padding: 0.75rem 1rem;
+      /* Sticky positioning for always-visible navigation */
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background-color: var(--yt-bg);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     button {
@@ -1744,7 +1750,8 @@
       // Close modal
       closeChapterSelector();
 
-      window.scrollTo(0, 0);
+      // Auto-scroll to reading area with smooth behavior
+      scrollToReadingTop();
 
       // Save the reading state
       saveReadingState(currentBook, currentChapter);
@@ -1834,15 +1841,32 @@
     }
 
     // Navigation functions
+    /**
+     * Scroll smoothly to the top of the reading area after chapter change
+     * Ensures the chapter indicator and verses container are visible
+     */
+    function scrollToReadingTop() {
+      const chapterIndicator = document.getElementById('chapterIndicator');
+      if (chapterIndicator) {
+        // Scroll to the chapter indicator (sits between header and sticky nav)
+        chapterIndicator.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        // Fallback to top of page if indicator not found
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
     function previousChapter() {
       if (currentChapter > 1) {
         displayChapter(currentChapter - 1);
+        scrollToReadingTop();
       }
     }
 
     function nextChapter() {
       if (currentChapter < totalChapters) {
         displayChapter(currentChapter + 1);
+        scrollToReadingTop();
       }
     }
 

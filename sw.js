@@ -1,5 +1,5 @@
 // Cache version constant - increment this to bust the cache
-const CACHE_VERSION = "bible-pwa-v4";
+const CACHE_VERSION = "bible-pwa-v5";
 
 // Get the base path from the service worker's own location
 // e.g., if SW is at /bible-pwa/sw.js, base is /bible-pwa/
@@ -104,6 +104,9 @@ self.addEventListener("install", (event) => {
       ];
 
       return cache.addAll(allFiles);
+    }).then(() => {
+      // Activate immediately without waiting for other tabs to close
+      self.skipWaiting();
     })
   );
 });
@@ -117,32 +120,106 @@ self.addEventListener("activate", (event) => {
           .filter((cacheName) => cacheName !== CACHE_VERSION)
           .map((cacheName) => caches.delete(cacheName))
       );
+    }).then(() => {
+      // Claim all clients immediately so new SW takes control
+      return clients.claim();
     })
   );
 });
 
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
+  const pathname = url.pathname;
 
-  // Normalize pathname to handle both root and subpath deployments
-  // Check if pathname contains /data/ and ends with .json
-  const isDataRequest = url.pathname.includes('/data/') && url.pathname.endsWith('.json');
+  // Determine request type
+  const isNavigationRequest = event.request.mode === 'navigate' ||
+                             pathname === BASE_PATH ||
+                             pathname === `${BASE_PATH}index.html` ||
+                             pathname === '/';
 
-  console.log('SW fetch:', url.pathname, 'isData:', isDataRequest);
+  const isDataRequest = pathname.includes('/data/') && pathname.endsWith('.json');
 
-  // Smart caching strategy for Bible data files
-  // Pattern: /data/*.json files (books and individual books)
-  if (isDataRequest) {
+  console.log('SW fetch:', pathname, 'nav:', isNavigationRequest, 'data:', isDataRequest);
+
+  // 1. NAVIGATION REQUESTS (HTML shell) - network-first strategy
+  // Try network first for fresh content, fall back to cache for offline
+  if (isNavigationRequest) {
+    event.respondWith(networkFirstStrategy(event.request));
+  }
+  // 2. BIBLE DATA REQUESTS - cache-first with network update
+  // Return cached version immediately, update in background
+  else if (isDataRequest) {
     event.respondWith(cacheFirstWithNetworkUpdate(event.request));
-  } else {
-    // Default strategy for all other requests: cache-first with network fallback
-    event.respondWith(
-      caches.match(event.request).then((cached) => {
-        return cached || fetch(event.request);
-      })
-    );
+  }
+  // 3. STATIC ASSETS (images, etc.) - cache-first
+  // Return cached version, no network update
+  else {
+    event.respondWith(cacheFirstStrategy(event.request));
   }
 });
+
+/**
+ * Network-first strategy for HTML shell (index.html, navigation)
+ * Tries to fetch from network first for fresh content.
+ * On success: updates cache and returns fresh response
+ * On failure: falls back to cached version for offline support
+ */
+function networkFirstStrategy(request) {
+  return fetch(request).then((networkResponse) => {
+    // Cache successful responses
+    if (networkResponse && networkResponse.status === 200) {
+      const responseToCache = networkResponse.clone();
+      caches.open(CACHE_VERSION).then((cache) => {
+        cache.put(request, responseToCache);
+      }).catch(() => {
+        // Cache update failed - still return network response
+      });
+    }
+    return networkResponse;
+  }).catch(() => {
+    // Network failed - try cache
+    return caches.match(request).then((cached) => {
+      if (cached) return cached;
+      // No network and no cache - offline response
+      return new Response("Offline - please check your connection", {
+        status: 503,
+        statusText: "Service Unavailable",
+        headers: new Headers({ "Content-Type": "text/plain" })
+      });
+    });
+  });
+}
+
+/**
+ * Cache-first strategy for static assets (images, icons)
+ * Returns cached version immediately without network check.
+ * No background updates.
+ */
+function cacheFirstStrategy(request) {
+  return caches.match(request).then((cached) => {
+    if (cached) return cached;
+    // Not in cache - fetch and cache it
+    return fetch(request).then((response) => {
+      if (!response || response.status !== 200) {
+        return response;
+      }
+      const responseToCache = response.clone();
+      caches.open(CACHE_VERSION).then((cache) => {
+        cache.put(request, responseToCache);
+      }).catch(() => {
+        // Cache update failed - still return network response
+      });
+      return response;
+    }).catch(() => {
+      // Network failed and no cache
+      return new Response("Resource not available", {
+        status: 404,
+        statusText: "Not Found",
+        headers: new Headers({ "Content-Type": "text/plain" })
+      });
+    });
+  });
+}
 
 /**
  * Cache-first with network update strategy
