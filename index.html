@@ -248,6 +248,149 @@
       color: var(--yt-accent);
     }
 
+    /* Search Container */
+    .search-container {
+      max-width: 700px;
+      margin: 0 auto 1rem;
+      padding: 0 1rem;
+    }
+
+    .search-bar {
+      margin-bottom: 0.5rem;
+    }
+
+    .search-label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--yt-text-main);
+      margin-bottom: 0.3rem;
+    }
+
+    .search-input-wrapper {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 0.5rem 0.75rem;
+      font-size: 1rem;
+      border: 2px solid var(--yt-card-border);
+      border-radius: 6px;
+      background-color: var(--yt-card-bg);
+      color: var(--yt-text-main);
+      transition: border-color 0.2s ease;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--yt-accent);
+      box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+    }
+
+    .search-button,
+    .search-clear-button {
+      padding: 0.5rem 0.75rem;
+      font-size: 1rem;
+      background-color: var(--yt-accent);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-height: 44px;
+      min-width: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .search-button:hover,
+    .search-clear-button:hover {
+      background-color: var(--yt-accent-soft);
+      transform: translateY(-1px);
+    }
+
+    .search-button:focus-visible,
+    .search-clear-button:focus-visible {
+      outline: 2px solid var(--yt-accent);
+      outline-offset: 2px;
+    }
+
+    .search-clear-button {
+      background-color: #6c757d;
+    }
+
+    .search-clear-button:hover {
+      background-color: #5a6268;
+    }
+
+    .search-results {
+      font-size: 0.9rem;
+      color: var(--yt-text-muted);
+      min-height: 1.5rem;
+      padding: 0.25rem 0;
+    }
+
+    .search-navigation {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+
+    .search-navigation button {
+      padding: 0.3rem 0.6rem;
+      font-size: 0.9rem;
+      min-height: 32px;
+      min-width: 32px;
+    }
+
+    #matchPosition {
+      font-size: 0.9rem;
+      color: var(--yt-text-main);
+      font-weight: 500;
+    }
+
+    /* Search highlight styles */
+    .search-highlight {
+      background-color: #ffeb3b;
+      color: #000;
+      padding: 0.1rem 0.2rem;
+      border-radius: 2px;
+    }
+
+    .search-highlight-current {
+      background-color: #ff9800;
+      color: #000;
+      padding: 0.1rem 0.2rem;
+      border-radius: 2px;
+      box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.3);
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 600px) {
+      .search-container {
+        padding: 0 0.5rem;
+      }
+
+      .search-input {
+        font-size: 0.95rem;
+        padding: 0.4rem 0.6rem;
+      }
+
+      .search-button,
+      .search-clear-button {
+        min-height: 44px;
+        min-width: 44px;
+        padding: 0.4rem 0.6rem;
+        font-size: 0.9rem;
+      }
+    }
+
     .verses-container {
       max-width: 700px;
       margin: 0 auto;
@@ -1114,6 +1257,47 @@
 
   <div class="chapter-indicator" id="chapterIndicator" role="region" aria-live="polite" aria-label="Current chapter">Loading...</div>
 
+  <!-- Search Bar -->
+  <div class="search-container" id="searchContainer">
+    <div class="search-bar">
+      <label for="chapterSearchInput" class="search-label">Search this chapter:</label>
+      <div class="search-input-wrapper">
+        <input
+          type="text"
+          id="chapterSearchInput"
+          class="search-input"
+          placeholder="Enter search term..."
+          aria-label="Search current chapter"
+          autocomplete="off"
+          maxlength="100"
+        />
+        <button
+          id="searchBtn"
+          class="search-button"
+          onclick="performChapterSearch()"
+          title="Search"
+          aria-label="Search">
+          🔍
+        </button>
+        <button
+          id="clearSearchBtn"
+          class="search-clear-button"
+          onclick="clearChapterSearch()"
+          title="Clear search"
+          aria-label="Clear search"
+          style="display: none;">
+          ✕
+        </button>
+      </div>
+    </div>
+    <div class="search-results" id="searchResults" aria-live="polite" aria-atomic="true"></div>
+    <div class="search-navigation" id="searchNavigation" style="display: none;">
+      <button id="prevMatchBtn" onclick="goToPreviousMatch()" aria-label="Previous match">↑</button>
+      <span id="matchPosition" aria-live="polite" aria-atomic="true">1 of 3</span>
+      <button id="nextMatchBtn" onclick="goToNextMatch()" aria-label="Next match">↓</button>
+    </div>
+  </div>
+
   <nav class="chapter-nav" aria-label="Chapter navigation">
     <button id="prevBtn" onclick="previousChapter()" aria-label="Go to previous chapter">← Previous</button>
     <button class="bookmark-button" onclick="toggleBookmark()" title="Bookmark this chapter" aria-label="Toggle bookmark for current chapter">
@@ -1493,11 +1677,12 @@
 
     // Keyboard event handling for accessibility
     document.addEventListener('keydown', function(event) {
-      // ESC key closes modals
+      // ESC key closes modals or clears search
       if (event.key === 'Escape') {
         const bookModal = document.getElementById('bookModalOverlay');
         const chapterModal = document.getElementById('chapterModalOverlay');
         const bookmarksModal = document.getElementById('bookmarksModalOverlay');
+        const searchInput = document.getElementById('chapterSearchInput');
 
         if (bookModal.classList.contains('active')) {
           closeBookSelector();
@@ -1507,6 +1692,10 @@
           event.preventDefault();
         } else if (bookmarksModal.classList.contains('active')) {
           closeBookmarksModal();
+          event.preventDefault();
+        } else if (searchInput.value.trim()) {
+          // If search has content, clear it
+          clearChapterSearch();
           event.preventDefault();
         }
       }
@@ -1782,6 +1971,9 @@
         return;
       }
 
+      // Clear any active search when navigating to a new chapter
+      clearChapterSearch();
+
       currentChapter = chapterNum;
       const verses = bookData[chapterNum];
       const container = document.getElementById('versesContainer');
@@ -1993,6 +2185,259 @@
     loadBooksJson();
     // Restore reading state instead of always loading John 1
     restoreReadingState();
+
+    // ========================================
+    // Chapter Search Functionality
+    // ========================================
+
+    let searchMatches = [];
+    let currentMatchIndex = 0;
+
+    /**
+     * Helper function to escape special regex characters
+     * @param {string} str - String to escape
+     * @returns {string} Escaped string safe for regex
+     */
+    function escapeRegex(str) {
+      return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    /**
+     * Perform search within the current chapter
+     * Finds ALL matches across ALL verses and stores them with their location
+     */
+    function performChapterSearch() {
+      const searchInput = document.getElementById('chapterSearchInput');
+      const searchTerm = searchInput.value.trim();
+
+      // Clear previous results
+      clearSearchHighlights();
+      searchMatches = [];
+      currentMatchIndex = 0;
+
+      if (!searchTerm) {
+        document.getElementById('searchResults').textContent = '';
+        document.getElementById('searchNavigation').style.display = 'none';
+        document.getElementById('searchBtn').style.display = 'inline-flex';
+        document.getElementById('clearSearchBtn').style.display = 'none';
+        return;
+      }
+
+      // Hide search button, show clear button
+      document.getElementById('searchBtn').style.display = 'none';
+      document.getElementById('clearSearchBtn').style.display = 'inline-flex';
+
+      // Build regex for case-insensitive matching
+      const regex = new RegExp(escapeRegex(searchTerm), 'gi');
+
+      // Search through ALL verse-text elements
+      const container = document.getElementById('versesContainer');
+      const verses = container.querySelectorAll('.verse-text');
+
+      verses.forEach((verseElement) => {
+        const text = verseElement.textContent;
+        let match;
+
+        // Reset regex.lastIndex for global flag to work correctly in loop
+        regex.lastIndex = 0;
+
+        // Find ALL matches within this verse text
+        while ((match = regex.exec(text)) !== null) {
+          searchMatches.push({
+            element: verseElement,
+            verseText: text,
+            matchText: match[0],
+            startIndex: match.index,
+            length: match[0].length
+          });
+        }
+      });
+
+      // Update UI based on results
+      if (searchMatches.length === 0) {
+        document.getElementById('searchResults').textContent = `No matches found for "${searchTerm}"`;
+        document.getElementById('searchNavigation').style.display = 'none';
+      } else {
+        // Highlight first match and navigate to it
+        highlightMatch(0);
+        updateSearchResultsDisplay(searchTerm);
+        document.getElementById('searchNavigation').style.display = 'flex';
+      }
+    }
+
+    /**
+     * Highlight a specific match by index
+     * Updates the .verse-text HTML with all matches, marking only the current one with .search-highlight-current
+     * @param {number} index - The match index to highlight
+     */
+    function highlightMatch(index) {
+      if (index < 0 || index >= searchMatches.length) return;
+
+      currentMatchIndex = index;
+      const currentMatch = searchMatches[index];
+
+      // Get the search term to rebuild the verse with highlights
+      const searchTerm = document.getElementById('chapterSearchInput').value.trim();
+      const regex = new RegExp(escapeRegex(searchTerm), 'gi');
+
+      // Process each unique verse element that has matches
+      const processedElements = new Set();
+
+      searchMatches.forEach((match, matchIndex) => {
+        if (!processedElements.has(match.element)) {
+          processedElements.add(match.element);
+
+          const verseText = match.verseText;
+          let html = '';
+          let lastIndex = 0;
+
+          // Split text by all matches and build HTML
+          let regexMatch;
+          regex.lastIndex = 0;
+          const parts = [];
+
+          while ((regexMatch = regex.exec(verseText)) !== null) {
+            // Add text before this match
+            if (regexMatch.index > lastIndex) {
+              parts.push({
+                type: 'text',
+                content: verseText.substring(lastIndex, regexMatch.index)
+              });
+            }
+
+            // Check if this is the current match being highlighted
+            const isCurrentMatch = match.element === currentMatch.element &&
+              regexMatch.index === currentMatch.startIndex;
+
+            parts.push({
+              type: 'match',
+              content: regexMatch[0],
+              isCurrent: isCurrentMatch
+            });
+
+            lastIndex = regexMatch.index + regexMatch[0].length;
+          }
+
+          // Add remaining text
+          if (lastIndex < verseText.length) {
+            parts.push({
+              type: 'text',
+              content: verseText.substring(lastIndex)
+            });
+          }
+
+          // Build HTML from parts
+          match.element.innerHTML = '';
+          parts.forEach(part => {
+            if (part.type === 'text') {
+              match.element.appendChild(document.createTextNode(part.content));
+            } else {
+              const span = document.createElement('span');
+              span.className = part.isCurrent ? 'search-highlight-current' : 'search-highlight';
+              span.textContent = part.content;
+              match.element.appendChild(span);
+            }
+          });
+        }
+      });
+
+      // Scroll the current match into view
+      const currentMatchSpan = currentMatch.element.querySelector('.search-highlight-current');
+      if (currentMatchSpan) {
+        currentMatchSpan.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        currentMatch.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      // Update navigation display
+      document.getElementById('matchPosition').textContent = `${index + 1} of ${searchMatches.length}`;
+
+      // Update navigation button states
+      document.getElementById('prevMatchBtn').disabled = index === 0;
+      document.getElementById('nextMatchBtn').disabled = index === searchMatches.length - 1;
+    }
+
+    /**
+     * Go to previous search match with wraparound
+     */
+    function goToPreviousMatch() {
+      if (searchMatches.length === 0) return;
+
+      let newIndex = currentMatchIndex - 1;
+      // Wrap around to end if at beginning
+      if (newIndex < 0) {
+        newIndex = searchMatches.length - 1;
+      }
+
+      highlightMatch(newIndex);
+    }
+
+    /**
+     * Go to next search match with wraparound
+     */
+    function goToNextMatch() {
+      if (searchMatches.length === 0) return;
+
+      let newIndex = currentMatchIndex + 1;
+      // Wrap around to beginning if at end
+      if (newIndex >= searchMatches.length) {
+        newIndex = 0;
+      }
+
+      highlightMatch(newIndex);
+    }
+
+    /**
+     * Clear all search highlights and reset search state
+     */
+    function clearChapterSearch() {
+      clearSearchHighlights();
+      document.getElementById('chapterSearchInput').value = '';
+      document.getElementById('searchResults').textContent = '';
+      document.getElementById('searchNavigation').style.display = 'none';
+      document.getElementById('searchBtn').style.display = 'inline-flex';
+      document.getElementById('clearSearchBtn').style.display = 'none';
+      searchMatches = [];
+      currentMatchIndex = 0;
+    }
+
+    /**
+     * Remove all search highlights from verse text
+     * Replaces .search-highlight and .search-highlight-current spans with plain text nodes
+     */
+    function clearSearchHighlights() {
+      const highlights = document.querySelectorAll('.search-highlight, .search-highlight-current');
+      highlights.forEach(highlight => {
+        const text = highlight.textContent;
+        const parent = highlight.parentNode;
+        if (parent) {
+          parent.replaceChild(document.createTextNode(text), highlight);
+          // Merge adjacent text nodes to restore original structure
+          parent.normalize();
+        }
+      });
+    }
+
+    /**
+     * Update search results display with match count
+     * @param {string} searchTerm - The search term
+     */
+    function updateSearchResultsDisplay(searchTerm) {
+      const resultText = searchMatches.length === 1
+        ? `1 match found for "${searchTerm}"`
+        : `${searchMatches.length} matches found for "${searchTerm}"`;
+      document.getElementById('searchResults').textContent = resultText;
+    }
+
+    // Set up Enter key handler for search input
+    const searchInput = document.getElementById('chapterSearchInput');
+    if (searchInput) {
+      searchInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+          performChapterSearch();
+        }
+      });
+    }
 
     // Register Service Worker for PWA
     if ('serviceWorker' in navigator) {
