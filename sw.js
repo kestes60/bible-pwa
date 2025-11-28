@@ -1,5 +1,5 @@
 // Cache version constant - increment this to bust the cache
-const CACHE_VERSION = "bible-pwa-v5";
+const CACHE_VERSION = "bible-pwa-v6";
 
 // Get the base path from the service worker's own location
 // e.g., if SW is at /bible-pwa/sw.js, base is /bible-pwa/
@@ -89,6 +89,10 @@ self.addEventListener("install", (event) => {
         `${BASE_PATH}`,
         `${BASE_PATH}index.html`,
         `${BASE_PATH}manifest.json`,
+        // Stylesheets and scripts
+        `${BASE_PATH}styles/main.css`,
+        `${BASE_PATH}scripts/config/versions.js`,
+        `${BASE_PATH}scripts/app.js`,
         // Icons
         `${BASE_PATH}icons/icon-72x72.png`,
         `${BASE_PATH}icons/icon-96x96.png`,
