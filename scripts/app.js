@@ -310,6 +310,43 @@ async function navigateToBookmark(bookmarkId) {
 initTheme();
 // Initialize font size immediately
 initFontSize();
+// Initialize version indicator
+initVersionIndicator();
+
+// ========================================
+// Version Indicator
+// ========================================
+
+/**
+ * Initialize the version indicator chip in the header
+ * Uses getCurrentVersion() from versions.js to display the current Bible version
+ */
+function initVersionIndicator() {
+  const versionChip = document.getElementById('versionChip');
+  if (versionChip && typeof getCurrentVersion === 'function') {
+    const version = getCurrentVersion();
+    if (version && version.shortName) {
+      versionChip.textContent = version.shortName;
+      versionChip.title = version.name || 'Current Bible version';
+    }
+  }
+}
+
+/**
+ * Update the version indicator chip (hook for future multi-version support)
+ * Call this when switching versions to update the UI
+ * @param {string} versionId - The version identifier (e.g., "en-web")
+ */
+function updateVersionIndicator(versionId) {
+  const versionChip = document.getElementById('versionChip');
+  if (versionChip && typeof getVersion === 'function') {
+    const version = getVersion(versionId);
+    if (version && version.shortName) {
+      versionChip.textContent = version.shortName;
+      versionChip.title = version.name || 'Current Bible version';
+    }
+  }
+}
 
 // ========================================
 // Reading State Persistence

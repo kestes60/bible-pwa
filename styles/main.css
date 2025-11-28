@@ -105,6 +105,29 @@ header.app-header {
   opacity: 0.9;
   font-weight: 400;
   pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Version Indicator Chip */
+.version-chip {
+  display: inline-block;
+  background-color: rgba(255, 255, 255, 0.25);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.15rem 0.4rem;
+  border-radius: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  vertical-align: middle;
+  cursor: default;
+  transition: background-color 0.2s ease;
+}
+
+.version-chip:hover {
+  background-color: rgba(255, 255, 255, 0.35);
 }
 
 .header-right {
@@ -1249,6 +1272,12 @@ header {
 
   .app-subtitle {
     font-size: 0.75rem;
+    justify-content: center;
+  }
+
+  .version-chip {
+    font-size: 0.6rem;
+    padding: 0.1rem 0.35rem;
   }
 
   #fontSizeControl {
