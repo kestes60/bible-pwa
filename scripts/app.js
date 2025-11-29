@@ -310,8 +310,9 @@ async function navigateToBookmark(bookmarkId) {
 initTheme();
 // Initialize font size immediately
 initFontSize();
-// Initialize version indicator
+// Initialize version indicator and version manager
 initVersionIndicator();
+initVersionManager();
 
 // ========================================
 // Version Indicator
@@ -344,6 +345,101 @@ function updateVersionIndicator(versionId) {
     if (version && version.shortName) {
       versionChip.textContent = version.shortName;
       versionChip.title = version.name || 'Current Bible version';
+    }
+  }
+}
+
+// ========================================
+// Version Manager
+// ========================================
+
+/**
+ * Initialize the version manager modal
+ * Populates the installed versions list using getCurrentVersion() from versions.js
+ *
+ * TODO: When multi-version support is added:
+ * - This function should call getInstalledVersions() to get all locally cached versions
+ * - Each version item should include a "Remove" button for non-active versions
+ * - The active version should be determined by user preference stored in localStorage
+ */
+function initVersionManager() {
+  const listContainer = document.getElementById('installedVersionsList');
+  if (!listContainer) return;
+
+  // Get current version from versions.js
+  const currentVersion = getCurrentVersion();
+  if (!currentVersion) return;
+
+  // Build the version item HTML
+  // TODO: Loop through getInstalledVersions() when multi-version is implemented
+  const versionItem = document.createElement('div');
+  versionItem.className = 'version-item';
+
+  const infoDiv = document.createElement('div');
+  infoDiv.className = 'version-item-info';
+
+  const nameDiv = document.createElement('div');
+  nameDiv.className = 'version-item-name';
+  nameDiv.textContent = `${currentVersion.shortName} – ${currentVersion.name}`;
+
+  const langDiv = document.createElement('div');
+  langDiv.className = 'version-item-language';
+  langDiv.textContent = `Language: ${currentVersion.languageName}`;
+
+  infoDiv.appendChild(nameDiv);
+  infoDiv.appendChild(langDiv);
+
+  const badge = document.createElement('span');
+  badge.className = 'version-badge';
+  badge.textContent = 'Active';
+
+  versionItem.appendChild(infoDiv);
+  versionItem.appendChild(badge);
+
+  listContainer.innerHTML = '';
+  listContainer.appendChild(versionItem);
+
+  // Set up version chip click handler
+  const versionChip = document.getElementById('versionChip');
+  if (versionChip) {
+    // Handle Enter/Space key for accessibility (since it has role="button")
+    versionChip.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        openVersionManager();
+      }
+    });
+  }
+}
+
+/**
+ * Open the version manager modal
+ */
+function openVersionManager() {
+  const overlay = document.getElementById('versionManagerOverlay');
+  if (overlay) {
+    overlay.classList.add('active');
+    // Focus the close button for keyboard navigation
+    setTimeout(() => {
+      const closeBtn = overlay.querySelector('.version-manager-close');
+      if (closeBtn) closeBtn.focus();
+    }, 0);
+  }
+}
+
+/**
+ * Close the version manager modal
+ * @param {Event} event - Optional event object from click handler
+ */
+function closeVersionManager(event) {
+  // Only close if clicking overlay background or explicitly called
+  if (!event || event.target === event.currentTarget) {
+    const overlay = document.getElementById('versionManagerOverlay');
+    if (overlay) {
+      overlay.classList.remove('active');
+      // Return focus to version chip
+      const versionChip = document.getElementById('versionChip');
+      if (versionChip) versionChip.focus();
     }
   }
 }
@@ -856,9 +952,13 @@ document.addEventListener('keydown', function(event) {
     const bookModal = document.getElementById('bookModalOverlay');
     const chapterModal = document.getElementById('chapterModalOverlay');
     const bookmarksModal = document.getElementById('bookmarksModalOverlay');
+    const versionManager = document.getElementById('versionManagerOverlay');
     const searchInput = document.getElementById('chapterSearchInput');
 
-    if (bookModal.classList.contains('active')) {
+    if (versionManager && versionManager.classList.contains('active')) {
+      closeVersionManager();
+      event.preventDefault();
+    } else if (bookModal.classList.contains('active')) {
       closeBookSelector();
       event.preventDefault();
     } else if (chapterModal.classList.contains('active')) {

@@ -35,13 +35,9 @@
       <h1 class="app-title">Bible Reader</h1>
       <div class="app-subtitle">
         by Yahtsar
-        <span class="version-chip" id="versionChip" title="Current Bible version">WEB</span>
+        <span class="version-chip" id="versionChip" onclick="openVersionManager()" title="Manage Bible versions" role="button" tabindex="0" aria-label="Manage Bible versions">WEB</span>
       </div>
-      <!-- TODO: Multi-Version Support
-           Add version selector here for switching between Bible translations
-           The version chip above shows the current version shortName.
-           Future: clicking the chip opens a version selector modal.
-      -->
+      <!-- Version Manager Modal trigger is the version chip above -->
     </div>
 
     <div class="header-right">
@@ -158,6 +154,31 @@
       </div>
       <div id="bookmarksContainer" class="bookmarks-list">
         <p class="no-bookmarks">No bookmarks yet. Tap the star icon to bookmark a chapter.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Version Manager Modal -->
+  <div class="version-manager-overlay" id="versionManagerOverlay" onclick="closeVersionManager(event)" role="dialog" aria-labelledby="versionManagerTitle" aria-modal="true">
+    <div class="version-manager-modal" onclick="event.stopPropagation()">
+      <div class="version-manager-header">
+        <h2 id="versionManagerTitle">Manage Versions</h2>
+        <button class="version-manager-close" onclick="closeVersionManager()" aria-label="Close version manager">&times;</button>
+      </div>
+      <div class="version-manager-content">
+        <p class="version-manager-description">Choose which Bible version(s) to keep offline.</p>
+
+        <h3 class="version-manager-section-title">Installed versions</h3>
+        <div id="installedVersionsList" class="installed-versions-list">
+          <!-- Populated by initVersionManager() -->
+        </div>
+
+        <div class="version-manager-footer">
+          <button class="version-manager-browse" disabled aria-disabled="true">
+            Browse more versions (coming soon)
+          </button>
+          <button class="version-manager-close-btn" onclick="closeVersionManager()">Close</button>
+        </div>
       </div>
     </div>
   </div>
