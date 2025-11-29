@@ -2,10 +2,14 @@
  * Bible Version Registry
  *
  * Configuration for available Bible translations.
- * Currently supports only World English Bible (WEB).
+ * Currently supports World English Bible (WEB) and upcoming King James Version (KJV).
+ *
+ * Each version includes:
+ * - status: "installed" (available offline), "coming-soon" (planned), or "remote" (future)
+ * - storageStrategy: "bundled" (included in app) or "remote" (downloaded)
+ * - estimatedSizeMB: Approximate size for UI display
  *
  * Future versions can be added here:
- * - "en-kjv": King James Version
  * - "en-nasb": New American Standard Bible
  * - "es-rvr": Reina Valera (Spanish)
  * etc.
@@ -26,31 +30,28 @@ const bibleVersions = {
     shortName: "WEB",
     language: "en",
     languageName: "English",
+    status: "installed",
+    storageStrategy: "bundled",
     dataPath: "data/",
     booksFile: "books.json",
+    estimatedSizeMB: 3,
+    sourceRepo: null,
     description: "Modern English translation, public domain"
+  },
+  "en-kjv": {
+    id: "en-kjv",
+    name: "King James Version",
+    shortName: "KJV",
+    language: "en",
+    languageName: "English",
+    status: "coming-soon",
+    storageStrategy: "bundled",
+    dataPath: "data/kjv/",
+    booksFile: "books.json",
+    estimatedSizeMB: 3,
+    sourceRepo: null,
+    description: "Classic English translation from 1611"
   }
-  // TODO: Add additional versions here
-  // "en-kjv": {
-  //   id: "en-kjv",
-  //   name: "King James Version",
-  //   shortName: "KJV",
-  //   language: "en",
-  //   languageName: "English",
-  //   dataPath: "data/kjv/",
-  //   booksFile: "books.json",
-  //   description: "Classic English translation from 1611"
-  // },
-  // "es-rvr": {
-  //   id: "es-rvr",
-  //   name: "Reina Valera Revisada",
-  //   shortName: "RVR",
-  //   language: "es",
-  //   languageName: "Español",
-  //   dataPath: "data/rvr/",
-  //   booksFile: "books.json",
-  //   description: "Spanish translation"
-  // }
 };
 
 /**
@@ -93,4 +94,21 @@ function getCurrentDataPath() {
 function getCurrentBooksFile() {
   const version = getCurrentVersion();
   return version.dataPath + version.booksFile;
+}
+
+/**
+ * Get the internal ID for the currently active version
+ * @returns {string} The current version ID (e.g., "en-web")
+ * TODO: In future, read from localStorage (bibleReader.currentVersionId)
+ */
+function getCurrentVersionId() {
+  return CURRENT_VERSION_ID;
+}
+
+/**
+ * Get all versions that are installed/available offline
+ * @returns {Array} Array of version objects with status === "installed"
+ */
+function getInstalledVersions() {
+  return Object.values(bibleVersions).filter(v => v.status === "installed");
 }

@@ -355,49 +355,120 @@ function updateVersionIndicator(versionId) {
 
 /**
  * Initialize the version manager modal
- * Populates the installed versions list using getCurrentVersion() from versions.js
+ * Populates the installed versions list and "Other versions" section
+ * Uses getInstalledVersions() and getAllVersions() from versions.js
  *
- * TODO: When multi-version support is added:
- * - This function should call getInstalledVersions() to get all locally cached versions
- * - Each version item should include a "Remove" button for non-active versions
+ * TODO: When full multi-version support is added:
+ * - Each installed version item should include a "Remove" button for non-active versions
+ * - "Coming soon" versions should have a "Download" button when available
  * - The active version should be determined by user preference stored in localStorage
  */
 function initVersionManager() {
   const listContainer = document.getElementById('installedVersionsList');
   if (!listContainer) return;
 
-  // Get current version from versions.js
-  const currentVersion = getCurrentVersion();
-  if (!currentVersion) return;
+  const contentContainer = listContainer.parentElement;
+  if (!contentContainer) return;
 
-  // Build the version item HTML
-  // TODO: Loop through getInstalledVersions() when multi-version is implemented
-  const versionItem = document.createElement('div');
-  versionItem.className = 'version-item';
+  const currentVersionId = getCurrentVersionId();
+  const installedVersions = getInstalledVersions();
 
-  const infoDiv = document.createElement('div');
-  infoDiv.className = 'version-item-info';
-
-  const nameDiv = document.createElement('div');
-  nameDiv.className = 'version-item-name';
-  nameDiv.textContent = `${currentVersion.shortName} – ${currentVersion.name}`;
-
-  const langDiv = document.createElement('div');
-  langDiv.className = 'version-item-language';
-  langDiv.textContent = `Language: ${currentVersion.languageName}`;
-
-  infoDiv.appendChild(nameDiv);
-  infoDiv.appendChild(langDiv);
-
-  const badge = document.createElement('span');
-  badge.className = 'version-badge';
-  badge.textContent = 'Active';
-
-  versionItem.appendChild(infoDiv);
-  versionItem.appendChild(badge);
-
+  // Clear the installed versions list
   listContainer.innerHTML = '';
-  listContainer.appendChild(versionItem);
+
+  // Populate installed versions
+  installedVersions.forEach((version) => {
+    const versionItem = document.createElement('div');
+    versionItem.className = 'version-item';
+
+    const infoDiv = document.createElement('div');
+    infoDiv.className = 'version-item-info';
+
+    const nameDiv = document.createElement('div');
+    nameDiv.className = 'version-item-name';
+    nameDiv.textContent = `${version.shortName} – ${version.name}`;
+
+    const langDiv = document.createElement('div');
+    langDiv.className = 'version-item-language';
+    langDiv.textContent = `Language: ${version.languageName}`;
+
+    infoDiv.appendChild(nameDiv);
+    infoDiv.appendChild(langDiv);
+
+    const badge = document.createElement('span');
+    badge.className = 'version-badge';
+    badge.textContent = version.id === currentVersionId ? 'Active' : 'Installed';
+
+    versionItem.appendChild(infoDiv);
+    versionItem.appendChild(badge);
+
+    listContainer.appendChild(versionItem);
+  });
+
+  // Add "Other versions" section if there are non-installed versions
+  const allVersions = getAllVersions();
+  const otherVersions = allVersions.filter((v) => v.status !== 'installed');
+
+  // Remove any existing "Other versions" section (in case of re-init)
+  const existingOtherSection = contentContainer.querySelector('.other-versions-section');
+  if (existingOtherSection) {
+    existingOtherSection.remove();
+  }
+
+  if (otherVersions.length > 0) {
+    // Create wrapper for the entire section
+    const otherSection = document.createElement('div');
+    otherSection.className = 'other-versions-section';
+
+    // Create section title
+    const sectionTitle = document.createElement('h3');
+    sectionTitle.className = 'version-manager-section-title';
+    sectionTitle.textContent = 'Other versions';
+    otherSection.appendChild(sectionTitle);
+
+    // Create list wrapper
+    const otherListWrapper = document.createElement('div');
+    otherListWrapper.className = 'other-versions-list';
+
+    // Populate other versions
+    otherVersions.forEach((version) => {
+      const versionItem = document.createElement('div');
+      versionItem.className = 'version-item';
+
+      const infoDiv = document.createElement('div');
+      infoDiv.className = 'version-item-info';
+
+      const nameDiv = document.createElement('div');
+      nameDiv.className = 'version-item-name';
+      nameDiv.textContent = `${version.shortName} – ${version.name}`;
+
+      const langDiv = document.createElement('div');
+      langDiv.className = 'version-item-language';
+      langDiv.textContent = `Language: ${version.languageName}`;
+
+      infoDiv.appendChild(nameDiv);
+      infoDiv.appendChild(langDiv);
+
+      const badge = document.createElement('span');
+      badge.className = 'version-badge version-badge-secondary';
+      badge.textContent = 'Coming soon';
+
+      versionItem.appendChild(infoDiv);
+      versionItem.appendChild(badge);
+
+      otherListWrapper.appendChild(versionItem);
+    });
+
+    otherSection.appendChild(otherListWrapper);
+
+    // Insert before the footer
+    const footer = contentContainer.querySelector('.version-manager-footer');
+    if (footer) {
+      contentContainer.insertBefore(otherSection, footer);
+    } else {
+      contentContainer.appendChild(otherSection);
+    }
+  }
 
   // Set up version chip click handler
   const versionChip = document.getElementById('versionChip');
