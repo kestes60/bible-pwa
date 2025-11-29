@@ -19,8 +19,11 @@
  * but the PWA will continue to load JSON files in the browser.
  */
 
-// Current active version
-const CURRENT_VERSION_ID = "en-web";
+// Current active version (default)
+const DEFAULT_VERSION_ID = "en-web";
+
+// localStorage key for persisting version preference
+const VERSION_STORAGE_KEY = 'bibleReader.currentVersionId';
 
 // Registry of available Bible versions
 const bibleVersions = {
@@ -56,10 +59,11 @@ const bibleVersions = {
 
 /**
  * Get the currently active Bible version
+ * Respects the user's saved version preference from localStorage
  * @returns {Object} The current version configuration
  */
 function getCurrentVersion() {
-  return bibleVersions[CURRENT_VERSION_ID];
+  return bibleVersions[getCurrentVersionId()];
 }
 
 /**
@@ -98,11 +102,69 @@ function getCurrentBooksFile() {
 
 /**
  * Get the internal ID for the currently active version
+ * Reads from localStorage, falls back to DEFAULT_VERSION_ID
  * @returns {string} The current version ID (e.g., "en-web")
- * TODO: In future, read from localStorage (bibleReader.currentVersionId)
  */
 function getCurrentVersionId() {
-  return CURRENT_VERSION_ID;
+  try {
+    const savedVersionId = localStorage.getItem(VERSION_STORAGE_KEY);
+    // Validate saved version exists in registry
+    if (savedVersionId && bibleVersions[savedVersionId]) {
+      return savedVersionId;
+    }
+  } catch (e) {
+    console.warn('Error reading version from localStorage:', e);
+  }
+  return DEFAULT_VERSION_ID;
+}
+
+/**
+ * Set the current version ID and persist to localStorage
+ * @param {string} versionId - The version ID to set (e.g., "en-web", "en-kjv")
+ * @returns {boolean} True if set successfully, false if version not found
+ */
+function setCurrentVersionId(versionId) {
+  if (!bibleVersions[versionId]) {
+    console.error('Version not found:', versionId);
+    return false;
+  }
+  try {
+    localStorage.setItem(VERSION_STORAGE_KEY, versionId);
+    return true;
+  } catch (e) {
+    console.error('Error saving version to localStorage:', e);
+    return false;
+  }
+}
+
+/**
+ * Get the data path for a specific version
+ * @param {string} versionId - The version ID
+ * @returns {string|null} Path to the Bible data directory or null if not found
+ */
+function getVersionDataPath(versionId) {
+  const version = getVersion(versionId);
+  return version ? version.dataPath : null;
+}
+
+/**
+ * Get the books.json file path for a specific version
+ * @param {string} versionId - The version ID
+ * @returns {string|null} Path to the books metadata file or null if not found
+ */
+function getVersionBooksFile(versionId) {
+  const version = getVersion(versionId);
+  return version ? version.dataPath + version.booksFile : null;
+}
+
+/**
+ * Check if a version is installed (available offline)
+ * @param {string} versionId - The version ID to check
+ * @returns {boolean} True if version is installed
+ */
+function isVersionInstalled(versionId) {
+  const version = getVersion(versionId);
+  return version && version.status === "installed";
 }
 
 /**
@@ -111,4 +173,13 @@ function getCurrentVersionId() {
  */
 function getInstalledVersions() {
   return Object.values(bibleVersions).filter(v => v.status === "installed");
+}
+
+/**
+ * Get the current version object using getCurrentVersionId()
+ * This version reads from localStorage unlike the direct getCurrentVersion()
+ * @returns {Object} The current version configuration
+ */
+function getActiveVersion() {
+  return bibleVersions[getCurrentVersionId()];
 }

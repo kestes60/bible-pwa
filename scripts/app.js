@@ -378,8 +378,28 @@ function initVersionManager() {
 
   // Populate installed versions
   installedVersions.forEach((version) => {
+    const isActive = version.id === currentVersionId;
+
     const versionItem = document.createElement('div');
-    versionItem.className = 'version-item';
+    versionItem.className = 'version-item' + (isActive ? '' : ' version-item-clickable');
+    versionItem.setAttribute('role', 'button');
+    versionItem.setAttribute('tabindex', '0');
+    versionItem.setAttribute('aria-label', isActive
+      ? `${version.shortName} - ${version.name} (currently active)`
+      : `Switch to ${version.shortName} - ${version.name}`);
+
+    // Click handler to switch version (only if not active)
+    if (!isActive) {
+      versionItem.addEventListener('click', () => {
+        switchVersion(version.id);
+      });
+      versionItem.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          switchVersion(version.id);
+        }
+      });
+    }
 
     const infoDiv = document.createElement('div');
     infoDiv.className = 'version-item-info';
@@ -396,8 +416,8 @@ function initVersionManager() {
     infoDiv.appendChild(langDiv);
 
     const badge = document.createElement('span');
-    badge.className = 'version-badge';
-    badge.textContent = version.id === currentVersionId ? 'Active' : 'Installed';
+    badge.className = 'version-badge' + (isActive ? ' version-badge-active' : '');
+    badge.textContent = isActive ? 'Active' : 'Installed';
 
     versionItem.appendChild(infoDiv);
     versionItem.appendChild(badge);
@@ -512,6 +532,157 @@ function closeVersionManager(event) {
       const versionChip = document.getElementById('versionChip');
       if (versionChip) versionChip.focus();
     }
+  }
+}
+
+// ========================================
+// Toast Notification System
+// ========================================
+
+/**
+ * Show a non-blocking toast notification
+ * @param {string} message - The message to display
+ * @param {number} duration - Duration in ms (default: 3000)
+ */
+function showToast(message, duration = 3000) {
+  // Remove any existing toast
+  const existingToast = document.querySelector('.toast-notification');
+  if (existingToast) {
+    existingToast.remove();
+  }
+
+  // Create toast element
+  const toast = document.createElement('div');
+  toast.className = 'toast-notification';
+  toast.setAttribute('role', 'alert');
+  toast.setAttribute('aria-live', 'polite');
+  toast.textContent = message;
+
+  // Add to DOM
+  document.body.appendChild(toast);
+
+  // Trigger animation
+  requestAnimationFrame(() => {
+    toast.classList.add('toast-visible');
+  });
+
+  // Remove after duration
+  setTimeout(() => {
+    toast.classList.remove('toast-visible');
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.remove();
+      }
+    }, 300); // Wait for fade out animation
+  }, duration);
+}
+
+// ========================================
+// Version Switching
+// ========================================
+
+/**
+ * Switch to a different Bible version
+ * @param {string} versionId - The version ID to switch to (e.g., "en-web", "en-kjv")
+ * @returns {Promise<boolean>} True if switch was successful
+ */
+async function switchVersion(versionId) {
+  // Validate version exists
+  const version = getVersion(versionId);
+  if (!version) {
+    showToast('Version not found.');
+    return false;
+  }
+
+  // Check if already on this version
+  if (versionId === getCurrentVersionId()) {
+    closeVersionManager();
+    return true;
+  }
+
+  // Check if version is installed
+  if (!isVersionInstalled(versionId)) {
+    showToast('This version is not installed yet.');
+    return false;
+  }
+
+  try {
+    // Save new version preference
+    if (!setCurrentVersionId(versionId)) {
+      showToast('Failed to save version preference.');
+      return false;
+    }
+
+    // Update version indicator chip
+    updateVersionIndicator(versionId);
+
+    // Clear any active search
+    clearChapterSearch();
+
+    // Reload books.json for the new version
+    const booksFilePath = './' + getVersionBooksFile(versionId);
+    const response = await fetch(booksFilePath);
+    console.log('Loading books.json from:', new URL(booksFilePath, window.location.href).href);
+
+    if (!response.ok) {
+      throw new Error('Failed to load books data for ' + version.shortName);
+    }
+
+    booksJson = await response.json();
+
+    // Rebuild book selector modal
+    populateBookLists();
+
+    // Reset to Genesis 1 (or first available book)
+    const firstBook = booksJson.books[0];
+    if (firstBook) {
+      currentBook = firstBook.name;
+      currentBookData = firstBook;
+      totalChapters = firstBook.chapters;
+      currentChapter = 1;
+
+      // Load the first book's data
+      const dataPath = './' + version.dataPath;
+      const bookPath = dataPath + firstBook.filename;
+      const bookResponse = await fetch(bookPath);
+
+      if (!bookResponse.ok) {
+        throw new Error('Failed to load ' + firstBook.name);
+      }
+
+      bookData = await bookResponse.json();
+
+      // Display chapter
+      displayChapter(currentChapter);
+
+      // Update navigation
+      updateChapterIndicator();
+      updateNavigationButtons();
+
+      // Save new reading state
+      saveReadingState(currentBook, currentChapter);
+
+      // Update bookmark button for new context
+      updateBookmarkButton();
+    }
+
+    // Re-initialize the version manager to reflect the change
+    initVersionManager();
+
+    // Close version manager
+    closeVersionManager();
+
+    // Show success toast
+    showToast('Switched to ' + version.shortName);
+
+    return true;
+  } catch (error) {
+    console.error('Error switching version:', error);
+    showToast('Error loading ' + version.shortName + '. Please try again.');
+
+    // Revert to previous version in localStorage if needed
+    // (The version files may not be available)
+    return false;
   }
 }
 
