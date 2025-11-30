@@ -1,5 +1,5 @@
 // Cache version constant - increment this to bust the cache
-const CACHE_VERSION = "bible-pwa-v9";
+const CACHE_VERSION = "bible-pwa-v11";
 
 // Get the base path from the service worker's own location
 // e.g., if SW is at /bible-pwa/sw.js, base is /bible-pwa/
@@ -8,8 +8,7 @@ const BASE_PATH = SW_PATH.substring(0, SW_PATH.lastIndexOf('/') + 1);
 
 console.log('Service Worker base path:', BASE_PATH);
 
-// Complete list of Bible data files to precache
-// All 66 Bible books + books.json manifest (67 total files)
+// WEB: 66 books + books.json = 67 files
 const PRECACHE_FILES = [
   `${BASE_PATH}data/books.json`,
   `${BASE_PATH}data/1_Chronicles.json`,
@@ -80,6 +79,78 @@ const PRECACHE_FILES = [
   `${BASE_PATH}data/Zephaniah.json`
 ];
 
+// KJV Bible data files to precache (67 files)
+const KJV_PRECACHE_FILES = [
+  `${BASE_PATH}data/kjv/books.json`,
+  `${BASE_PATH}data/kjv/1_Chronicles.json`,
+  `${BASE_PATH}data/kjv/1_Corinthians.json`,
+  `${BASE_PATH}data/kjv/1_John.json`,
+  `${BASE_PATH}data/kjv/1_Kings.json`,
+  `${BASE_PATH}data/kjv/1_Peter.json`,
+  `${BASE_PATH}data/kjv/1_Samuel.json`,
+  `${BASE_PATH}data/kjv/1_Thessalonians.json`,
+  `${BASE_PATH}data/kjv/1_Timothy.json`,
+  `${BASE_PATH}data/kjv/2_Chronicles.json`,
+  `${BASE_PATH}data/kjv/2_Corinthians.json`,
+  `${BASE_PATH}data/kjv/2_John.json`,
+  `${BASE_PATH}data/kjv/2_Kings.json`,
+  `${BASE_PATH}data/kjv/2_Peter.json`,
+  `${BASE_PATH}data/kjv/2_Samuel.json`,
+  `${BASE_PATH}data/kjv/2_Thessalonians.json`,
+  `${BASE_PATH}data/kjv/2_Timothy.json`,
+  `${BASE_PATH}data/kjv/3_John.json`,
+  `${BASE_PATH}data/kjv/Acts.json`,
+  `${BASE_PATH}data/kjv/Amos.json`,
+  `${BASE_PATH}data/kjv/Colossians.json`,
+  `${BASE_PATH}data/kjv/Daniel.json`,
+  `${BASE_PATH}data/kjv/Deuteronomy.json`,
+  `${BASE_PATH}data/kjv/Ecclesiastes.json`,
+  `${BASE_PATH}data/kjv/Ephesians.json`,
+  `${BASE_PATH}data/kjv/Esther.json`,
+  `${BASE_PATH}data/kjv/Exodus.json`,
+  `${BASE_PATH}data/kjv/Ezekiel.json`,
+  `${BASE_PATH}data/kjv/Ezra.json`,
+  `${BASE_PATH}data/kjv/Galatians.json`,
+  `${BASE_PATH}data/kjv/Genesis.json`,
+  `${BASE_PATH}data/kjv/Habakkuk.json`,
+  `${BASE_PATH}data/kjv/Haggai.json`,
+  `${BASE_PATH}data/kjv/Hebrews.json`,
+  `${BASE_PATH}data/kjv/Hosea.json`,
+  `${BASE_PATH}data/kjv/Isaiah.json`,
+  `${BASE_PATH}data/kjv/James.json`,
+  `${BASE_PATH}data/kjv/Jeremiah.json`,
+  `${BASE_PATH}data/kjv/Job.json`,
+  `${BASE_PATH}data/kjv/Joel.json`,
+  `${BASE_PATH}data/kjv/John.json`,
+  `${BASE_PATH}data/kjv/Jonah.json`,
+  `${BASE_PATH}data/kjv/Joshua.json`,
+  `${BASE_PATH}data/kjv/Jude.json`,
+  `${BASE_PATH}data/kjv/Judges.json`,
+  `${BASE_PATH}data/kjv/Lamentations.json`,
+  `${BASE_PATH}data/kjv/Leviticus.json`,
+  `${BASE_PATH}data/kjv/Luke.json`,
+  `${BASE_PATH}data/kjv/Malachi.json`,
+  `${BASE_PATH}data/kjv/Mark.json`,
+  `${BASE_PATH}data/kjv/Matthew.json`,
+  `${BASE_PATH}data/kjv/Micah.json`,
+  `${BASE_PATH}data/kjv/Nahum.json`,
+  `${BASE_PATH}data/kjv/Nehemiah.json`,
+  `${BASE_PATH}data/kjv/Numbers.json`,
+  `${BASE_PATH}data/kjv/Obadiah.json`,
+  `${BASE_PATH}data/kjv/Philemon.json`,
+  `${BASE_PATH}data/kjv/Philippians.json`,
+  `${BASE_PATH}data/kjv/Proverbs.json`,
+  `${BASE_PATH}data/kjv/Psalms.json`,
+  `${BASE_PATH}data/kjv/Revelation.json`,
+  `${BASE_PATH}data/kjv/Romans.json`,
+  `${BASE_PATH}data/kjv/Ruth.json`,
+  `${BASE_PATH}data/kjv/Song_of_Solomon.json`,
+  `${BASE_PATH}data/kjv/Titus.json`,
+  `${BASE_PATH}data/kjv/Zechariah.json`,
+  `${BASE_PATH}data/kjv/Zephaniah.json`
+];
+
+// Main install handler that does the precaching
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_VERSION).then((cache) => {
@@ -103,8 +174,10 @@ self.addEventListener("install", (event) => {
         `${BASE_PATH}icons/icon-256x256.png`,
         `${BASE_PATH}icons/icon-384x384.png`,
         `${BASE_PATH}icons/icon-512x512.png`,
-        // Bible data files (66 books + books.json manifest = 67 files)
-        ...PRECACHE_FILES
+        // Bible data files (WEB)
+        ...PRECACHE_FILES,
+        // KJV Bible data files
+        ...KJV_PRECACHE_FILES
       ];
 
       return cache.addAll(allFiles);
@@ -113,6 +186,11 @@ self.addEventListener("install", (event) => {
       self.skipWaiting();
     })
   );
+});
+
+// ✅ Add this snippet *right after* the main install handler
+self.addEventListener('install', () => {
+  console.log('SW install complete, cache version:', CACHE_VERSION);
 });
 
 // Clean up old caches when activating a new Service Worker version

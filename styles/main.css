@@ -487,15 +487,15 @@ button:disabled {
 
 /* Font size variants */
 body[data-font-size="small"] .verses-container {
-  font-size: 0.95rem;
-}
-
-body[data-font-size="medium"] .verses-container {
   font-size: 1.1rem;
 }
 
+body[data-font-size="medium"] .verses-container {
+  font-size: 1.4rem;
+}
+
 body[data-font-size="large"] .verses-container {
-  font-size: 1.3rem;
+  font-size: 1.7rem;
 }
 
 .verse {

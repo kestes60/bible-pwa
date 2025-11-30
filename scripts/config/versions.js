@@ -47,7 +47,7 @@ const bibleVersions = {
     shortName: "KJV",
     language: "en",
     languageName: "English",
-    status: "coming-soon",
+    status: "installed",
     storageStrategy: "bundled",
     dataPath: "data/kjv/",
     booksFile: "books.json",
