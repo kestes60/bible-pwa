@@ -164,19 +164,20 @@ header.app-header {
   outline-offset: 2px;
 }
 
-.font-size-label {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: white;
-  margin-right: 0.35rem;
+/* Font Size Dropdown */
+.font-size-dropdown {
+  position: relative;
+  display: inline-block;
 }
 
-#fontSizeControl {
+.font-size-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
   background-color: rgba(255, 255, 255, 0.2);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.3);
-  padding: 0.2rem 0.4rem;
-  font-size: 0.8rem;
+  padding: 0.25rem 0.5rem;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -184,19 +185,101 @@ header.app-header {
   min-height: 32px;
 }
 
-#fontSizeControl:hover {
+.font-size-toggle:hover {
   background-color: rgba(255, 255, 255, 0.3);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-#fontSizeControl:focus-visible {
+.font-size-toggle:focus-visible {
   outline: 2px solid white;
   outline-offset: 2px;
 }
 
-#fontSizeControl option {
+.font-size-display {
+  font-weight: 700;
+  line-height: 1;
+}
+
+.font-size-display-small {
+  font-size: 1.1rem;
+}
+
+.font-size-display-medium {
+  font-size: 1.4rem;
+}
+
+.font-size-display-large {
+  font-size: 1.7rem;
+}
+
+.font-size-caret {
+  font-size: 0.7rem;
+  opacity: 0.8;
+  transition: transform 0.2s ease;
+}
+
+.font-size-dropdown.open .font-size-caret {
+  transform: rotate(180deg);
+}
+
+.font-size-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
   background-color: var(--yt-bg);
-  color: var(--yt-text-main);
+  border: 1px solid var(--yt-border);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  list-style: none;
+  margin: 0;
+  padding: 0.25rem 0;
+  min-width: 60px;
+  z-index: 1000;
+}
+
+.font-size-dropdown.open .font-size-menu {
+  display: block;
+}
+
+.font-size-menu li {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease;
+}
+
+.font-size-menu li:hover {
+  background-color: var(--yt-hover);
+}
+
+.font-size-menu li:focus {
+  outline: none;
+  background-color: var(--yt-hover);
+}
+
+.font-size-menu li.active {
+  background-color: var(--yt-accent);
+  color: white;
+}
+
+.font-size-option {
+  font-weight: 700;
+  line-height: 1;
+}
+
+.font-size-option-small {
+  font-size: 1.1rem;
+}
+
+.font-size-option-medium {
+  font-size: 1.4rem;
+}
+
+.font-size-option-large {
+  font-size: 1.7rem;
 }
 
 .chapter-nav {
@@ -1187,7 +1270,14 @@ header {
   color: var(--yt-accent);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  margin: 0 0 0.5rem 0;
+}
+
+.version-manager-hint {
+  font-size: 0.85rem;
+  color: var(--yt-text-muted);
   margin: 0 0 0.75rem 0;
+  line-height: 1.4;
 }
 
 .installed-versions-list {
@@ -1540,9 +1630,8 @@ header {
     padding: 0.1rem 0.35rem;
   }
 
-  #fontSizeControl {
-    font-size: 0.75rem;
-    padding: 0.2rem 0.3rem;
+  .font-size-toggle {
+    padding: 0.2rem 0.4rem;
     min-height: 28px;
   }
 

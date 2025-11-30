@@ -35,18 +35,33 @@
       <h1 class="app-title">Bible Reader</h1>
       <div class="app-subtitle">
         by Yahtsar
-        <span class="version-chip" id="versionChip" onclick="openVersionManager()" title="Manage Bible versions" role="button" tabindex="0" aria-label="Manage Bible versions">WEB</span>
+        <span class="version-chip" id="versionChip" onclick="openVersionManager()" title="Tap to manage versions" role="button" tabindex="0" aria-label="Tap to manage Bible versions">WEB</span>
       </div>
       <!-- Version Manager Modal trigger is the version chip above -->
     </div>
 
     <div class="header-right">
-      <label class="font-size-label" for="fontSizeControl">A</label>
-      <select id="fontSizeControl" onchange="changeFontSize(this.value)" title="Adjust text size" aria-label="Adjust font size">
-        <option value="small">Small</option>
-        <option value="medium">Medium</option>
-        <option value="large">Large</option>
-      </select>
+      <div class="font-size-dropdown" aria-label="Adjust font size">
+        <button id="fontSizeToggle"
+                class="font-size-toggle"
+                aria-haspopup="listbox"
+                aria-expanded="false"
+                title="Adjust text size">
+          <span id="fontSizeDisplay" class="font-size-display">A</span>
+          <span class="font-size-caret" aria-hidden="true">▾</span>
+        </button>
+        <ul id="fontSizeMenu" class="font-size-menu" role="listbox" aria-label="Font size options">
+          <li role="option" data-size="small" tabindex="-1">
+            <span class="font-size-option font-size-option-small">A</span>
+          </li>
+          <li role="option" data-size="medium" tabindex="-1">
+            <span class="font-size-option font-size-option-medium">A</span>
+          </li>
+          <li role="option" data-size="large" tabindex="-1">
+            <span class="font-size-option font-size-option-large">A</span>
+          </li>
+        </ul>
+      </div>
 
       <button class="bookmarks-header-btn" onclick="openBookmarksModal()" title="View bookmarks" aria-label="Open bookmarks">★</button>
 
@@ -169,6 +184,7 @@
         <p class="version-manager-description">Choose which Bible version(s) to keep offline.</p>
 
         <h3 class="version-manager-section-title">Installed versions</h3>
+        <p class="version-manager-hint">Tap an installed version to switch. The "Active" badge shows your current Bible.</p>
         <div id="installedVersionsList" class="installed-versions-list">
           <!-- Populated by initVersionManager() -->
         </div>

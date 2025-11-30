@@ -103,8 +103,27 @@ function saveFontSize(size) {
  */
 function applyFontSize(size) {
   document.body.setAttribute('data-font-size', size);
-  const control = document.getElementById('fontSizeControl');
-  if (control) control.value = size;
+
+  // Update dropdown display "A" to match chosen size
+  const display = document.getElementById('fontSizeDisplay');
+  if (display) {
+    display.className = 'font-size-display font-size-display-' + size;
+  }
+
+  // Update active state and aria-selected on menu options
+  const menu = document.getElementById('fontSizeMenu');
+  if (menu) {
+    const options = menu.querySelectorAll('li[role="option"]');
+    options.forEach(opt => {
+      if (opt.getAttribute('data-size') === size) {
+        opt.classList.add('active');
+        opt.setAttribute('aria-selected', 'true');
+      } else {
+        opt.classList.remove('active');
+        opt.setAttribute('aria-selected', 'false');
+      }
+    });
+  }
 }
 
 /**
@@ -117,11 +136,127 @@ function changeFontSize(size) {
 }
 
 /**
+ * Toggle font size dropdown open/close
+ */
+function toggleFontSizeDropdown() {
+  const dropdown = document.querySelector('.font-size-dropdown');
+  const toggle = document.getElementById('fontSizeToggle');
+  if (!dropdown || !toggle) return;
+
+  const isOpen = dropdown.classList.contains('open');
+  if (isOpen) {
+    closeFontSizeDropdown();
+  } else {
+    dropdown.classList.add('open');
+    toggle.setAttribute('aria-expanded', 'true');
+    // Focus the currently active option
+    const activeOption = document.querySelector('#fontSizeMenu li.active');
+    if (activeOption) {
+      activeOption.focus();
+    }
+  }
+}
+
+/**
+ * Close font size dropdown
+ */
+function closeFontSizeDropdown() {
+  const dropdown = document.querySelector('.font-size-dropdown');
+  const toggle = document.getElementById('fontSizeToggle');
+  if (dropdown) {
+    dropdown.classList.remove('open');
+  }
+  if (toggle) {
+    toggle.setAttribute('aria-expanded', 'false');
+  }
+}
+
+/**
  * Initialize font size on page load
  */
 function initFontSize() {
   const savedSize = getSavedFontSize();
   applyFontSize(savedSize);
+
+  const toggle = document.getElementById('fontSizeToggle');
+  const menu = document.getElementById('fontSizeMenu');
+  const dropdown = document.querySelector('.font-size-dropdown');
+
+  if (!toggle || !menu || !dropdown) return;
+
+  // Toggle button click
+  toggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleFontSizeDropdown();
+  });
+
+  // Toggle button keyboard (Enter/Space handled by button default)
+  toggle.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (!dropdown.classList.contains('open')) {
+        toggleFontSizeDropdown();
+      }
+    }
+  });
+
+  // Option click handlers
+  const options = menu.querySelectorAll('li[role="option"]');
+  options.forEach(opt => {
+    opt.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const size = opt.getAttribute('data-size');
+      if (size) {
+        changeFontSize(size);
+        closeFontSizeDropdown();
+        toggle.focus();
+      }
+    });
+  });
+
+  // Keyboard navigation in menu
+  menu.addEventListener('keydown', (e) => {
+    const currentFocus = document.activeElement;
+    const optionsList = Array.from(options);
+    const currentIndex = optionsList.indexOf(currentFocus);
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        if (currentIndex < optionsList.length - 1) {
+          optionsList[currentIndex + 1].focus();
+        }
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        if (currentIndex > 0) {
+          optionsList[currentIndex - 1].focus();
+        }
+        break;
+      case 'Enter':
+      case ' ':
+        e.preventDefault();
+        if (currentFocus && currentFocus.hasAttribute('data-size')) {
+          const size = currentFocus.getAttribute('data-size');
+          changeFontSize(size);
+          closeFontSizeDropdown();
+          toggle.focus();
+        }
+        break;
+      case 'Escape':
+        e.preventDefault();
+        closeFontSizeDropdown();
+        toggle.focus();
+        break;
+    }
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!dropdown.contains(e.target)) {
+      closeFontSizeDropdown();
+    }
+  });
 }
 
 // ========================================
@@ -445,6 +580,12 @@ function initVersionManager() {
     sectionTitle.className = 'version-manager-section-title';
     sectionTitle.textContent = 'Other versions';
     otherSection.appendChild(sectionTitle);
+
+    // Create hint text
+    const otherHint = document.createElement('p');
+    otherHint.className = 'version-manager-hint';
+    otherHint.textContent = 'Other versions will be available for download in a future update.';
+    otherSection.appendChild(otherHint);
 
     // Create list wrapper
     const otherListWrapper = document.createElement('div');
