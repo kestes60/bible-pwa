@@ -2,52 +2,38 @@ name: Deploy Bible PWA to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
-  # Optional: manual trigger from the Actions tab
+    branches: [ "main" ]
   workflow_dispatch:
 
+# Required permissions for GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
+# Only one deployment at a time
 concurrency:
   group: "pages"
   cancel-in-progress: true
 
 jobs:
-  build:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build site
-        run: npm run build
-
-      - name: Upload Pages artifact
+      # For a purely static site, just upload the whole repo
+      - name: Upload site artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
+          # Root of your static site (index.html is here)
+          path: "."
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
