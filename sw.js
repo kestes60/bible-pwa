@@ -1,5 +1,5 @@
 // Cache version constant - increment this to bust the cache
-const CACHE_VERSION = "bible-pwa-v12";
+const CACHE_VERSION = "bible-pwa-v13";
 
 // Get the base path from the service worker's own location
 // e.g., if SW is at /bible-pwa/sw.js, base is /bible-pwa/
@@ -77,6 +77,77 @@ const PRECACHE_FILES = [
   `${BASE_PATH}data/Titus.json`,
   `${BASE_PATH}data/Zechariah.json`,
   `${BASE_PATH}data/Zephaniah.json`
+];
+
+// KRV (Korean) Bible data files to precache (67 files)
+const KRV_PRECACHE_FILES = [
+  `${BASE_PATH}data/krv/books.json`,
+  `${BASE_PATH}data/krv/1_Chronicles.json`,
+  `${BASE_PATH}data/krv/1_Corinthians.json`,
+  `${BASE_PATH}data/krv/1_John.json`,
+  `${BASE_PATH}data/krv/1_Kings.json`,
+  `${BASE_PATH}data/krv/1_Peter.json`,
+  `${BASE_PATH}data/krv/1_Samuel.json`,
+  `${BASE_PATH}data/krv/1_Thessalonians.json`,
+  `${BASE_PATH}data/krv/1_Timothy.json`,
+  `${BASE_PATH}data/krv/2_Chronicles.json`,
+  `${BASE_PATH}data/krv/2_Corinthians.json`,
+  `${BASE_PATH}data/krv/2_John.json`,
+  `${BASE_PATH}data/krv/2_Kings.json`,
+  `${BASE_PATH}data/krv/2_Peter.json`,
+  `${BASE_PATH}data/krv/2_Samuel.json`,
+  `${BASE_PATH}data/krv/2_Thessalonians.json`,
+  `${BASE_PATH}data/krv/2_Timothy.json`,
+  `${BASE_PATH}data/krv/3_John.json`,
+  `${BASE_PATH}data/krv/Acts.json`,
+  `${BASE_PATH}data/krv/Amos.json`,
+  `${BASE_PATH}data/krv/Colossians.json`,
+  `${BASE_PATH}data/krv/Daniel.json`,
+  `${BASE_PATH}data/krv/Deuteronomy.json`,
+  `${BASE_PATH}data/krv/Ecclesiastes.json`,
+  `${BASE_PATH}data/krv/Ephesians.json`,
+  `${BASE_PATH}data/krv/Esther.json`,
+  `${BASE_PATH}data/krv/Exodus.json`,
+  `${BASE_PATH}data/krv/Ezekiel.json`,
+  `${BASE_PATH}data/krv/Ezra.json`,
+  `${BASE_PATH}data/krv/Galatians.json`,
+  `${BASE_PATH}data/krv/Genesis.json`,
+  `${BASE_PATH}data/krv/Habakkuk.json`,
+  `${BASE_PATH}data/krv/Haggai.json`,
+  `${BASE_PATH}data/krv/Hebrews.json`,
+  `${BASE_PATH}data/krv/Hosea.json`,
+  `${BASE_PATH}data/krv/Isaiah.json`,
+  `${BASE_PATH}data/krv/James.json`,
+  `${BASE_PATH}data/krv/Jeremiah.json`,
+  `${BASE_PATH}data/krv/Job.json`,
+  `${BASE_PATH}data/krv/Joel.json`,
+  `${BASE_PATH}data/krv/John.json`,
+  `${BASE_PATH}data/krv/Jonah.json`,
+  `${BASE_PATH}data/krv/Joshua.json`,
+  `${BASE_PATH}data/krv/Jude.json`,
+  `${BASE_PATH}data/krv/Judges.json`,
+  `${BASE_PATH}data/krv/Lamentations.json`,
+  `${BASE_PATH}data/krv/Leviticus.json`,
+  `${BASE_PATH}data/krv/Luke.json`,
+  `${BASE_PATH}data/krv/Malachi.json`,
+  `${BASE_PATH}data/krv/Mark.json`,
+  `${BASE_PATH}data/krv/Matthew.json`,
+  `${BASE_PATH}data/krv/Micah.json`,
+  `${BASE_PATH}data/krv/Nahum.json`,
+  `${BASE_PATH}data/krv/Nehemiah.json`,
+  `${BASE_PATH}data/krv/Numbers.json`,
+  `${BASE_PATH}data/krv/Obadiah.json`,
+  `${BASE_PATH}data/krv/Philemon.json`,
+  `${BASE_PATH}data/krv/Philippians.json`,
+  `${BASE_PATH}data/krv/Proverbs.json`,
+  `${BASE_PATH}data/krv/Psalms.json`,
+  `${BASE_PATH}data/krv/Revelation.json`,
+  `${BASE_PATH}data/krv/Romans.json`,
+  `${BASE_PATH}data/krv/Ruth.json`,
+  `${BASE_PATH}data/krv/Song_of_Solomon.json`,
+  `${BASE_PATH}data/krv/Titus.json`,
+  `${BASE_PATH}data/krv/Zechariah.json`,
+  `${BASE_PATH}data/krv/Zephaniah.json`
 ];
 
 // KJV Bible data files to precache (67 files)
@@ -177,7 +248,9 @@ self.addEventListener("install", (event) => {
         // Bible data files (WEB)
         ...PRECACHE_FILES,
         // KJV Bible data files
-        ...KJV_PRECACHE_FILES
+        ...KJV_PRECACHE_FILES,
+        // KRV (Korean) Bible data files
+        ...KRV_PRECACHE_FILES
       ];
 
       return cache.addAll(allFiles);

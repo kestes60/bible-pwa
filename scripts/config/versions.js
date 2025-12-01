@@ -2,21 +2,23 @@
  * Bible Version Registry
  *
  * Configuration for available Bible translations.
- * Currently supports World English Bible (WEB) and upcoming King James Version (KJV).
+ * Supports multiple languages with installed (offline) and planned (coming-soon) versions.
  *
  * Each version includes:
- * - status: "installed" (available offline), "coming-soon" (planned), or "remote" (future)
- * - storageStrategy: "bundled" (included in app) or "remote" (downloaded)
+ * - status: "installed" (available offline), "coming-soon" (planned), or "remote" (downloadable)
+ * - storageStrategy: "bundled" (included in app) or "remote" (user-downloaded)
  * - estimatedSizeMB: Approximate size for UI display
  *
- * Future versions can be added here:
- * - "en-nasb": New American Standard Bible
- * - "es-rvr": Reina Valera (Spanish)
- * etc.
+ * Currently installed:
+ * - en-web: World English Bible (English)
+ * - en-kjv: King James Version (English)
+ *
+ * Planned translations (coming-soon):
+ * - Korean, Spanish, Chinese, Arabic, Hindi, French, Bengali,
+ *   Portuguese, Russian, Indonesian, Urdu, German, Japanese
  *
  * NOTE: Bible data is stored in JSON format in /data/ directory.
- * Future AI features may use TOON format for prompts/context,
- * but the PWA will continue to load JSON files in the browser.
+ * Future versions will be converted from OSIS format using open-bibles tools.
  */
 
 // Current active version (default)
@@ -27,6 +29,9 @@ const VERSION_STORAGE_KEY = 'bibleReader.currentVersionId';
 
 // Registry of available Bible versions
 const bibleVersions = {
+  // ========================================
+  // INSTALLED VERSIONS (available offline)
+  // ========================================
   "en-web": {
     id: "en-web",
     name: "World English Bible",
@@ -54,6 +59,202 @@ const bibleVersions = {
     estimatedSizeMB: 3,
     sourceRepo: null,
     description: "Classic English translation from 1611"
+  },
+
+  // ========================================
+  // INSTALLED VERSIONS (additional languages)
+  // ========================================
+  "ko-krv": {
+    id: "ko-krv",
+    name: "Korean Revised Version",
+    shortName: "KRV",
+    language: "ko",
+    languageName: "Korean",
+    status: "installed",
+    storageStrategy: "bundled",
+    dataPath: "data/krv/",
+    booksFile: "books.json",
+    estimatedSizeMB: 3,
+    sourceUrl: "https://raw.githubusercontent.com/seven1m/open-bibles/master/kor-korean.osis.xml",
+    sourceFormat: "osis",
+    description: "Korean translation, public domain"
+  },
+
+  // ========================================
+  // PLANNED VERSIONS (coming soon)
+  // Require USFX converter or source not available
+  // ========================================
+  "es-rvr": {
+    id: "es-rvr",
+    name: "Reina Valera 1909",
+    shortName: "RVR",
+    language: "es",
+    languageName: "Spanish",
+    status: "coming-soon",
+    storageStrategy: "remote",
+    dataPath: "data/rvr/",
+    booksFile: "books.json",
+    estimatedSizeMB: 3,
+    sourceUrl: "https://raw.githubusercontent.com/seven1m/open-bibles/master/spa-rv1909.usfx.xml",
+    sourceFormat: "usfx",
+    description: "Classic Spanish translation, public domain (USFX converter needed)"
+  },
+  "zh-cuv": {
+    id: "zh-cuv",
+    name: "Chinese Union Version",
+    shortName: "CUV",
+    language: "zh",
+    languageName: "Chinese",
+    status: "coming-soon",
+    storageStrategy: "remote",
+    dataPath: "data/cuv/",
+    booksFile: "books.json",
+    estimatedSizeMB: 3,
+    sourceUrl: "https://raw.githubusercontent.com/seven1m/open-bibles/master/chi-cuv.usfx.xml",
+    sourceFormat: "usfx",
+    description: "Traditional Chinese translation, public domain (USFX converter needed)"
+  },
+  "ar-svd": {
+    id: "ar-svd",
+    name: "Smith & Van Dyck Arabic",
+    shortName: "SVD",
+    language: "ar",
+    languageName: "Arabic",
+    status: "coming-soon",
+    storageStrategy: "remote",
+    dataPath: "data/svd/",
+    booksFile: "books.json",
+    estimatedSizeMB: 3,
+    sourceUrl: null,
+    sourceFormat: null,
+    description: "Arabic translation (source not yet available in open-bibles)"
+  },
+  "hi-irv": {
+    id: "hi-irv",
+    name: "Indian Revised Version",
+    shortName: "IRV",
+    language: "hi",
+    languageName: "Hindi",
+    status: "coming-soon",
+    storageStrategy: "remote",
+    dataPath: "data/irv/",
+    booksFile: "books.json",
+    estimatedSizeMB: 3,
+    sourceUrl: null,
+    sourceFormat: null,
+    description: "Hindi translation (source not yet available in open-bibles)"
+  },
+  "fr-lsg": {
+    id: "fr-lsg",
+    name: "Louis Segond",
+    shortName: "LSG",
+    language: "fr",
+    languageName: "French",
+    status: "coming-soon",
+    storageStrategy: "remote",
+    dataPath: "data/lsg/",
+    booksFile: "books.json",
+    estimatedSizeMB: 3,
+    sourceRepo: null,
+    description: "Classic French translation, public domain"
+  },
+  "bn-bsi": {
+    id: "bn-bsi",
+    name: "Bengali Common Language",
+    shortName: "BCL",
+    language: "bn",
+    languageName: "Bengali",
+    status: "coming-soon",
+    storageStrategy: "remote",
+    dataPath: "data/bcl/",
+    booksFile: "books.json",
+    estimatedSizeMB: 3,
+    sourceRepo: null,
+    description: "Bengali translation, public domain"
+  },
+  "pt-ara": {
+    id: "pt-ara",
+    name: "Almeida Revista e Atualizada",
+    shortName: "ARA",
+    language: "pt",
+    languageName: "Portuguese",
+    status: "coming-soon",
+    storageStrategy: "remote",
+    dataPath: "data/ara/",
+    booksFile: "books.json",
+    estimatedSizeMB: 3,
+    sourceRepo: null,
+    description: "Portuguese translation, public domain"
+  },
+  "ru-synod": {
+    id: "ru-synod",
+    name: "Synodal Translation",
+    shortName: "SYNOD",
+    language: "ru",
+    languageName: "Russian",
+    status: "coming-soon",
+    storageStrategy: "remote",
+    dataPath: "data/synod/",
+    booksFile: "books.json",
+    estimatedSizeMB: 3,
+    sourceRepo: null,
+    description: "Russian Synodal translation, public domain"
+  },
+  "id-tb": {
+    id: "id-tb",
+    name: "Terjemahan Baru",
+    shortName: "TB",
+    language: "id",
+    languageName: "Indonesian",
+    status: "coming-soon",
+    storageStrategy: "remote",
+    dataPath: "data/tb/",
+    booksFile: "books.json",
+    estimatedSizeMB: 3,
+    sourceRepo: null,
+    description: "Indonesian translation, public domain"
+  },
+  "ur-geo": {
+    id: "ur-geo",
+    name: "Urdu Geo Version",
+    shortName: "UGV",
+    language: "ur",
+    languageName: "Urdu",
+    status: "coming-soon",
+    storageStrategy: "remote",
+    dataPath: "data/ugv/",
+    booksFile: "books.json",
+    estimatedSizeMB: 3,
+    sourceRepo: null,
+    description: "Urdu translation, public domain"
+  },
+  "de-lut": {
+    id: "de-lut",
+    name: "Luther Bibel",
+    shortName: "LUT",
+    language: "de",
+    languageName: "German",
+    status: "coming-soon",
+    storageStrategy: "remote",
+    dataPath: "data/lut/",
+    booksFile: "books.json",
+    estimatedSizeMB: 3,
+    sourceRepo: null,
+    description: "German Luther translation, public domain"
+  },
+  "ja-kougo": {
+    id: "ja-kougo",
+    name: "Kougo-yaku",
+    shortName: "JCB",
+    language: "ja",
+    languageName: "Japanese",
+    status: "coming-soon",
+    storageStrategy: "remote",
+    dataPath: "data/kougo/",
+    booksFile: "books.json",
+    estimatedSizeMB: 3,
+    sourceRepo: null,
+    description: "Japanese Colloquial translation, public domain"
   }
 };
 
@@ -176,10 +377,35 @@ function getInstalledVersions() {
 }
 
 /**
+ * Get all versions that are planned but not yet available
+ * @returns {Array} Array of version objects with status === "coming-soon"
+ */
+function getComingSoonVersions() {
+  return Object.values(bibleVersions).filter(v => v.status === "coming-soon");
+}
+
+/**
+ * Get all versions that are not installed (coming-soon or remote)
+ * @returns {Array} Array of version objects with status !== "installed"
+ */
+function getNonInstalledVersions() {
+  return Object.values(bibleVersions).filter(v => v.status !== "installed");
+}
+
+/**
  * Get the current version object using getCurrentVersionId()
  * This version reads from localStorage unlike the direct getCurrentVersion()
  * @returns {Object} The current version configuration
  */
 function getActiveVersion() {
   return bibleVersions[getCurrentVersionId()];
+}
+
+/**
+ * Get total size of all installed versions in MB
+ * @returns {number} Total estimated size in MB
+ */
+function getTotalInstalledSizeMB() {
+  return getInstalledVersions()
+    .reduce((sum, v) => sum + (v.estimatedSizeMB || 0), 0);
 }

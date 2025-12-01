@@ -550,6 +550,12 @@ function initVersionManager() {
     infoDiv.appendChild(nameDiv);
     infoDiv.appendChild(langDiv);
 
+    // Add size info
+    const sizeDiv = document.createElement('div');
+    sizeDiv.className = 'version-size-text';
+    sizeDiv.textContent = `~${version.estimatedSizeMB || 0} MB offline`;
+    infoDiv.appendChild(sizeDiv);
+
     const badge = document.createElement('span');
     badge.className = 'version-badge' + (isActive ? ' version-badge-active' : '');
     badge.textContent = isActive ? 'Active' : 'Installed';
@@ -559,6 +565,12 @@ function initVersionManager() {
 
     listContainer.appendChild(versionItem);
   });
+
+  // Add total installed size summary
+  const totalSizeDiv = document.createElement('div');
+  totalSizeDiv.className = 'version-total-size';
+  totalSizeDiv.textContent = `Total installed offline: ${getTotalInstalledSizeMB()} MB`;
+  listContainer.appendChild(totalSizeDiv);
 
   // Add "Other versions" section if there are non-installed versions
   const allVersions = getAllVersions();
@@ -578,13 +590,13 @@ function initVersionManager() {
     // Create section title
     const sectionTitle = document.createElement('h3');
     sectionTitle.className = 'version-manager-section-title';
-    sectionTitle.textContent = 'Other versions';
+    sectionTitle.textContent = 'Other languages (coming soon)';
     otherSection.appendChild(sectionTitle);
 
     // Create hint text
     const otherHint = document.createElement('p');
     otherHint.className = 'version-manager-hint';
-    otherHint.textContent = 'Other versions will be available for download in a future update.';
+    otherHint.textContent = 'These translations are planned for a future update. Download support is not available yet.';
     otherSection.appendChild(otherHint);
 
     // Create list wrapper
@@ -594,7 +606,22 @@ function initVersionManager() {
     // Populate other versions
     otherVersions.forEach((version) => {
       const versionItem = document.createElement('div');
-      versionItem.className = 'version-item';
+      versionItem.className = 'version-item version-item-disabled';
+      versionItem.setAttribute('role', 'button');
+      versionItem.setAttribute('tabindex', '0');
+      versionItem.setAttribute('aria-label', `${version.shortName} - ${version.name} (coming soon)`);
+
+      // Click handler shows toast for coming-soon versions
+      const handleComingSoonClick = () => {
+        showToast('This translation will be available in a future update.');
+      };
+      versionItem.addEventListener('click', handleComingSoonClick);
+      versionItem.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          handleComingSoonClick();
+        }
+      });
 
       const infoDiv = document.createElement('div');
       infoDiv.className = 'version-item-info';
@@ -610,9 +637,15 @@ function initVersionManager() {
       infoDiv.appendChild(nameDiv);
       infoDiv.appendChild(langDiv);
 
+      // Add size info (without "offline" since not installed)
+      const sizeDiv = document.createElement('div');
+      sizeDiv.className = 'version-size-text';
+      sizeDiv.textContent = `~${version.estimatedSizeMB || 0} MB`;
+      infoDiv.appendChild(sizeDiv);
+
       const badge = document.createElement('span');
       badge.className = 'version-badge version-badge-secondary';
-      badge.textContent = 'Coming soon';
+      badge.textContent = version.status === 'coming-soon' ? 'Coming soon' : 'Download';
 
       versionItem.appendChild(infoDiv);
       versionItem.appendChild(badge);
