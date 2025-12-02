@@ -139,6 +139,47 @@ function runOsisConverter(sourcePath, outDir, versionId) {
 }
 
 /**
+ * Runs the USFX to JSON converter
+ * @param {string} sourcePath - Path to source USFX file
+ * @param {string} outDir - Output directory
+ * @param {string} versionId - Version ID
+ * @returns {Promise<void>}
+ */
+function runUsfxConverter(sourcePath, outDir, versionId) {
+  return new Promise((resolve, reject) => {
+    const converterPath = path.join(__dirname, 'convert-usfx-to-json.mjs');
+
+    console.log('\n=== Running USFX to JSON converter ===');
+    console.log(`Converter: ${converterPath}`);
+    console.log(`Source: ${sourcePath}`);
+    console.log(`Output: ${outDir}`);
+    console.log(`Version: ${versionId}\n`);
+
+    const converter = spawn('node', [
+      converterPath,
+      '--source', sourcePath,
+      '--out-dir', outDir,
+      '--version-id', versionId
+    ], {
+      stdio: 'inherit'
+    });
+
+    converter.on('close', (code) => {
+      if (code === 0) {
+        console.log('\nConversion completed successfully!');
+        resolve();
+      } else {
+        reject(new Error(`Converter exited with code ${code}`));
+      }
+    });
+
+    converter.on('error', (err) => {
+      reject(new Error(`Failed to run converter: ${err.message}`));
+    });
+  });
+}
+
+/**
  * Main function
  */
 async function main() {
@@ -208,9 +249,20 @@ async function main() {
       console.log(`Source files: ${sourceDir}`);
       console.log(`JSON output: ${outputDir}`);
     } else if (source.format === 'usfx') {
-      console.log(`\n=== USFX format detected ===`);
-      console.log(`USFX converter not yet implemented.`);
-      console.log(`Files downloaded to: ${sourceDir}`);
+      console.log('\n=== USFX format detected - running converter ===');
+
+      // Create output directory
+      if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+        console.log(`Created output directory: ${outputDir}`);
+      }
+
+      // Run converter
+      await runUsfxConverter(destPath, outputDir, versionId);
+
+      console.log(`\n=== Complete ===`);
+      console.log(`Source files: ${sourceDir}`);
+      console.log(`JSON output: ${outputDir}`);
     } else {
       console.log(`\n=== Unknown format: ${source.format} ===`);
       console.log(`Files downloaded to: ${sourceDir}`);

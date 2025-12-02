@@ -81,8 +81,7 @@ const bibleVersions = {
   },
 
   // ========================================
-  // PLANNED VERSIONS (coming soon)
-  // Require USFX converter or source not available
+  // INSTALLED VERSIONS (Spanish and Chinese)
   // ========================================
   "es-rvr": {
     id: "es-rvr",
@@ -90,14 +89,14 @@ const bibleVersions = {
     shortName: "RVR",
     language: "es",
     languageName: "Spanish",
-    status: "coming-soon",
-    storageStrategy: "remote",
+    status: "installed",
+    storageStrategy: "bundled",
     dataPath: "data/rvr/",
     booksFile: "books.json",
-    estimatedSizeMB: 3,
+    estimatedSizeMB: 4,
     sourceUrl: "https://raw.githubusercontent.com/seven1m/open-bibles/master/spa-rv1909.usfx.xml",
     sourceFormat: "usfx",
-    description: "Classic Spanish translation, public domain (USFX converter needed)"
+    description: "Classic Spanish translation from 1909, public domain"
   },
   "zh-cuv": {
     id: "zh-cuv",
@@ -105,15 +104,19 @@ const bibleVersions = {
     shortName: "CUV",
     language: "zh",
     languageName: "Chinese",
-    status: "coming-soon",
-    storageStrategy: "remote",
+    status: "installed",
+    storageStrategy: "bundled",
     dataPath: "data/cuv/",
     booksFile: "books.json",
-    estimatedSizeMB: 3,
+    estimatedSizeMB: 2,
     sourceUrl: "https://raw.githubusercontent.com/seven1m/open-bibles/master/chi-cuv.usfx.xml",
     sourceFormat: "usfx",
-    description: "Traditional Chinese translation, public domain (USFX converter needed)"
+    description: "Traditional Chinese translation, public domain"
   },
+
+  // ========================================
+  // PLANNED VERSIONS (coming soon)
+  // ========================================
   "ar-svd": {
     id: "ar-svd",
     name: "Smith & Van Dyck Arabic",
