@@ -1173,6 +1173,204 @@ header {
 }
 
 /* ========================================
+   Reading History Modal Styles
+   ======================================== */
+
+/* History Header Button */
+.history-header-btn {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.3rem 0.6rem;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+  min-height: 32px;
+  min-width: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.history-header-btn:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.history-header-btn:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+/* History Modal Overlay */
+.history-modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+}
+
+.history-modal-overlay.active {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* History Modal */
+.history-modal {
+  background-color: var(--yt-card-bg);
+  border: 1px solid var(--yt-card-border);
+  border-radius: 8px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+}
+
+.history-modal-header {
+  background: linear-gradient(135deg, var(--yt-header-grad-start) 0%, var(--yt-header-grad-end) 100%);
+  color: white;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.history-modal-header h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  flex: 1;
+}
+
+.history-modal-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+}
+
+.history-modal-close:hover {
+  opacity: 0.8;
+}
+
+.history-modal-close:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Reading History List */
+.reading-history-list {
+  padding: 1.5rem;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.empty-history {
+  text-align: center;
+  color: var(--yt-text-muted);
+  padding: 2rem 1rem;
+  font-size: 1rem;
+  opacity: 0.7;
+}
+
+/* History Item */
+.history-item {
+  border-bottom: 1px solid var(--yt-card-border);
+}
+
+.history-item:last-child {
+  border-bottom: none;
+}
+
+.history-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--yt-text-main);
+  text-align: left;
+  cursor: pointer;
+  padding: 0.75rem 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  min-height: auto;
+  min-width: auto;
+  border-radius: 4px;
+}
+
+.history-link:hover {
+  background-color: rgba(20, 184, 166, 0.1);
+  color: var(--yt-accent);
+  transform: none;
+  box-shadow: none;
+}
+
+.history-link:focus-visible {
+  outline: 2px solid var(--yt-accent);
+  outline-offset: 2px;
+}
+
+.history-text {
+  font-weight: 600;
+}
+
+.history-time {
+  font-size: 0.85rem;
+  color: var(--yt-text-muted);
+  font-weight: 400;
+}
+
+@media (max-width: 600px) {
+  .history-header-btn {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.85rem;
+    min-height: 28px;
+    min-width: 28px;
+  }
+
+  .history-modal {
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .reading-history-list {
+    padding: 1rem;
+  }
+
+  .history-link {
+    padding: 0.6rem 0.4rem;
+    font-size: 0.95rem;
+  }
+}
+
+/* ========================================
    Version Manager Modal Styles
    ======================================== */
 

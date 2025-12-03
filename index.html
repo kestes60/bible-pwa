@@ -65,6 +65,8 @@
 
       <button class="bookmarks-header-btn" onclick="openBookmarksModal()" title="View bookmarks" aria-label="Open bookmarks">★</button>
 
+      <button class="history-header-btn" onclick="openReadingHistory()" title="Recent reading history" aria-label="Open reading history">📜</button>
+
       <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle" title="Toggle theme" aria-label="Toggle light/dark theme">☀ Light</button>
     </div>
   </header>
@@ -199,12 +201,27 @@
     </div>
   </div>
 
+  <!-- Reading History Modal -->
+  <div class="history-modal-overlay" id="historyModalOverlay" onclick="closeReadingHistory(event)" role="dialog" aria-labelledby="historyModalTitle" aria-modal="true">
+    <div class="history-modal" onclick="event.stopPropagation()">
+      <div class="history-modal-header">
+        <h2 id="historyModalTitle">Recent Reading</h2>
+        <button class="history-modal-close" onclick="closeReadingHistory()" aria-label="Close reading history">×</button>
+      </div>
+      <div id="readingHistoryList" class="reading-history-list">
+        <p class="empty-history">No recent reading activity yet.</p>
+      </div>
+    </div>
+  </div>
+
   <!-- Back to Top Button -->
   <button id="backToTopBtn" class="back-to-top" onclick="scrollToTop()" aria-label="Back to top">↑ Top</button>
 
   <!-- External Scripts -->
   <!-- Load version configuration first (app.js depends on it) -->
   <script src="scripts/config/versions.js"></script>
+  <!-- Reading plans & history storage (available as window.BibleReading) -->
+  <script src="scripts/storage/reading-plans.js"></script>
   <!-- Main application logic -->
   <script src="scripts/app.js"></script>
 </body>

@@ -441,6 +441,125 @@ async function navigateToBookmark(bookmarkId) {
   selectChapter(bookmark.chapter);
 }
 
+// ========================================
+// Reading History Modal
+// ========================================
+
+/**
+ * Format a relative time string (e.g., "5m ago", "2h ago", "3d ago")
+ * @param {Date} date - The date to format
+ * @returns {string} Relative time string
+ */
+function timeSince(date) {
+  const seconds = Math.floor((new Date() - date) / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (days > 0) return days + 'd';
+  if (hours > 0) return hours + 'h';
+  if (minutes > 0) return minutes + 'm';
+  return seconds + 's';
+}
+
+/**
+ * Open the reading history modal and populate with recent events
+ */
+function openReadingHistory() {
+  const modal = document.getElementById('historyModalOverlay');
+  const list = document.getElementById('readingHistoryList');
+  list.innerHTML = '';
+
+  // Check if BibleReading API is available
+  if (!window.BibleReading || typeof BibleReading.getRecentReadingEvents !== 'function') {
+    list.innerHTML = '<p class="empty-history">Reading history not available.</p>';
+    modal.classList.add('active');
+    return;
+  }
+
+  const events = BibleReading.getRecentReadingEvents(20);
+
+  if (!events.length) {
+    list.innerHTML = '<p class="empty-history">No recent reading activity yet.</p>';
+  } else {
+    events.forEach(ev => {
+      const div = document.createElement('div');
+      div.className = 'history-item';
+
+      const timeAgo = timeSince(new Date(ev.completedAt));
+
+      // Create clickable link to navigate to the chapter
+      const link = document.createElement('button');
+      link.className = 'history-link';
+      link.setAttribute('aria-label', 'Go to ' + ev.bookId + ' chapter ' + ev.chapter);
+
+      const textSpan = document.createElement('span');
+      textSpan.className = 'history-text';
+      textSpan.textContent = ev.bookId + ' ' + ev.chapter;
+
+      const timeSpan = document.createElement('span');
+      timeSpan.className = 'history-time';
+      timeSpan.textContent = timeAgo + ' ago';
+
+      link.appendChild(textSpan);
+      link.appendChild(timeSpan);
+
+      // Add click handler to navigate
+      link.addEventListener('click', function() {
+        navigateToHistoryItem(ev.bookId, ev.chapter);
+      });
+
+      div.appendChild(link);
+      list.appendChild(div);
+    });
+  }
+
+  modal.classList.add('active');
+
+  // Focus first item for keyboard navigation
+  setTimeout(function() {
+    const firstLink = list.querySelector('.history-link');
+    if (firstLink) firstLink.focus();
+  }, 0);
+}
+
+/**
+ * Close the reading history modal
+ * @param {Event} event - Optional event object from click handler
+ */
+function closeReadingHistory(event) {
+  if (!event || event.target === event.currentTarget) {
+    document.getElementById('historyModalOverlay').classList.remove('active');
+  }
+}
+
+/**
+ * Navigate to a chapter from reading history
+ * @param {string} bookId - The book name
+ * @param {number} chapter - The chapter number
+ */
+async function navigateToHistoryItem(bookId, chapter) {
+  closeReadingHistory();
+
+  // Load the book if different from current
+  if (bookId !== currentBook) {
+    try {
+      const bookInfo = booksJson.books.find(function(b) {
+        return b.name === bookId;
+      });
+      if (bookInfo) {
+        await selectBook(bookInfo);
+      }
+    } catch (e) {
+      console.error('Error loading book from history:', e);
+      return;
+    }
+  }
+
+  // Navigate to the chapter
+  selectChapter(chapter);
+}
+
 // Initialize theme immediately
 initTheme();
 // Initialize font size immediately
@@ -924,6 +1043,43 @@ function loadReadingState() {
   return null;
 }
 
+/**
+ * Log the current chapter as a reading event (simple v1)
+ * Uses window.BibleReading.logReadingEvent if available.
+ * Called after a chapter is successfully displayed.
+ */
+function logCurrentChapterReading() {
+  if (!window.BibleReading || typeof BibleReading.logReadingEvent !== 'function') {
+    return;
+  }
+
+  try {
+    const versionId = typeof getCurrentVersionId === 'function' ? getCurrentVersionId() : null;
+
+    // Use the book name as identifier (matches how bookmarks and reading state work)
+    // Prefer currentBookData.name if available for consistency
+    const bookId =
+      (currentBookData && currentBookData.name) ||
+      currentBook ||
+      null;
+
+    const chapterNum = Number(currentChapter);
+
+    if (!versionId || !bookId || !chapterNum) {
+      return;
+    }
+
+    BibleReading.logReadingEvent({
+      versionId: versionId,
+      bookId: bookId,
+      chapter: chapterNum
+      // completedAt will default to now inside the storage module
+    });
+  } catch (e) {
+    console.warn('[BibleReading] Failed to log reading event:', e);
+  }
+}
+
 // ========================================
 // Offline Detection & Management
 // ========================================
@@ -1251,6 +1407,9 @@ function displayChapter(chapterNum) {
 
   // Save the reading state after displaying
   saveReadingState(currentBook, currentChapter);
+
+  // Log reading event for history tracking
+  logCurrentChapterReading();
 }
 
 // Update the chapter indicator text
@@ -1368,11 +1527,15 @@ document.addEventListener('keydown', function(event) {
     const bookModal = document.getElementById('bookModalOverlay');
     const chapterModal = document.getElementById('chapterModalOverlay');
     const bookmarksModal = document.getElementById('bookmarksModalOverlay');
+    const historyModal = document.getElementById('historyModalOverlay');
     const versionManager = document.getElementById('versionManagerOverlay');
     const searchInput = document.getElementById('chapterSearchInput');
 
     if (versionManager && versionManager.classList.contains('active')) {
       closeVersionManager();
+      event.preventDefault();
+    } else if (historyModal && historyModal.classList.contains('active')) {
+      closeReadingHistory();
       event.preventDefault();
     } else if (bookModal.classList.contains('active')) {
       closeBookSelector();
