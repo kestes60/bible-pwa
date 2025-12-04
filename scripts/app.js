@@ -1080,6 +1080,112 @@ function logCurrentChapterReading() {
   }
 }
 
+/**
+ * Update the simple "Current Book" reading plan in BibleReading storage.
+ * Called whenever a chapter is displayed.
+ */
+function updateCurrentBookPlan() {
+  if (
+    !window.BibleReading ||
+    typeof BibleReading.upsertPlan !== 'function' ||
+    typeof BibleReading.setCurrentPlanId !== 'function'
+  ) {
+    return;
+  }
+
+  const bookId =
+    (currentBookData && currentBookData.name) ||
+    currentBook ||
+    null;
+
+  const chapterNum = Number(currentChapter || 0);
+
+  if (!bookId || !chapterNum) {
+    return;
+  }
+
+  // Use the global totalChapters or currentBookData.chapters
+  const chaptersCount =
+    (currentBookData && currentBookData.chapters) ||
+    totalChapters ||
+    0;
+
+  const nowIso = new Date().toISOString();
+
+  BibleReading.upsertPlan({
+    id: 'current-book',
+    name: 'Current Book',
+    type: 'auto-current-book',
+    config: {
+      bookId: bookId,
+      totalChapters: chaptersCount || null
+    },
+    progress: {
+      bookId: bookId,
+      lastChapter: chapterNum,
+      lastUpdatedAt: nowIso
+    }
+  });
+
+  BibleReading.setCurrentPlanId('current-book');
+}
+
+/**
+ * Update the UI line under the chapter title with the current plan status.
+ * Example: "Reading plan: Genesis 7 of 50"
+ */
+function updateCurrentPlanStatusUI() {
+  const el = document.getElementById('currentPlanStatus');
+  if (!el) return;
+
+  // If BibleReading API not available, hide the element
+  if (!window.BibleReading) {
+    el.textContent = '';
+    return;
+  }
+
+  const currentPlanId =
+    typeof BibleReading.getCurrentPlanId === 'function'
+      ? BibleReading.getCurrentPlanId()
+      : null;
+
+  if (currentPlanId !== 'current-book') {
+    el.textContent = '';
+    return;
+  }
+
+  let plan;
+  try {
+    const state = BibleReading.loadReadingState();
+    plan = state && state.plans ? state.plans['current-book'] : null;
+  } catch (e) {
+    console.warn('[BibleReading] Unable to load reading plan state:', e);
+    el.textContent = '';
+    return;
+  }
+
+  if (!plan || !plan.progress || !plan.config) {
+    el.textContent = '';
+    return;
+  }
+
+  const bookId = plan.config.bookId || plan.progress.bookId;
+  const chapterNum = plan.progress.lastChapter;
+  const chaptersTotal = plan.config.totalChapters;
+
+  if (!bookId || !chapterNum) {
+    el.textContent = '';
+    return;
+  }
+
+  // Build label with or without totalChapters
+  if (chaptersTotal && Number(chaptersTotal) > 0) {
+    el.textContent = 'Reading plan: ' + bookId + ' ' + chapterNum + ' of ' + chaptersTotal;
+  } else {
+    el.textContent = 'Reading plan: ' + bookId + ' ' + chapterNum;
+  }
+}
+
 // ========================================
 // Offline Detection & Management
 // ========================================
@@ -1410,6 +1516,10 @@ function displayChapter(chapterNum) {
 
   // Log reading event for history tracking
   logCurrentChapterReading();
+
+  // Update the simple "Current Book" reading plan and its UI
+  updateCurrentBookPlan();
+  updateCurrentPlanStatusUI();
 }
 
 // Update the chapter indicator text
