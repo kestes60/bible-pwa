@@ -392,7 +392,11 @@ function renderBookmarksList() {
   const container = document.getElementById('bookmarksContainer');
 
   if (bookmarks.length === 0) {
-    container.innerHTML = '<p class="no-bookmarks">No bookmarks yet. Tap the star icon to bookmark a chapter.</p>';
+    container.innerHTML =
+      '<div class="empty-state">' +
+        '<p class="empty-title">You haven\'t saved any bookmarks yet.</p>' +
+        '<p class="empty-hint">Tap ★ while reading to save a favorite chapter.</p>' +
+      '</div>';
     return;
   }
 
@@ -475,7 +479,11 @@ function openReadingHistory() {
 
   // Check if BibleReading API is available
   if (!window.BibleReading || typeof BibleReading.getRecentReadingEvents !== 'function') {
-    list.innerHTML = '<p class="empty-history">Reading history not available.</p>';
+    list.innerHTML =
+      '<div class="empty-state">' +
+        '<p class="empty-title">Reading history not available.</p>' +
+        '<p class="empty-hint">The reading history feature could not be loaded.</p>' +
+      '</div>';
     modal.classList.add('active');
     return;
   }
@@ -483,7 +491,11 @@ function openReadingHistory() {
   var events = BibleReading.getRecentReadingEvents(20);
 
   if (!events.length) {
-    list.innerHTML = '<p class="empty-history">No recent reading activity yet.</p>';
+    list.innerHTML =
+      '<div class="empty-state">' +
+        '<p class="empty-title">No recent reading yet.</p>' +
+        '<p class="empty-hint">Start reading any chapter, and it will appear here automatically.</p>' +
+      '</div>';
   } else {
     events.forEach(ev => {
       const div = document.createElement('div');
@@ -1201,14 +1213,21 @@ function updateCurrentBookPlan() {
 /**
  * Update the UI line under the chapter title with the current plan status.
  * Example: "Reading plan: Genesis 7 of 50"
+ * Shows empty-state message when no plan progress exists.
  */
 function updateCurrentPlanStatusUI() {
   const el = document.getElementById('currentPlanStatus');
   if (!el) return;
 
-  // If BibleReading API not available, hide the element
+  // Helper to show empty-state placeholder
+  function showEmptyState() {
+    el.textContent = 'Reading plan: No plan yet — start reading to begin tracking.';
+    el.style.color = '';  // Use default muted color from CSS
+  }
+
+  // If BibleReading API not available, show empty state
   if (!window.BibleReading) {
-    el.textContent = '';
+    showEmptyState();
     return;
   }
 
@@ -1217,8 +1236,9 @@ function updateCurrentPlanStatusUI() {
       ? BibleReading.getCurrentPlanId()
       : null;
 
+  // If no current-book plan is active, show empty state
   if (currentPlanId !== 'current-book') {
-    el.textContent = '';
+    showEmptyState();
     return;
   }
 
@@ -1228,12 +1248,13 @@ function updateCurrentPlanStatusUI() {
     plan = state && state.plans ? state.plans['current-book'] : null;
   } catch (e) {
     console.warn('[BibleReading] Unable to load reading plan state:', e);
-    el.textContent = '';
+    showEmptyState();
     return;
   }
 
+  // If no plan or no progress recorded yet, show empty state
   if (!plan || !plan.progress || !plan.config) {
-    el.textContent = '';
+    showEmptyState();
     return;
   }
 
@@ -1241,8 +1262,9 @@ function updateCurrentPlanStatusUI() {
   const chapterNum = plan.progress.lastChapter;
   const chaptersTotal = plan.config.totalChapters;
 
+  // If no actual progress data, show empty state
   if (!bookId || !chapterNum) {
-    el.textContent = '';
+    showEmptyState();
     return;
   }
 
@@ -1803,9 +1825,13 @@ document.addEventListener('keydown', function(event) {
     const bookmarksModal = document.getElementById('bookmarksModalOverlay');
     const historyModal = document.getElementById('historyModalOverlay');
     const versionManager = document.getElementById('versionManagerOverlay');
+    const settingsModal = document.getElementById('settingsModalOverlay');
     const searchInput = document.getElementById('chapterSearchInput');
 
-    if (versionManager && versionManager.classList.contains('active')) {
+    if (settingsModal && settingsModal.classList.contains('active')) {
+      closeSettingsModal();
+      event.preventDefault();
+    } else if (versionManager && versionManager.classList.contains('active')) {
       closeVersionManager();
       event.preventDefault();
     } else if (historyModal && historyModal.classList.contains('active')) {
@@ -2134,6 +2160,184 @@ window.addEventListener('scroll', () => {
     }
   }
 });
+
+// ========================================
+// Settings Modal & Backup/Restore
+// ========================================
+
+/**
+ * Open the settings modal
+ */
+function openSettingsModal() {
+  document.getElementById('settingsModalOverlay').classList.add('active');
+  // Focus the first button for keyboard navigation
+  setTimeout(() => {
+    const firstBtn = document.querySelector('.settings-primary-btn');
+    if (firstBtn) firstBtn.focus();
+  }, 0);
+}
+
+/**
+ * Close the settings modal
+ * @param {Event} event - Optional event object from click handler
+ */
+function closeSettingsModal(event) {
+  if (!event || event.target === event.currentTarget) {
+    document.getElementById('settingsModalOverlay').classList.remove('active');
+    // Return focus to settings button
+    const settingsBtn = document.querySelector('.settings-header-btn');
+    if (settingsBtn) settingsBtn.focus();
+  }
+}
+
+/**
+ * Open the hidden file input to select a backup file
+ */
+function openBackupFilePicker() {
+  const fileInput = document.getElementById('backupFileInput');
+  if (fileInput) {
+    fileInput.click();
+  }
+}
+
+/**
+ * Handle file selection for backup restore
+ * @param {Event} event - The file input change event
+ */
+function handleBackupFileSelected(event) {
+  const fileInput = event.target;
+  const file = fileInput.files && fileInput.files[0];
+
+  if (!file) {
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+    try {
+      const content = e.target.result;
+      const backup = JSON.parse(content);
+
+      // Validate the backup structure
+      if (!backup || typeof backup !== 'object') {
+        alert('This file does not look like a valid Bible Reader backup.');
+        return;
+      }
+
+      // Check appId
+      if (backup.appId !== 'yahtsar-bible-reader') {
+        alert('This file does not look like a valid Bible Reader backup.');
+        return;
+      }
+
+      // Check schemaVersion is a number
+      if (typeof backup.schemaVersion !== 'number') {
+        alert('This file does not look like a valid Bible Reader backup.');
+        return;
+      }
+
+      // Check data is an object
+      if (!backup.data || typeof backup.data !== 'object') {
+        alert('This file does not look like a valid Bible Reader backup.');
+        return;
+      }
+
+      // Ask for confirmation
+      const ok = window.confirm(
+        'Restoring a backup will overwrite your current Bible Reader data (reading progress, history, preferences) on this device. Continue?'
+      );
+
+      if (!ok) {
+        return;
+      }
+
+      // Clear existing localStorage keys that start with "bibleReader."
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('bibleReader.')) {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+
+      // Write all keys from backup.data into localStorage
+      for (const key in backup.data) {
+        if (Object.prototype.hasOwnProperty.call(backup.data, key)) {
+          localStorage.setItem(key, backup.data[key]);
+        }
+      }
+
+      // Show success message and reload
+      alert('Backup restored successfully. The app will now reload.');
+      window.location.reload();
+
+    } catch (err) {
+      console.error('Error parsing backup file:', err);
+      alert('This file does not look like a valid Bible Reader backup.');
+    }
+  };
+
+  reader.onerror = function() {
+    console.error('Error reading backup file');
+    alert('Sorry, something went wrong while reading the backup file.');
+  };
+
+  reader.readAsText(file);
+
+  // Clear the file input value so the same file can be re-selected later
+  fileInput.value = '';
+}
+
+/**
+ * Export all Bible Reader data as a JSON backup file
+ */
+function exportBibleBackup() {
+  try {
+    const backup = {
+      appId: 'yahtsar-bible-reader',
+      schemaVersion: 1,
+      exportedAt: new Date().toISOString(),
+      data: {}
+    };
+
+    // Collect all localStorage keys that start with "bibleReader."
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('bibleReader.')) {
+        backup.data[key] = localStorage.getItem(key);
+      }
+    }
+
+    // Check if there's any data to export
+    if (Object.keys(backup.data).length === 0) {
+      alert('No Bible Reader data found to export. You can still save this file as a starting point.');
+    }
+
+    // Create the JSON blob
+    const jsonStr = JSON.stringify(backup, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+
+    // Generate filename with timestamp
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const filename = 'bible-reader-backup-' + timestamp + '.json';
+
+    // Create download link and trigger download
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+  } catch (err) {
+    console.error('Error creating backup:', err);
+    alert('Sorry, something went wrong while creating the backup.');
+  }
+}
 
 // ========================================
 // Service Worker Registration

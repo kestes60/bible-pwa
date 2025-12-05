@@ -68,6 +68,8 @@
       <button class="history-header-btn" onclick="openReadingHistory()" title="Recent reading history" aria-label="Open reading history">📜</button>
       <span id="lastReadHint" class="last-read-hint last-read-header-label"></span>
 
+      <button class="settings-header-btn" onclick="openSettingsModal()" title="Settings" aria-label="Open settings">⚙</button>
+
       <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle" title="Toggle theme" aria-label="Toggle light/dark theme">☀ Light</button>
     </div>
   </header>
@@ -175,7 +177,10 @@
         <button class="bookmarks-modal-close" onclick="closeBookmarksModal()" aria-label="Close bookmarks">×</button>
       </div>
       <div id="bookmarksContainer" class="bookmarks-list">
-        <p class="no-bookmarks">No bookmarks yet. Tap the star icon to bookmark a chapter.</p>
+        <div class="empty-state">
+          <p class="empty-title">You haven't saved any bookmarks yet.</p>
+          <p class="empty-hint">Tap ★ while reading to save a favorite chapter.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -215,7 +220,34 @@
         <button class="history-modal-close" onclick="closeReadingHistory()" aria-label="Close reading history">×</button>
       </div>
       <div id="readingHistoryList" class="reading-history-list">
-        <p class="empty-history">No recent reading activity yet.</p>
+        <div class="empty-state">
+          <p class="empty-title">No recent reading yet.</p>
+          <p class="empty-hint">Start reading any chapter, and it will appear here automatically.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="settings-modal-overlay" id="settingsModalOverlay" onclick="closeSettingsModal(event)" role="dialog" aria-labelledby="settingsModalTitle" aria-modal="true">
+    <div class="settings-modal" onclick="event.stopPropagation()">
+      <div class="settings-modal-header">
+        <h2 id="settingsModalTitle">Settings</h2>
+        <button class="settings-modal-close" onclick="closeSettingsModal()" aria-label="Close settings">×</button>
+      </div>
+      <div class="settings-modal-content">
+        <h3 class="settings-section-title">Backup & Restore</h3>
+        <p class="settings-description">
+          Download a backup of your Bible Reader data (reading history, plan progress, preferences). You can restore it later if your browser data is cleared.
+        </p>
+        <div class="settings-buttons">
+          <button class="settings-primary-btn" onclick="exportBibleBackup()">Download backup</button>
+          <button class="settings-secondary-btn" onclick="openBackupFilePicker()">Restore from backup file</button>
+        </div>
+        <p class="settings-note">
+          Backups are stored only on your device. Restoring will overwrite your current Bible Reader data.
+        </p>
+        <input type="file" id="backupFileInput" accept="application/json" style="display:none" onchange="handleBackupFileSelected(event)" />
       </div>
     </div>
   </div>
