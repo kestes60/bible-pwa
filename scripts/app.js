@@ -1254,6 +1254,98 @@ function updateCurrentPlanStatusUI() {
   }
 }
 
+/**
+ * Update the "Continue reading" button UI based on current-book plan state.
+ * Shows/hides button and updates label based on progress.
+ */
+function updateCurrentPlanActionUI() {
+  var container = document.getElementById('currentPlanActions');
+  var btn = document.getElementById('continuePlanBtn');
+  if (!container || !btn) return;
+
+  // Hide if BibleReading API unavailable
+  if (!window.BibleReading || typeof BibleReading.getPlans !== 'function') {
+    container.style.display = 'none';
+    return;
+  }
+
+  // Get current-book plan
+  var plans = BibleReading.getPlans();
+  var plan = plans ? plans['current-book'] : null;
+
+  // Hide if no plan or no config
+  if (!plan || !plan.config || !plan.config.bookId) {
+    container.style.display = 'none';
+    return;
+  }
+
+  var planBookId = plan.config.bookId;
+  var planTotal = plan.config.totalChapters || 0;
+  var lastChapter = (plan.progress && plan.progress.lastChapter) || 0;
+
+  // Use currentBookData.name for display (matches UI)
+  var displayName = (currentBookData && currentBookData.name) || planBookId;
+
+  // Determine next chapter
+  var nextChapter;
+  var buttonLabel;
+
+  if (lastChapter >= planTotal && planTotal > 0) {
+    // Completed book - offer to re-read
+    nextChapter = 1;
+    buttonLabel = 'Re-read ' + displayName;
+  } else if (lastChapter > 0) {
+    // Has progress - continue
+    nextChapter = Math.min(lastChapter + 1, planTotal || lastChapter + 1);
+    buttonLabel = 'Continue in ' + displayName;
+  } else {
+    // No progress yet - start
+    nextChapter = 1;
+    buttonLabel = 'Start reading ' + displayName;
+  }
+
+  // Store next chapter on button for click handler
+  btn.dataset.bookId = planBookId;
+  btn.dataset.nextChapter = nextChapter;
+  btn.textContent = buttonLabel;
+  container.style.display = '';
+}
+
+/**
+ * Navigate to the next chapter in the current-book plan.
+ * Called when user clicks the "Continue reading" button.
+ */
+function continueCurrentBookPlan() {
+  var btn = document.getElementById('continuePlanBtn');
+  if (!btn) return;
+
+  var targetBookId = btn.dataset.bookId;
+  var targetChapter = parseInt(btn.dataset.nextChapter, 10);
+
+  if (!targetBookId || isNaN(targetChapter)) return;
+
+  // If already on the correct book, just select the chapter
+  if (currentBook === targetBookId) {
+    selectChapter(targetChapter);
+    return;
+  }
+
+  // Otherwise, need to load the book first, then select chapter
+  if (!booksJson || !booksJson.books) return;
+
+  var bookInfo = booksJson.books.find(function(b) {
+    return b.name === targetBookId;
+  });
+
+  if (bookInfo) {
+    selectBook(bookInfo).then(function() {
+      selectChapter(targetChapter);
+    }).catch(function(e) {
+      console.error('Error loading book for continue:', e);
+    });
+  }
+}
+
 // ========================================
 // Offline Detection & Management
 // ========================================
@@ -1588,6 +1680,7 @@ function displayChapter(chapterNum) {
   // Update the simple "Current Book" reading plan and its UI
   updateCurrentBookPlan();
   updateCurrentPlanStatusUI();
+  updateCurrentPlanActionUI();
 
   // Update "Last read" hint in header
   updateLastReadHint();

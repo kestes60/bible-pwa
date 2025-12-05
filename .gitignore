@@ -4,6 +4,9 @@
 .vscode/
 .idea/
 
+# Documentation (local dev notes)
+docs/
+
 # OS files
 .DS_Store
 Thumbs.db

@@ -391,6 +391,17 @@ Desktop: http://localhost:4173
 
 Phone (same Wi-Fi): http://<your-ip>:4173
 
+To find your ip address to view on phone:
+
+In a Command Prompt, enter: ipconfig
+
+Then look for: Wireless LAN adapter Wi-Fi
+
+Under that look for: 
+IPv4 Address. . . . . . . . . . . : 192.168.1.156
+
+---
+
 Confirm:
 
 Versions load (WEB/KJV/KRV/RVR/CUV).
