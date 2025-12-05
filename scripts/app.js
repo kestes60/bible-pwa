@@ -560,6 +560,43 @@ async function navigateToHistoryItem(bookId, chapter) {
   selectChapter(chapter);
 }
 
+/**
+ * Update the "Last read" hint in the header.
+ * Desktop: shows text "Last: John 8"
+ * Mobile: updates tooltip and aria-label on the history button
+ */
+function updateLastReadHint() {
+  if (!window.BibleReading) return;
+
+  const events = BibleReading.getRecentReadingEvents(1);
+  const hintEl = document.getElementById('lastReadHint');
+  const historyBtn = document.querySelector('.history-header-btn');
+
+  if (!events.length) {
+    // No history yet
+    if (hintEl) hintEl.textContent = '';
+    if (historyBtn) {
+      historyBtn.title = 'Recent reading history';
+      historyBtn.setAttribute('aria-label', 'Open reading history');
+    }
+    return;
+  }
+
+  const ev = events[0];
+  const label = ev.bookId + ' ' + ev.chapter;
+
+  // Desktop text
+  if (hintEl) {
+    hintEl.textContent = 'Last: ' + label;
+  }
+
+  // Mobile tooltip + accessibility
+  if (historyBtn) {
+    historyBtn.title = 'Recent reading (Last: ' + label + ')';
+    historyBtn.setAttribute('aria-label', 'Recent reading (Last: ' + label + ')');
+  }
+}
+
 // Initialize theme immediately
 initTheme();
 // Initialize font size immediately
@@ -1520,6 +1557,9 @@ function displayChapter(chapterNum) {
   // Update the simple "Current Book" reading plan and its UI
   updateCurrentBookPlan();
   updateCurrentPlanStatusUI();
+
+  // Update "Last read" hint in header
+  updateLastReadHint();
 }
 
 // Update the chapter indicator text
@@ -1668,6 +1708,8 @@ document.addEventListener('keydown', function(event) {
 loadBooksJson();
 // Restore reading state instead of always loading John 1
 restoreReadingState();
+// Initialize "Last read" hint from stored history
+updateLastReadHint();
 
 // ========================================
 // Chapter Search Functionality

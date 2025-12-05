@@ -1221,6 +1221,22 @@ header {
   outline-offset: 2px;
 }
 
+/* Last Read Hint (desktop only) */
+.last-read-hint {
+  display: none;
+  margin-left: 0.4rem;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+@media (min-width: 900px) {
+  .last-read-hint {
+    display: inline-block;
+  }
+}
+
 /* History Modal Overlay */
 .history-modal-overlay {
   display: none;
