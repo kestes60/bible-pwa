@@ -466,9 +466,12 @@ function timeSince(date) {
  * Open the reading history modal and populate with recent events
  */
 function openReadingHistory() {
-  const modal = document.getElementById('historyModalOverlay');
-  const list = document.getElementById('readingHistoryList');
+  var modal = document.getElementById('historyModalOverlay');
+  var list = document.getElementById('readingHistoryList');
   list.innerHTML = '';
+
+  // Update the subtitle with fresh data
+  updateHistoryModalSubtitle();
 
   // Check if BibleReading API is available
   if (!window.BibleReading || typeof BibleReading.getRecentReadingEvents !== 'function') {
@@ -477,7 +480,7 @@ function openReadingHistory() {
     return;
   }
 
-  const events = BibleReading.getRecentReadingEvents(20);
+  var events = BibleReading.getRecentReadingEvents(20);
 
   if (!events.length) {
     list.innerHTML = '<p class="empty-history">No recent reading activity yet.</p>';
@@ -561,16 +564,42 @@ async function navigateToHistoryItem(bookId, chapter) {
 }
 
 /**
+ * Update the history modal subtitle with the most recent reading.
+ * Shows "Last: John 8 (3m ago)" or "No recent reading yet." if empty.
+ */
+function updateHistoryModalSubtitle() {
+  var subtitleEl = document.getElementById('historyModalSubtitle');
+  if (!subtitleEl) return;
+
+  if (!window.BibleReading || typeof BibleReading.getRecentReadingEvents !== 'function') {
+    subtitleEl.textContent = 'No recent reading yet.';
+    return;
+  }
+
+  var events = BibleReading.getRecentReadingEvents(1);
+
+  if (!events.length) {
+    subtitleEl.textContent = 'No recent reading yet.';
+  } else {
+    var ev = events[0];
+    var label = ev.bookId + ' ' + ev.chapter;
+    var timeAgo = timeSince(new Date(ev.completedAt));
+    subtitleEl.textContent = 'Last: ' + label + ' (' + timeAgo + ' ago)';
+  }
+}
+
+/**
  * Update the "Last read" hint in the header.
  * Desktop: shows text "Last: John 8"
  * Mobile: updates tooltip and aria-label on the history button
+ * Also updates the history modal subtitle.
  */
 function updateLastReadHint() {
   if (!window.BibleReading) return;
 
-  const events = BibleReading.getRecentReadingEvents(1);
-  const hintEl = document.getElementById('lastReadHint');
-  const historyBtn = document.querySelector('.history-header-btn');
+  var events = BibleReading.getRecentReadingEvents(1);
+  var hintEl = document.getElementById('lastReadHint');
+  var historyBtn = document.querySelector('.history-header-btn');
 
   if (!events.length) {
     // No history yet
@@ -579,22 +608,24 @@ function updateLastReadHint() {
       historyBtn.title = 'Recent reading history';
       historyBtn.setAttribute('aria-label', 'Open reading history');
     }
-    return;
+  } else {
+    var ev = events[0];
+    var label = ev.bookId + ' ' + ev.chapter;
+
+    // Desktop text (short label)
+    if (hintEl) {
+      hintEl.textContent = 'Last: ' + label;
+    }
+
+    // Mobile tooltip + accessibility
+    if (historyBtn) {
+      historyBtn.title = 'Recent reading (Last: ' + label + ')';
+      historyBtn.setAttribute('aria-label', 'Recent reading (Last: ' + label + ')');
+    }
   }
 
-  const ev = events[0];
-  const label = ev.bookId + ' ' + ev.chapter;
-
-  // Desktop text
-  if (hintEl) {
-    hintEl.textContent = 'Last: ' + label;
-  }
-
-  // Mobile tooltip + accessibility
-  if (historyBtn) {
-    historyBtn.title = 'Recent reading (Last: ' + label + ')';
-    historyBtn.setAttribute('aria-label', 'Recent reading (Last: ' + label + ')');
-  }
+  // Also update the history modal subtitle
+  updateHistoryModalSubtitle();
 }
 
 // Initialize theme immediately

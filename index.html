@@ -66,7 +66,7 @@
       <button class="bookmarks-header-btn" onclick="openBookmarksModal()" title="View bookmarks" aria-label="Open bookmarks">★</button>
 
       <button class="history-header-btn" onclick="openReadingHistory()" title="Recent reading history" aria-label="Open reading history">📜</button>
-      <span id="lastReadHint" class="last-read-hint"></span>
+      <span id="lastReadHint" class="last-read-hint last-read-header-label"></span>
 
       <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle" title="Toggle theme" aria-label="Toggle light/dark theme">☀ Light</button>
     </div>
@@ -208,6 +208,7 @@
     <div class="history-modal" onclick="event.stopPropagation()">
       <div class="history-modal-header">
         <h2 id="historyModalTitle">Recent Reading</h2>
+        <p id="historyModalSubtitle" class="history-modal-subtitle"></p>
         <button class="history-modal-close" onclick="closeReadingHistory()" aria-label="Close reading history">×</button>
       </div>
       <div id="readingHistoryList" class="reading-history-list">

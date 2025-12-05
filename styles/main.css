@@ -1237,6 +1237,13 @@ header {
   }
 }
 
+/* Hide last-read header label on mobile */
+@media (max-width: 768px) {
+  .last-read-header-label {
+    display: none;
+  }
+}
+
 /* History Modal Overlay */
 .history-modal-overlay {
   display: none;
@@ -1274,8 +1281,9 @@ header {
   color: white;
   padding: 1.5rem;
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   flex-shrink: 0;
 }
 
@@ -1284,6 +1292,19 @@ header {
   font-size: 1.3rem;
   font-weight: 600;
   flex: 1;
+}
+
+.history-modal-subtitle {
+  width: 100%;
+  order: 3;
+  margin: 0.5rem 0 0 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 400;
+}
+
+.history-modal-subtitle:empty {
+  display: none;
 }
 
 .history-modal-close {
