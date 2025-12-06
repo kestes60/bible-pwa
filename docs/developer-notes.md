@@ -413,6 +413,37 @@ All header buttons maintain a minimum tap target size of 36-40px for accessibili
 
 **Future consideration**: If more header controls are added, we may need to move some buttons into an overflow menu.
 
+### Reading plans menu (UI skeleton, v1)
+
+The Reading Plans menu lives inside the Settings modal (⚙ button). It displays reading plan cards using `BibleReading.getPlans()` and `BibleReading.getCurrentPlanId()`.
+
+**Current behavior:**
+- Shows the auto-generated `current-book` plan (tracks progress through whichever book you're reading)
+- Displays an "Active" badge on the current plan
+- Shows book name and chapter progress (e.g., "Book: Hebrews • Last: 8 / 13")
+- Clicking a plan card shows a "Plan switching is coming in a future update" alert
+- Empty state message if no plans exist
+
+**Key files:**
+- **HTML**: `#readingPlansList` container inside Settings modal in `index.html`
+- **CSS**: `.reading-plans-section`, `.reading-plan-card`, `.reading-plan-badge-active`, etc. in `styles/main.css`
+- **JS**: `renderReadingPlansList()` in `scripts/app.js`, called from `openSettingsModal()`
+
+**Future steps:**
+- Implement real plan switching
+- Add more built-in plans (e.g., "Bible in a Year", "Gospels in 30 Days")
+- Allow users to create and manage custom plans
+
+### Modal transitions (one modal at a time)
+
+When opening a modal from within another modal, we close the first modal before opening the second. This prevents modals from stacking on top of each other.
+
+**Example**: "See what's new in this version" link in Settings modal uses `openWhatsNewFromSettings()` which:
+1. Closes the Settings modal
+2. Opens the What's New modal
+
+**Pattern**: For any future in-modal links that open another modal, create a transition helper function following the same pattern in `scripts/app.js`.
+
 ---
 
 10. "First Day Back" Checklist

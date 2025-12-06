@@ -291,6 +291,17 @@
         <button class="settings-modal-close" onclick="closeSettingsModal()" aria-label="Close settings">×</button>
       </div>
       <div class="settings-modal-content">
+        <!-- Reading Plans Section -->
+        <div class="reading-plans-section">
+          <h3 class="settings-section-title">Reading Plans</h3>
+          <p class="settings-description">
+            Track your progress through books or custom plans. More options are coming in future updates.
+          </p>
+          <div id="readingPlansList" class="reading-plans-list">
+            <!-- Populated by renderReadingPlansList() -->
+          </div>
+        </div>
+
         <h3 class="settings-section-title">Backup & Restore</h3>
         <p class="settings-description">
           Download a backup of your Bible Reader data (reading history, plan progress, preferences). You can restore it later if your browser data is cleared.
@@ -305,7 +316,7 @@
         <input type="file" id="backupFileInput" accept="application/json" style="display:none" onchange="handleBackupFileSelected(event)" />
 
         <p class="settings-whats-new-link">
-          <button type="button" class="link-button" onclick="openWhatsNewModal()">
+          <button type="button" class="link-button" onclick="openWhatsNewFromSettings()">
             See what's new in this version
           </button>
         </p>

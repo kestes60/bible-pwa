@@ -2215,9 +2215,116 @@ window.addEventListener('scroll', () => {
 // ========================================
 
 /**
+ * Render the reading plans list in the Settings modal.
+ * Shows plan cards with active badge and progress info.
+ */
+function renderReadingPlansList() {
+  const container = document.getElementById('readingPlansList');
+  if (!container) {
+    return;
+  }
+
+  // Clear previous content
+  container.innerHTML = '';
+
+  // Check if BibleReading API is available
+  if (!window.BibleReading || typeof BibleReading.getPlans !== 'function') {
+    const errorP = document.createElement('p');
+    errorP.className = 'reading-plans-empty';
+    errorP.textContent = 'Reading plans are not available right now.';
+    container.appendChild(errorP);
+    return;
+  }
+
+  const plans = BibleReading.getPlans();
+  const currentPlanId = BibleReading.getCurrentPlanId();
+  const planIds = Object.keys(plans);
+
+  // Empty state
+  if (planIds.length === 0) {
+    const emptyP = document.createElement('p');
+    emptyP.className = 'reading-plans-empty';
+    emptyP.textContent = "No reading plans yet. Start reading a book and we'll track your progress automatically.";
+    container.appendChild(emptyP);
+    return;
+  }
+
+  // Render each plan as a card
+  planIds.forEach(planId => {
+    const plan = plans[planId];
+    const isActive = planId === currentPlanId;
+
+    const card = document.createElement('div');
+    card.className = 'reading-plan-card';
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-label', (plan.name || planId) + (isActive ? ' (Active)' : ''));
+
+    // Header row with title and optional Active badge
+    const header = document.createElement('div');
+    header.className = 'reading-plan-header';
+
+    const title = document.createElement('span');
+    title.className = 'reading-plan-title';
+    title.textContent = plan.name || planId;
+    header.appendChild(title);
+
+    if (isActive) {
+      const badge = document.createElement('span');
+      badge.className = 'reading-plan-badge-active';
+      badge.textContent = 'Active';
+      header.appendChild(badge);
+    }
+
+    card.appendChild(header);
+
+    // Meta line with progress info
+    const meta = document.createElement('p');
+    meta.className = 'reading-plan-meta';
+
+    if (planId === 'current-book' && plan.config && plan.progress) {
+      const bookId = plan.config.bookId;
+      const totalChapters = plan.config.totalChapters;
+      const lastChapter = plan.progress.lastChapter;
+
+      if (bookId && totalChapters && lastChapter) {
+        meta.textContent = `Book: ${bookId} • Last: ${lastChapter} / ${totalChapters}`;
+      } else if (bookId) {
+        meta.textContent = `Book: ${bookId}`;
+      } else {
+        meta.textContent = 'Tracks your current book automatically.';
+      }
+    } else {
+      // Generic fallback for other plan types
+      meta.textContent = plan.description || 'Custom reading plan.';
+    }
+
+    card.appendChild(meta);
+
+    // Click handler - show "coming soon" message
+    const handlePlanClick = () => {
+      alert('Plan switching is coming in a future update.');
+    };
+
+    card.addEventListener('click', handlePlanClick);
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handlePlanClick();
+      }
+    });
+
+    container.appendChild(card);
+  });
+}
+
+/**
  * Open the settings modal
  */
 function openSettingsModal() {
+  // Render reading plans list fresh each time
+  renderReadingPlansList();
+
   document.getElementById('settingsModalOverlay').classList.add('active');
   // Focus the first button for keyboard navigation
   setTimeout(() => {
@@ -2503,9 +2610,21 @@ function closeWhatsNewModal() {
   setLastSeenVersion(APP_VERSION);
 }
 
+/**
+ * Open What's New modal from Settings modal (closes Settings first)
+ * Ensures only one modal is visible at a time
+ */
+function openWhatsNewFromSettings() {
+  // Close Settings modal first
+  document.getElementById('settingsModalOverlay').classList.remove('active');
+  // Then open What's New
+  openWhatsNewModal();
+}
+
 // Expose open/close on window for onclick handlers
 window.openWhatsNewModal = openWhatsNewModal;
 window.closeWhatsNewModal = closeWhatsNewModal;
+window.openWhatsNewFromSettings = openWhatsNewFromSettings;
 
 // ========================================
 // Service Worker Registration
