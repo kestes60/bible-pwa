@@ -80,6 +80,34 @@
     <button id="continuePlanBtn" class="current-plan-button" onclick="continueCurrentBookPlan()" aria-label="Continue reading current book"></button>
   </div>
 
+  <!-- Welcome Banner (first-time only) -->
+  <div id="welcomeBanner" class="welcome-banner" aria-live="polite" aria-label="Welcome to Bible Reader">
+    <div class="welcome-banner-inner">
+      <div class="welcome-banner-text">
+        <h2 class="welcome-banner-title">Welcome to Bible Reader</h2>
+        <p class="welcome-banner-body">
+          Track your reading in each book, bookmark favorite chapters, and back up your progress anytime.
+        </p>
+        <p class="welcome-banner-hint">
+          Tip: Tap ★ to save a chapter, 📜 to see recent reading, and ⚙ to back up your data.
+        </p>
+      </div>
+      <div class="welcome-banner-actions">
+        <button type="button" class="welcome-banner-btn" onclick="dismissWelcomeBanner()">
+          Got it
+        </button>
+        <button
+          type="button"
+          class="welcome-banner-close"
+          onclick="dismissWelcomeBanner()"
+          aria-label="Dismiss welcome message"
+        >
+          ×
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Search Bar -->
   <div class="search-container" id="searchContainer">
     <div class="search-bar">

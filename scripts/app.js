@@ -1860,6 +1860,8 @@ loadBooksJson();
 restoreReadingState();
 // Initialize "Last read" hint from stored history
 updateLastReadHint();
+// Initialize welcome banner for first-time users
+initWelcomeBanner();
 
 // ========================================
 // Chapter Search Functionality
@@ -2338,6 +2340,59 @@ function exportBibleBackup() {
     alert('Sorry, something went wrong while creating the backup.');
   }
 }
+
+// ========================================
+// Welcome Banner (First-time users)
+// ========================================
+
+const WELCOME_SEEN_KEY = 'bibleReader.hasSeenWelcome';
+
+/**
+ * Check if the welcome banner should be shown
+ * @returns {boolean} True if banner should be shown
+ */
+function shouldShowWelcomeBanner() {
+  try {
+    const value = localStorage.getItem(WELCOME_SEEN_KEY);
+    return value !== 'true';
+  } catch (e) {
+    // If localStorage is blocked, just show it once per session
+    console.warn('[WelcomeBanner] localStorage unavailable, showing banner without persistence.', e);
+    return true;
+  }
+}
+
+/**
+ * Initialize the welcome banner - show if user hasn't seen it before
+ */
+function initWelcomeBanner() {
+  const banner = document.getElementById('welcomeBanner');
+  if (!banner) return;
+
+  if (shouldShowWelcomeBanner()) {
+    banner.classList.add('active');
+  } else {
+    banner.classList.remove('active');
+  }
+}
+
+/**
+ * Dismiss the welcome banner and persist the dismissal
+ */
+function dismissWelcomeBanner() {
+  const banner = document.getElementById('welcomeBanner');
+  if (banner) {
+    banner.classList.remove('active');
+  }
+  try {
+    localStorage.setItem(WELCOME_SEEN_KEY, 'true');
+  } catch (e) {
+    console.warn('[WelcomeBanner] Failed to persist welcome state:', e);
+  }
+}
+
+// Make dismissWelcomeBanner available globally for onclick handlers
+window.dismissWelcomeBanner = dismissWelcomeBanner;
 
 // ========================================
 // Service Worker Registration

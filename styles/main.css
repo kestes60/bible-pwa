@@ -2307,3 +2307,131 @@ header {
     font-size: 0.85rem;
   }
 }
+
+/* ========================================
+   Welcome Banner (First-time users)
+   ======================================== */
+
+.welcome-banner {
+  display: none;
+  margin: 1.25rem auto 0.75rem auto;
+  max-width: 700px;
+  padding: 0 1rem;
+}
+
+.welcome-banner.active {
+  display: block;
+}
+
+.welcome-banner-inner {
+  background: linear-gradient(
+    135deg,
+    var(--yt-header-grad-start) 0%,
+    var(--yt-header-grad-end) 100%
+  );
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+.welcome-banner-text {
+  flex: 1;
+}
+
+.welcome-banner-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+}
+
+.welcome-banner-body {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.welcome-banner-hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+.welcome-banner-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+}
+
+.welcome-banner-btn {
+  background-color: #ffffff;
+  color: var(--yt-header-grad-end);
+  border-radius: 999px;
+  border: none;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  min-height: auto;
+  min-width: auto;
+}
+
+.welcome-banner-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  background-color: #ffffff;
+}
+
+.welcome-banner-btn:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.welcome-banner-close {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  min-height: auto;
+  min-width: auto;
+}
+
+.welcome-banner-close:hover {
+  opacity: 0.8;
+  transform: none;
+  box-shadow: none;
+  background-color: transparent;
+}
+
+.welcome-banner-close:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+  border-radius: 50%;
+}
+
+@media (max-width: 600px) {
+  .welcome-banner-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .welcome-banner-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+    width: 100%;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  .welcome-banner-btn {
+    font-size: 0.85rem;
+    padding: 0.35rem 0.8rem;
+  }
+}
