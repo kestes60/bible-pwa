@@ -397,6 +397,22 @@ When a new chapter loads, the chapter content fades in with a subtle animation (
   - JS guard in `runChapterFadeIn()` skips class toggling entirely
 - **Target**: Applied to `#versesContainer` element
 
+### Header spacing & mobile layout
+
+The header uses a responsive layout that adapts to different screen sizes:
+
+- **Desktop (>600px)**: Flexbox layout with `.header-center` absolutely positioned for true centering
+- **Mobile (≤600px)**: CSS Grid two-row layout:
+  - Row 1: menu button + action buttons (font-size, bookmarks, history, settings, theme)
+  - Row 2: centered title + version chip
+- **Extra narrow (≤400px)**: Further tightened spacing and slightly larger tap targets (40px min)
+
+All header buttons maintain a minimum tap target size of 36-40px for accessibility. The `.last-read-hint` label is hidden below 768px to save space.
+
+**CSS files**: Header layout in `styles/main.css` around lines 58-170 (desktop) and in `@media (max-width: 600px)` / `@media (max-width: 400px)` sections.
+
+**Future consideration**: If more header controls are added, we may need to move some buttons into an overflow menu.
+
 ---
 
 10. "First Day Back" Checklist
