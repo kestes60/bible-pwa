@@ -1537,7 +1537,9 @@ async function selectBook(book) {
     closeBookSelector();
     openChapterSelector();
 
-    window.scrollTo(0, 0);
+    // Scroll to top so chapter selector modal is visible
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'instant' : 'smooth' });
 
     // Save the reading state when switching to a new book (will save final chapter when selected)
     saveReadingState(currentBook, 1);
@@ -1621,23 +1623,13 @@ function populateChapters(chapterCount) {
 
 // Handle chapter selection
 function selectChapter(chapterNum) {
-  currentChapter = chapterNum;
+  // displayChapter handles: updating UI, scrolling, saving state, logging history
+  displayChapter(chapterNum);
 
-  // Update UI
-  updateChapterIndicator();
-  updateNavigationButtons();
-  displayChapter(currentChapter);
-
-  // Close modal
+  // Close modal after display
   closeChapterSelector();
 
-  // Auto-scroll to reading area with smooth behavior
-  scrollToReadingTop();
-
-  // Save the reading state
-  saveReadingState(currentBook, currentChapter);
-
-  // Update bookmark button
+  // Update bookmark button (not handled by displayChapter)
   updateBookmarkButton();
 }
 
@@ -1706,7 +1698,7 @@ function displayChapter(chapterNum) {
   // Always update chapter indicator to reflect current state
   updateChapterIndicator();
   updateNavigationButtons();
-  window.scrollTo(0, 0);
+  scrollToReadingTop();
 
   // Save the reading state after displaying
   saveReadingState(currentBook, currentChapter);
@@ -1739,31 +1731,33 @@ function updateNavigationButtons() {
 
 // Navigation functions
 /**
- * Scroll smoothly to the top of the reading area after chapter change
- * Ensures the chapter indicator and verses container are visible
+ * Scroll to the top of the reading area after chapter change.
+ * Respects prefers-reduced-motion: uses instant jump if user prefers reduced motion,
+ * otherwise uses smooth scrolling.
  */
 function scrollToReadingTop() {
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const behavior = prefersReducedMotion ? 'instant' : 'smooth';
+
   const chapterIndicator = document.getElementById('chapterIndicator');
   if (chapterIndicator) {
     // Scroll to the chapter indicator (sits between header and sticky nav)
-    chapterIndicator.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    chapterIndicator.scrollIntoView({ behavior: behavior, block: 'start' });
   } else {
     // Fallback to top of page if indicator not found
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: behavior });
   }
 }
 
 function previousChapter() {
   if (currentChapter > 1) {
     displayChapter(currentChapter - 1);
-    scrollToReadingTop();
   }
 }
 
 function nextChapter() {
   if (currentChapter < totalChapters) {
     displayChapter(currentChapter + 1);
-    scrollToReadingTop();
   }
 }
 
@@ -2165,8 +2159,13 @@ if (searchInput) {
 // Back to Top Button Functionality
 // ========================================
 
+/**
+ * Scroll to the top of the page (for back-to-top button).
+ * Respects prefers-reduced-motion.
+ */
 function scrollToTop() {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'instant' : 'smooth' });
 }
 
 // Show/hide back-to-top button based on scroll position

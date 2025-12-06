@@ -1,6 +1,6 @@
 # Bible Reader – Developer Notes
 
-_Last updated: 2025-12-02_
+_Last updated: 2025-12-06_
 
 This document is a quick reference for how the Bible Reader PWA works and how to develop on it without having to re-figure everything each time.
 
@@ -370,7 +370,24 @@ Encrypted storage of personal data
 
 Account-based plans & backups.
 
-9. “First Day Back” Checklist
+9. UX Behaviors
+
+### Auto-scroll on chapter load
+
+When a chapter loads (via book selector, chapter selector, Next/Previous buttons, bookmarks, reading history, "Continue in…" button, or restore-reading-state), the page automatically scrolls to the top of the reading area.
+
+- **Helper function**: `scrollToReadingTop()` in `scripts/app.js`
+- **Called from**: `displayChapter()` — all navigation paths funnel through this function
+- **Accessibility**: Respects `prefers-reduced-motion`:
+  - If user prefers reduced motion → instant jump
+  - Otherwise → smooth scroll
+- **Target**: Scrolls to the `#chapterIndicator` element (or falls back to page top)
+
+The same reduced-motion logic is applied to `scrollToTop()` (used by the back-to-top button).
+
+---
+
+10. "First Day Back" Checklist
 
 When you return to this project after a break:
 
