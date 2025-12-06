@@ -1698,6 +1698,9 @@ function displayChapter(chapterNum) {
   // Always update chapter indicator to reflect current state
   updateChapterIndicator();
   updateNavigationButtons();
+
+  // Trigger fade-in animation, then scroll to top
+  runChapterFadeIn();
   scrollToReadingTop();
 
   // Save the reading state after displaying
@@ -1730,6 +1733,33 @@ function updateNavigationButtons() {
 }
 
 // Navigation functions
+
+/**
+ * Trigger a subtle fade-in animation on the chapter content container.
+ * Respects prefers-reduced-motion: skips animation if user prefers reduced motion.
+ * Called from displayChapter() after DOM is updated.
+ */
+function runChapterFadeIn() {
+  // Skip if user prefers reduced motion (CSS also handles this, but avoid class toggling)
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    return;
+  }
+
+  const container = document.getElementById('versesContainer');
+  if (!container) {
+    return;
+  }
+
+  // Remove class to reset animation state
+  container.classList.remove('chapter-fade-in');
+
+  // Force reflow to restart animation
+  void container.offsetWidth;
+
+  // Add class to trigger animation
+  container.classList.add('chapter-fade-in');
+}
+
 /**
  * Scroll to the top of the reading area after chapter change.
  * Respects prefers-reduced-motion: uses instant jump if user prefers reduced motion,

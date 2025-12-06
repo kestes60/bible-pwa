@@ -642,6 +642,29 @@ button:disabled {
   scroll-behavior: smooth;
 }
 
+/* Chapter fade-in animation */
+@keyframes chapterFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.chapter-fade-in {
+  animation: chapterFadeIn 220ms ease-out;
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .chapter-fade-in {
+    animation: none;
+  }
+}
+
 /* Font size variants */
 body[data-font-size="small"] .verses-container {
   font-size: 1.1rem;

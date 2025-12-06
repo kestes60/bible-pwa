@@ -385,6 +385,18 @@ When a chapter loads (via book selector, chapter selector, Next/Previous buttons
 
 The same reduced-motion logic is applied to `scrollToTop()` (used by the back-to-top button).
 
+### Chapter fade-in animation
+
+When a new chapter loads, the chapter content fades in with a subtle animation (opacity + slight translateY movement over 220ms).
+
+- **Helper function**: `runChapterFadeIn()` in `scripts/app.js` (near `scrollToReadingTop()`)
+- **Called from**: `displayChapter()` — right after DOM updates, before scrolling
+- **CSS**: `.chapter-fade-in` class and `@keyframes chapterFadeIn` in `styles/main.css`
+- **Accessibility**: Respects `prefers-reduced-motion`:
+  - CSS `@media (prefers-reduced-motion: reduce)` disables the animation
+  - JS guard in `runChapterFadeIn()` skips class toggling entirely
+- **Target**: Applied to `#versesContainer` element
+
 ---
 
 10. "First Day Back" Checklist
