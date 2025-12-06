@@ -256,6 +256,33 @@
     </div>
   </div>
 
+  <!-- What's New Modal -->
+  <div class="whats-new-modal-overlay" id="whatsNewOverlay" onclick="closeWhatsNewModal()" role="dialog" aria-labelledby="whatsNewTitle" aria-modal="true">
+    <div class="whats-new-modal" onclick="event.stopPropagation()">
+      <div class="whats-new-header">
+        <h2 id="whatsNewTitle">What's new</h2>
+        <button class="whats-new-close" onclick="closeWhatsNewModal()" aria-label="Close what's new">×</button>
+      </div>
+      <div class="whats-new-body">
+        <p class="whats-new-intro">
+          This update includes several improvements to help you stay in God's Word:
+        </p>
+        <ul class="whats-new-list">
+          <li><strong>Reading history:</strong> View your recent chapters from the 📜 history button.</li>
+          <li><strong>Current book progress:</strong> "Continue in …" button keeps you moving through the book you're reading.</li>
+          <li><strong>Backup & restore:</strong> Download a backup of your reading data and restore it later from ⚙ Settings.</li>
+          <li><strong>Welcome & empty states:</strong> Friendlier screens when you're just getting started.</li>
+        </ul>
+        <p class="whats-new-footer">
+          Thank you for using Bible Reader!
+        </p>
+      </div>
+      <div class="whats-new-actions">
+        <button type="button" class="whats-new-primary" onclick="closeWhatsNewModal()">Got it</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Settings Modal -->
   <div class="settings-modal-overlay" id="settingsModalOverlay" onclick="closeSettingsModal(event)" role="dialog" aria-labelledby="settingsModalTitle" aria-modal="true">
     <div class="settings-modal" onclick="event.stopPropagation()">
@@ -276,6 +303,12 @@
           Backups are stored only on your device. Restoring will overwrite your current Bible Reader data.
         </p>
         <input type="file" id="backupFileInput" accept="application/json" style="display:none" onchange="handleBackupFileSelected(event)" />
+
+        <p class="settings-whats-new-link">
+          <button type="button" class="link-button" onclick="openWhatsNewModal()">
+            See what's new in this version
+          </button>
+        </p>
       </div>
     </div>
   </div>

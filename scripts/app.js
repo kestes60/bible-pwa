@@ -81,6 +81,21 @@ const FONT_SIZE_SMALL = 'small';
 const FONT_SIZE_MEDIUM = 'medium';
 const FONT_SIZE_LARGE = 'large';
 
+// ========================================
+// App Version & Feature Keys (must be at top for init order)
+// ========================================
+const APP_VERSION = '0.9.0-dev5';
+const WELCOME_SEEN_KEY = 'bibleReader.hasSeenWelcome';
+const LAST_SEEN_VERSION_KEY = 'bibleReader.lastSeenVersion';
+
+// ========================================
+// Search State (must be at top for init order)
+// ========================================
+let searchMatches = [];
+let currentMatchIndex = 0;
+let lastSearchTerm = '';
+let searchActive = false;
+
 /**
  * Get saved font size from localStorage
  * @returns {string} Font size or FONT_SIZE_MEDIUM if not saved
@@ -1826,9 +1841,13 @@ document.addEventListener('keydown', function(event) {
     const historyModal = document.getElementById('historyModalOverlay');
     const versionManager = document.getElementById('versionManagerOverlay');
     const settingsModal = document.getElementById('settingsModalOverlay');
+    const whatsNewModal = document.getElementById('whatsNewOverlay');
     const searchInput = document.getElementById('chapterSearchInput');
 
-    if (settingsModal && settingsModal.classList.contains('active')) {
+    if (whatsNewModal && whatsNewModal.classList.contains('active')) {
+      closeWhatsNewModal();
+      event.preventDefault();
+    } else if (settingsModal && settingsModal.classList.contains('active')) {
       closeSettingsModal();
       event.preventDefault();
     } else if (versionManager && versionManager.classList.contains('active')) {
@@ -1862,15 +1881,14 @@ restoreReadingState();
 updateLastReadHint();
 // Initialize welcome banner for first-time users
 initWelcomeBanner();
+// Show What's New modal if version changed
+if (shouldShowWhatsNew()) {
+  openWhatsNewModal();
+}
 
 // ========================================
 // Chapter Search Functionality
 // ========================================
-
-let searchMatches = [];
-let currentMatchIndex = 0;
-let lastSearchTerm = '';
-let searchActive = false;
 
 /**
  * Helper function to escape special regex characters
@@ -2345,8 +2363,6 @@ function exportBibleBackup() {
 // Welcome Banner (First-time users)
 // ========================================
 
-const WELCOME_SEEN_KEY = 'bibleReader.hasSeenWelcome';
-
 /**
  * Check if the welcome banner should be shown
  * @returns {boolean} True if banner should be shown
@@ -2393,6 +2409,74 @@ function dismissWelcomeBanner() {
 
 // Make dismissWelcomeBanner available globally for onclick handlers
 window.dismissWelcomeBanner = dismissWelcomeBanner;
+
+// ========================================
+// What's New Modal (Version change notifications)
+// ========================================
+
+/**
+ * Get the last version the user has seen
+ * @returns {string|null} Last seen version or null
+ */
+function getLastSeenVersion() {
+  try {
+    return localStorage.getItem(LAST_SEEN_VERSION_KEY);
+  } catch (e) {
+    console.warn('[WhatsNew] Unable to read last seen version:', e);
+    return null;
+  }
+}
+
+/**
+ * Store the last seen version
+ * @param {string} version - Version to store
+ */
+function setLastSeenVersion(version) {
+  try {
+    localStorage.setItem(LAST_SEEN_VERSION_KEY, version);
+  } catch (e) {
+    console.warn('[WhatsNew] Unable to store last seen version:', e);
+  }
+}
+
+/**
+ * Check if we should show the What's New modal
+ * @returns {boolean} True if version has changed
+ */
+function shouldShowWhatsNew() {
+  const last = getLastSeenVersion();
+  return last !== APP_VERSION;
+}
+
+/**
+ * Open the What's New modal
+ */
+function openWhatsNewModal() {
+  const overlay = document.getElementById('whatsNewOverlay');
+  if (!overlay) return;
+  overlay.classList.add('active');
+
+  // Focus first focusable button for accessibility
+  setTimeout(function() {
+    const btn = overlay.querySelector('.whats-new-primary, .whats-new-close');
+    if (btn) btn.focus();
+  }, 0);
+}
+
+/**
+ * Close the What's New modal and mark version as seen
+ */
+function closeWhatsNewModal() {
+  const overlay = document.getElementById('whatsNewOverlay');
+  if (overlay) {
+    overlay.classList.remove('active');
+  }
+  setLastSeenVersion(APP_VERSION);
+}
+
+// Expose open/close on window for onclick handlers
+window.openWhatsNewModal = openWhatsNewModal;
+window.closeWhatsNewModal = closeWhatsNewModal;
 
 // ========================================
 // Service Worker Registration
