@@ -8,6 +8,45 @@
   const READING_STATE_KEY = 'bibleReader.readingState.v1';
 
   /**
+   * Built-in reading plan templates (placeholders for now).
+   * These are static plans that will be selectable in a future update.
+   */
+  const BUILTIN_PLANS = [
+    {
+      id: 'nt-90-days',
+      name: 'New Testament in 90 Days',
+      description: 'Read the entire New Testament at a gentle pace—perfect for daily devotion.',
+      meta: '27 books • ~260 chapters • Est. 3 months',
+      isBuiltin: true,
+      comingSoon: true
+    },
+    {
+      id: 'psalms-30-days',
+      name: 'Psalms in 30 Days',
+      description: 'Journey through the Psalms, one a day, with space for reflection.',
+      meta: '150 Psalms • 30-day plan',
+      isBuiltin: true,
+      comingSoon: true
+    },
+    {
+      id: 'gospels-40-days',
+      name: 'Gospels in 40 Days',
+      description: 'Follow Jesus through Matthew, Mark, Luke, and John during Lent or anytime.',
+      meta: '89 chapters • Lent-friendly',
+      isBuiltin: true,
+      comingSoon: true
+    },
+    {
+      id: 'bible-in-year',
+      name: 'Whole Bible in a Year',
+      description: 'Classic one-year plan mixing OT/NT/Psalms daily.',
+      meta: '1,189 chapters • Chronological mix',
+      isBuiltin: true,
+      comingSoon: true
+    }
+  ];
+
+  /**
    * Returns the default empty reading state structure.
    * @returns {Object} Default reading state
    */
@@ -133,12 +172,22 @@
   }
 
   /**
-   * Get all plans.
+   * Get all plans (stored + built-in templates).
+   * Stored plans take priority over built-ins with the same ID.
    * @returns {Object} Object mapping plan IDs to plan objects
    */
   function getPlans() {
     const state = loadReadingState();
-    return state.plans;
+    const storedPlans = state.plans;
+
+    // Convert builtins array to object
+    const builtinPlansObj = {};
+    BUILTIN_PLANS.forEach(plan => {
+      builtinPlansObj[plan.id] = plan;
+    });
+
+    // Merge: stored plans override builtins
+    return { ...builtinPlansObj, ...storedPlans };
   }
 
   /**

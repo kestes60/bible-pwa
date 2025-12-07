@@ -2240,7 +2240,7 @@ function renderReadingPlansList() {
   const currentPlanId = BibleReading.getCurrentPlanId();
   const planIds = Object.keys(plans);
 
-  // Empty state
+  // Empty state (shouldn't happen now that we have builtins)
   if (planIds.length === 0) {
     const emptyP = document.createElement('p');
     emptyP.className = 'reading-plans-empty';
@@ -2249,16 +2249,40 @@ function renderReadingPlansList() {
     return;
   }
 
+  // Sort: active first, then stored plans (non-builtin), then builtins alphabetically
+  const sortedPlanIds = planIds.slice().sort((a, b) => {
+    const planA = plans[a];
+    const planB = plans[b];
+    const isActiveA = a === currentPlanId;
+    const isActiveB = b === currentPlanId;
+
+    // Active plan always first
+    if (isActiveA && !isActiveB) return -1;
+    if (!isActiveA && isActiveB) return 1;
+
+    // Stored plans (non-builtin) before builtins
+    const isBuiltinA = planA.isBuiltin === true;
+    const isBuiltinB = planB.isBuiltin === true;
+    if (!isBuiltinA && isBuiltinB) return -1;
+    if (isBuiltinA && !isBuiltinB) return 1;
+
+    // Alphabetically by name
+    const nameA = (planA.name || a).toLowerCase();
+    const nameB = (planB.name || b).toLowerCase();
+    return nameA.localeCompare(nameB);
+  });
+
   // Render each plan as a card
-  planIds.forEach(planId => {
+  sortedPlanIds.forEach(planId => {
     const plan = plans[planId];
     const isActive = planId === currentPlanId;
+    const isComingSoon = plan.comingSoon === true;
 
     const card = document.createElement('div');
     card.className = 'reading-plan-card';
     card.setAttribute('role', 'button');
     card.setAttribute('tabindex', '0');
-    card.setAttribute('aria-label', (plan.name || planId) + (isActive ? ' (Active)' : ''));
+    card.setAttribute('aria-label', (plan.name || planId) + (isActive ? ' (Active)' : '') + (isComingSoon ? ' (Coming Soon)' : ''));
 
     // Header row with title and optional Active badge
     const header = document.createElement('div');
@@ -2278,11 +2302,12 @@ function renderReadingPlansList() {
 
     card.appendChild(header);
 
-    // Meta line with progress info
+    // Meta line with progress info or description
     const meta = document.createElement('p');
     meta.className = 'reading-plan-meta';
 
     if (planId === 'current-book' && plan.config && plan.progress) {
+      // Special handling for current-book plan
       const bookId = plan.config.bookId;
       const totalChapters = plan.config.totalChapters;
       const lastChapter = plan.progress.lastChapter;
@@ -2294,12 +2319,26 @@ function renderReadingPlansList() {
       } else {
         meta.textContent = 'Tracks your current book automatically.';
       }
+    } else if (plan.meta) {
+      // Built-in plans with meta string
+      meta.textContent = plan.meta;
+    } else if (plan.description) {
+      // Fallback to description (truncate if long)
+      const desc = plan.description;
+      meta.textContent = desc.length > 60 ? desc.substring(0, 57) + '...' : desc;
     } else {
-      // Generic fallback for other plan types
-      meta.textContent = plan.description || 'Custom reading plan.';
+      meta.textContent = 'Custom reading plan.';
     }
 
     card.appendChild(meta);
+
+    // Coming Soon badge for builtin placeholders
+    if (isComingSoon) {
+      const comingSoonBadge = document.createElement('p');
+      comingSoonBadge.className = 'reading-plan-coming-soon';
+      comingSoonBadge.textContent = 'Coming Soon';
+      card.appendChild(comingSoonBadge);
+    }
 
     // Click handler - show "coming soon" message
     const handlePlanClick = () => {

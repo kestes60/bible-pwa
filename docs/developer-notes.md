@@ -419,19 +419,22 @@ The Reading Plans menu lives inside the Settings modal (⚙ button). It displays
 
 **Current behavior:**
 - Shows the auto-generated `current-book` plan (tracks progress through whichever book you're reading)
+- Displays 4 built-in placeholder plans: NT 90 Days, Psalms 30 Days, Gospels 40 Days, Whole Bible in a Year
+- Built-in plans show "Coming Soon" badge and meta info (e.g., "27 books • ~260 chapters • Est. 3 months")
 - Displays an "Active" badge on the current plan
-- Shows book name and chapter progress (e.g., "Book: Hebrews • Last: 8 / 13")
-- Clicking a plan card shows a "Plan switching is coming in a future update" alert
-- Empty state message if no plans exist
+- Shows book name and chapter progress for current-book (e.g., "Book: Hebrews • Last: 8 / 13")
+- Clicking any plan card shows a "Plan switching is coming in a future update" alert
+- Sort order: active first, then stored plans, then builtins alphabetically
 
 **Key files:**
 - **HTML**: `#readingPlansList` container inside Settings modal in `index.html`
-- **CSS**: `.reading-plans-section`, `.reading-plan-card`, `.reading-plan-badge-active`, etc. in `styles/main.css`
+- **CSS**: `.reading-plans-section`, `.reading-plan-card`, `.reading-plan-badge-active`, `.reading-plan-coming-soon` in `styles/main.css`
 - **JS**: `renderReadingPlansList()` in `scripts/app.js`, called from `openSettingsModal()`
+- **Data**: `BUILTIN_PLANS` array in `scripts/storage/reading-plans.js`, merged with stored plans via `getPlans()`
 
 **Future steps:**
-- Implement real plan switching
-- Add more built-in plans (e.g., "Bible in a Year", "Gospels in 30 Days")
+- Make built-in plans selectable (implement real plan switching)
+- Add progress tracking per plan
 - Allow users to create and manage custom plans
 
 ### Modal transitions (one modal at a time)
