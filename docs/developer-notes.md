@@ -413,28 +413,35 @@ All header buttons maintain a minimum tap target size of 36-40px for accessibili
 
 **Future consideration**: If more header controls are added, we may need to move some buttons into an overflow menu.
 
-### Reading plans menu (UI skeleton, v1)
+### Reading plans menu
 
 The Reading Plans menu lives inside the Settings modal (⚙ button). It displays reading plan cards using `BibleReading.getPlans()` and `BibleReading.getCurrentPlanId()`.
 
 **Current behavior:**
 - Shows the auto-generated `current-book` plan (tracks progress through whichever book you're reading)
-- Displays 4 built-in placeholder plans: NT 90 Days, Psalms 30 Days, Gospels 40 Days, Whole Bible in a Year
-- Built-in plans show "Coming Soon" badge and meta info (e.g., "27 books • ~260 chapters • Est. 3 months")
+- Displays 4 built-in plans: NT 90 Days, Psalms 30 Days, Gospels 40 Days, Whole Bible in a Year
 - Displays an "Active" badge on the current plan
 - Shows book name and chapter progress for current-book (e.g., "Book: Hebrews • Last: 8 / 13")
-- Clicking any plan card shows a "Plan switching is coming in a future update" alert
+- Built-in plans show meta info (e.g., "27 books • ~260 chapters • Est. 3 months")
 - Sort order: active first, then all others alphabetically by name (explicit JS sort for cross-device consistency)
+
+**Plan switching:**
+- Click any plan card to switch to it
+- Switching to a built-in plan clears reading history (fresh start)
+- Switching to `current-book` preserves reading history
+- Clicking the already-active plan shows "Already on this plan" toast
+- Toast notification confirms switch with plan name
+- Badge moves to new active plan immediately
 
 **Key files:**
 - **HTML**: `#readingPlansList` container inside Settings modal in `index.html`
-- **CSS**: `.reading-plans-section`, `.reading-plan-card`, `.reading-plan-badge-active`, `.reading-plan-coming-soon` in `styles/main.css`
+- **CSS**: `.reading-plans-section`, `.reading-plan-card`, `.reading-plan-badge-active` in `styles/main.css`
 - **JS**: `renderReadingPlansList()` in `scripts/app.js`, called from `openSettingsModal()`
 - **Data**: `BUILTIN_PLANS` array in `scripts/storage/reading-plans.js`, merged with stored plans via `getPlans()`
 
 **Future steps:**
-- Make built-in plans selectable (implement real plan switching)
-- Add progress tracking per plan
+- Add scoped progress resets (only clear events outside plan's book scope)
+- Add daily tracking and progress indicators per plan
 - Allow users to create and manage custom plans
 
 ### Modal transitions (one modal at a time)

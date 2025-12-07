@@ -2302,13 +2302,12 @@ function renderReadingPlansList() {
   sortedPlans.forEach(plan => {
     const planId = plan.id;
     const isActive = planId === currentPlanId;
-    const isComingSoon = plan.comingSoon === true;
 
     const card = document.createElement('div');
     card.className = 'reading-plan-card';
     card.setAttribute('role', 'button');
     card.setAttribute('tabindex', '0');
-    card.setAttribute('aria-label', (plan.name || planId) + (isActive ? ' (Active)' : '') + (isComingSoon ? ' (Coming Soon)' : ''));
+    card.setAttribute('aria-label', (plan.name || planId) + (isActive ? ' (Active)' : ''));
 
     // Header row with title and optional Active badge
     const header = document.createElement('div');
@@ -2358,17 +2357,30 @@ function renderReadingPlansList() {
 
     card.appendChild(meta);
 
-    // Coming Soon badge for builtin placeholders
-    if (isComingSoon) {
-      const comingSoonBadge = document.createElement('p');
-      comingSoonBadge.className = 'reading-plan-coming-soon';
-      comingSoonBadge.textContent = 'Coming Soon';
-      card.appendChild(comingSoonBadge);
-    }
-
-    // Click handler - show "coming soon" message
+    // Click handler - switch to this plan
     const handlePlanClick = () => {
-      alert('Plan switching is coming in a future update.');
+      const currentId = BibleReading.getCurrentPlanId();
+
+      // Already on this plan? No-op with friendly message
+      if (planId === currentId) {
+        showToast('Already on this plan—keep reading!');
+        return;
+      }
+
+      // Switch to the new plan
+      BibleReading.setCurrentPlanId(planId);
+
+      // Reset progress: For v1, clear all events when switching to a builtin plan
+      // (current-book keeps events since it tracks whatever you're reading)
+      if (plan.isBuiltin && planId !== 'current-book') {
+        BibleReading.clearReadingEvents();
+        showToast(`Switched to ${plan.name}! Journey reset—start fresh.`);
+      } else {
+        showToast(`Switched to ${plan.name}!`);
+      }
+
+      // Re-render to update the Active badge
+      renderReadingPlansList();
     };
 
     card.addEventListener('click', handlePlanClick);
