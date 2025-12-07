@@ -381,6 +381,7 @@ function updateBookmarkButton() {
  * Open bookmarks modal
  */
 function openBookmarksModal() {
+  lockBodyScroll();
   renderBookmarksList();
   document.getElementById('bookmarksModalOverlay').classList.add('active');
   setTimeout(() => {
@@ -396,6 +397,7 @@ function openBookmarksModal() {
 function closeBookmarksModal(event) {
   if (!event || event.target === event.currentTarget) {
     document.getElementById('bookmarksModalOverlay').classList.remove('active');
+    unlockBodyScroll();
   }
 }
 
@@ -485,6 +487,7 @@ function timeSince(date) {
  * Open the reading history modal and populate with recent events
  */
 function openReadingHistory() {
+  lockBodyScroll();
   var modal = document.getElementById('historyModalOverlay');
   var list = document.getElementById('readingHistoryList');
   list.innerHTML = '';
@@ -560,6 +563,7 @@ function openReadingHistory() {
 function closeReadingHistory(event) {
   if (!event || event.target === event.currentTarget) {
     document.getElementById('historyModalOverlay').classList.remove('active');
+    unlockBodyScroll();
   }
 }
 
@@ -895,6 +899,7 @@ function initVersionManager() {
  * Open the version manager modal
  */
 function openVersionManager() {
+  lockBodyScroll();
   const overlay = document.getElementById('versionManagerOverlay');
   if (overlay) {
     overlay.classList.add('active');
@@ -916,6 +921,7 @@ function closeVersionManager(event) {
     const overlay = document.getElementById('versionManagerOverlay');
     if (overlay) {
       overlay.classList.remove('active');
+      unlockBodyScroll();
       // Return focus to version chip
       const versionChip = document.getElementById('versionChip');
       if (versionChip) versionChip.focus();
@@ -1468,6 +1474,7 @@ function populateBookLists() {
 
 // Open the book selector modal
 function openBookSelector() {
+  lockBodyScroll();
   document.getElementById('bookModalOverlay').classList.add('active');
   // Focus first book button for keyboard navigation
   setTimeout(() => {
@@ -1483,6 +1490,7 @@ function closeBookSelector(event) {
     return;
   }
   document.getElementById('bookModalOverlay').classList.remove('active');
+  unlockBodyScroll();
   // Return focus to menu button
   document.querySelector('.menu-button').focus();
 }
@@ -1581,6 +1589,8 @@ async function selectBook(book) {
 function openChapterSelector() {
   if (!currentBookData) return;
 
+  lockBodyScroll();
+
   // Update modal title
   document.getElementById('chapterModalTitle').textContent = currentBook;
 
@@ -1603,6 +1613,7 @@ function closeChapterSelector(event) {
     return;
   }
   document.getElementById('chapterModalOverlay').classList.remove('active');
+  unlockBodyScroll();
   // Return focus to main content area
   document.getElementById('versesContainer').focus();
 }
@@ -1730,6 +1741,35 @@ function updateNavigationButtons() {
   const chapters = Object.keys(bookData || {}).length || totalChapters;
   document.getElementById('prevBtn').disabled = currentChapter === 1;
   document.getElementById('nextBtn').disabled = currentChapter === chapters;
+}
+
+// ========================================
+// Body Scroll Lock (for modals)
+// ========================================
+
+let savedScrollY = 0;
+
+/**
+ * Lock body scroll when a modal opens.
+ * Saves current scroll position and applies body.modal-open class.
+ * Idempotent: safe to call multiple times (for modal-to-modal transitions).
+ */
+function lockBodyScroll() {
+  // Already locked? Don't overwrite saved position
+  if (document.body.classList.contains('modal-open')) return;
+  savedScrollY = window.scrollY;
+  document.body.classList.add('modal-open');
+  document.body.style.top = `-${savedScrollY}px`;
+}
+
+/**
+ * Unlock body scroll when a modal closes.
+ * Removes body.modal-open class and restores scroll position.
+ */
+function unlockBodyScroll() {
+  document.body.classList.remove('modal-open');
+  document.body.style.top = '';
+  window.scrollTo(0, savedScrollY);
 }
 
 // Navigation functions
@@ -2236,12 +2276,12 @@ function renderReadingPlansList() {
     return;
   }
 
-  const plans = BibleReading.getPlans();
+  const allPlans = BibleReading.getPlans();
   const currentPlanId = BibleReading.getCurrentPlanId();
-  const planIds = Object.keys(plans);
+  const plansArray = Object.values(allPlans);
 
   // Empty state (shouldn't happen now that we have builtins)
-  if (planIds.length === 0) {
+  if (plansArray.length === 0) {
     const emptyP = document.createElement('p');
     emptyP.className = 'reading-plans-empty';
     emptyP.textContent = "No reading plans yet. Start reading a book and we'll track your progress automatically.";
@@ -2249,32 +2289,18 @@ function renderReadingPlansList() {
     return;
   }
 
-  // Sort: active first, then stored plans (non-builtin), then builtins alphabetically
-  const sortedPlanIds = planIds.slice().sort((a, b) => {
-    const planA = plans[a];
-    const planB = plans[b];
-    const isActiveA = a === currentPlanId;
-    const isActiveB = b === currentPlanId;
+  // Explicit sort for cross-device consistency:
+  // 1. Active plan first (if exists)
+  // 2. Remaining plans alphabetically by name
+  const activePlan = currentPlanId ? allPlans[currentPlanId] : null;
+  const otherPlans = plansArray
+    .filter(p => p.id !== currentPlanId)
+    .sort((a, b) => (a.name || a.id).localeCompare(b.name || b.id));
+  const sortedPlans = activePlan ? [activePlan, ...otherPlans] : otherPlans;
 
-    // Active plan always first
-    if (isActiveA && !isActiveB) return -1;
-    if (!isActiveA && isActiveB) return 1;
-
-    // Stored plans (non-builtin) before builtins
-    const isBuiltinA = planA.isBuiltin === true;
-    const isBuiltinB = planB.isBuiltin === true;
-    if (!isBuiltinA && isBuiltinB) return -1;
-    if (isBuiltinA && !isBuiltinB) return 1;
-
-    // Alphabetically by name
-    const nameA = (planA.name || a).toLowerCase();
-    const nameB = (planB.name || b).toLowerCase();
-    return nameA.localeCompare(nameB);
-  });
-
-  // Render each plan as a card
-  sortedPlanIds.forEach(planId => {
-    const plan = plans[planId];
+  // Render each plan as a card (in sorted order)
+  sortedPlans.forEach(plan => {
+    const planId = plan.id;
     const isActive = planId === currentPlanId;
     const isComingSoon = plan.comingSoon === true;
 
@@ -2361,6 +2387,7 @@ function renderReadingPlansList() {
  * Open the settings modal
  */
 function openSettingsModal() {
+  lockBodyScroll();
   // Render reading plans list fresh each time
   renderReadingPlansList();
 
@@ -2379,6 +2406,7 @@ function openSettingsModal() {
 function closeSettingsModal(event) {
   if (!event || event.target === event.currentTarget) {
     document.getElementById('settingsModalOverlay').classList.remove('active');
+    unlockBodyScroll();
     // Return focus to settings button
     const settingsBtn = document.querySelector('.settings-header-btn');
     if (settingsBtn) settingsBtn.focus();
@@ -2627,6 +2655,7 @@ function shouldShowWhatsNew() {
  * Open the What's New modal
  */
 function openWhatsNewModal() {
+  lockBodyScroll();
   const overlay = document.getElementById('whatsNewOverlay');
   if (!overlay) return;
   overlay.classList.add('active');
@@ -2646,6 +2675,7 @@ function closeWhatsNewModal() {
   if (overlay) {
     overlay.classList.remove('active');
   }
+  unlockBodyScroll();
   setLastSeenVersion(APP_VERSION);
 }
 

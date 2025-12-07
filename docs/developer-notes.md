@@ -424,7 +424,7 @@ The Reading Plans menu lives inside the Settings modal (⚙ button). It displays
 - Displays an "Active" badge on the current plan
 - Shows book name and chapter progress for current-book (e.g., "Book: Hebrews • Last: 8 / 13")
 - Clicking any plan card shows a "Plan switching is coming in a future update" alert
-- Sort order: active first, then stored plans, then builtins alphabetically
+- Sort order: active first, then all others alphabetically by name (explicit JS sort for cross-device consistency)
 
 **Key files:**
 - **HTML**: `#readingPlansList` container inside Settings modal in `index.html`
@@ -446,6 +446,20 @@ When opening a modal from within another modal, we close the first modal before 
 2. Opens the What's New modal
 
 **Pattern**: For any future in-modal links that open another modal, create a transition helper function following the same pattern in `scripts/app.js`.
+
+### Body scroll lock (prevents overscroll)
+
+When a modal is open, body scroll is locked to prevent the background content from scrolling when the user scrolls to the edge of the modal content.
+
+**Implementation:**
+- `lockBodyScroll()` / `unlockBodyScroll()` helpers in `scripts/app.js`
+- CSS class `body.modal-open` in `styles/main.css` (applies `overflow: hidden; position: fixed;`)
+- Saves/restores scroll position to prevent jump when closing modal
+
+**Applied to all modals:**
+- Book Selector, Chapter Selector, Bookmarks, Reading History, Version Manager, Settings, What's New
+
+**Modal-to-modal transitions:** `lockBodyScroll()` is idempotent—safe to call multiple times without overwriting the saved scroll position. This allows transitions like Settings → What's New without scroll jumps.
 
 ---
 
