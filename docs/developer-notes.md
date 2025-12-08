@@ -424,7 +424,15 @@ The Settings modal includes adjustable reading preferences that persist in local
 - Applied via: CSS custom property `--line-height` on `:root`
 - Affects: `.verses-container { line-height: var(--line-height); }`
 - Live update: Changes apply immediately as slider moves
-- **JS functions**: `getSavedLineHeight()`, `saveLineHeight()`, `applyLineHeight()`, `initLineHeightSlider()` in `scripts/app.js`
+- **JS functions**: `getSavedLineHeight()`, `saveLineHeight()`, `applyLineHeight()`, `initLineHeightSlider()`, `updateLineHeightPreview()`, `handleLineHeightInput()`, `handleLineHeightChange()`, `handleLineHeightTouch()` in `scripts/app.js`
+
+**Mobile-specific handling:**
+- Preview pane (`#lineHeightPreview`) shows John 3:16-17 with live line-height updates (visible only on mobile ≤600px)
+- Three event listeners for reliability: `input` (drag), `change` (release), `touchmove` (fallback)
+- Debounced CSS property updates (50ms) to prevent mobile touch event spam
+- Force reflow via `.reflow-trigger` class toggle for stubborn mobile browsers
+- Console logging (`[LineHeight]`) for debugging touch event issues
+- CSS: `.line-height-preview`, `.preview-verse-num`, `.reflow-trigger` in `styles/main.css`
 
 **Future preferences**: Font family selector, text alignment, margin controls.
 

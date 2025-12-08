@@ -156,6 +156,9 @@ function changeFontSize(size) {
 // Line Height Preference
 // ========================================
 
+// Debounce timer for line height slider (mobile touch fires many events)
+let lineHeightDebounceTimer = null;
+
 /**
  * Get saved line height from localStorage
  * @returns {string} Line height value or default
@@ -174,10 +177,41 @@ function saveLineHeight(value) {
 
 /**
  * Apply line height to the document via CSS custom property
+ * Forces repaint on mobile by toggling a class
  * @param {string} value - Line height value to apply
  */
 function applyLineHeight(value) {
+  console.log('[LineHeight] applyLineHeight called with:', value);
   document.documentElement.style.setProperty('--line-height', value);
+
+  // Force repaint on mobile by toggling reflow-trigger class
+  const preview = document.getElementById('lineHeightPreview');
+  if (preview) {
+    preview.classList.add('reflow-trigger');
+    // Force synchronous reflow
+    void preview.offsetHeight;
+    preview.classList.remove('reflow-trigger');
+  }
+
+  // Also force reflow on verses container if visible
+  const versesContainer = document.getElementById('versesContainer');
+  if (versesContainer) {
+    versesContainer.classList.add('reflow-trigger');
+    void versesContainer.offsetHeight;
+    versesContainer.classList.remove('reflow-trigger');
+  }
+}
+
+/**
+ * Update the preview pane to show current line height
+ * @param {string} value - Line height value to display
+ */
+function updateLineHeightPreview(value) {
+  const preview = document.getElementById('lineHeightPreview');
+  if (preview) {
+    preview.style.lineHeight = value;
+    console.log('[LineHeight] Preview updated to:', value);
+  }
 }
 
 /**
@@ -187,27 +221,94 @@ function applyLineHeight(value) {
 function initLineHeightSlider() {
   const slider = document.getElementById('lineHeightSlider');
   const valueSpan = document.getElementById('lineHeightValue');
-  if (!slider || !valueSpan) return;
+  if (!slider || !valueSpan) {
+    console.log('[LineHeight] Slider or value span not found');
+    return;
+  }
 
   const currentValue = getSavedLineHeight();
+  console.log('[LineHeight] Initializing slider with value:', currentValue);
+
   slider.value = currentValue;
   valueSpan.textContent = currentValue;
 
-  // Remove old listener if any (prevents duplicates on re-open)
-  slider.removeEventListener('input', handleLineHeightChange);
-  slider.addEventListener('input', handleLineHeightChange);
+  // Update preview pane with current value
+  updateLineHeightPreview(currentValue);
+
+  // Remove old listeners (prevents duplicates on re-open)
+  slider.removeEventListener('input', handleLineHeightInput);
+  slider.removeEventListener('change', handleLineHeightChange);
+  slider.removeEventListener('touchmove', handleLineHeightTouch);
+
+  // Add both input and change listeners (mobile needs both)
+  slider.addEventListener('input', handleLineHeightInput);
+  slider.addEventListener('change', handleLineHeightChange);
+  // Extra touchmove listener for stubborn mobile browsers
+  slider.addEventListener('touchmove', handleLineHeightTouch, { passive: true });
+
+  console.log('[LineHeight] Slider initialized with listeners');
 }
 
 /**
- * Handle line height slider change
+ * Handle line height slider input (fires during drag)
+ * Updates display immediately, debounces save
  * @param {Event} e - Input event
+ */
+function handleLineHeightInput(e) {
+  const value = e.target.value;
+  console.log('[LineHeight] input event, value:', value);
+
+  // Update display immediately
+  const valueSpan = document.getElementById('lineHeightValue');
+  if (valueSpan) valueSpan.textContent = value;
+
+  // Update preview immediately
+  updateLineHeightPreview(value);
+
+  // Debounce the CSS property update and save
+  clearTimeout(lineHeightDebounceTimer);
+  lineHeightDebounceTimer = setTimeout(() => {
+    applyLineHeight(value);
+    saveLineHeight(value);
+  }, 50);
+}
+
+/**
+ * Handle line height slider change (fires on release)
+ * Ensures final value is applied and saved
+ * @param {Event} e - Change event
  */
 function handleLineHeightChange(e) {
   const value = e.target.value;
+  console.log('[LineHeight] change event, value:', value);
+
+  // Clear any pending debounce
+  clearTimeout(lineHeightDebounceTimer);
+
+  // Update display
   const valueSpan = document.getElementById('lineHeightValue');
   if (valueSpan) valueSpan.textContent = value;
+
+  // Apply and save immediately on release
+  updateLineHeightPreview(value);
   applyLineHeight(value);
   saveLineHeight(value);
+}
+
+/**
+ * Handle touchmove on slider for stubborn mobile browsers
+ * @param {TouchEvent} e - Touch event
+ */
+function handleLineHeightTouch(e) {
+  const slider = e.target;
+  if (!slider || slider.id !== 'lineHeightSlider') return;
+
+  const value = slider.value;
+  console.log('[LineHeight] touchmove, value:', value);
+
+  const valueSpan = document.getElementById('lineHeightValue');
+  if (valueSpan) valueSpan.textContent = value;
+  updateLineHeightPreview(value);
 }
 
 /**

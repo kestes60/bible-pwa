@@ -2315,6 +2315,40 @@ header {
   font-style: italic;
 }
 
+/* Line Height Preview Pane - visible on mobile for live feedback */
+.line-height-preview {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background: var(--yt-bg);
+  border: 1px solid var(--yt-card-border);
+  border-radius: 6px;
+  font-size: 1rem;
+  color: var(--yt-text-main);
+  line-height: var(--line-height, 1.6);
+  max-height: 100px;
+  overflow: hidden;
+}
+
+.line-height-preview .preview-verse-num {
+  font-weight: 700;
+  color: var(--yt-accent);
+  font-size: 0.75em;
+  vertical-align: super;
+  margin-right: 0.1em;
+}
+
+/* Hide preview on desktop (>600px) - user can see verses directly */
+@media (min-width: 601px) {
+  .line-height-preview {
+    display: none;
+  }
+}
+
+/* Reflow trigger class - used to force repaint on mobile */
+.reflow-trigger {
+  transform: translateZ(0);
+}
+
 .settings-buttons {
   display: flex;
   flex-direction: column;
