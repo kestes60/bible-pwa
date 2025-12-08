@@ -23,6 +23,7 @@ body.theme-dark {
   --yt-accent-soft: #0d9488;           /* Darker teal for hover states */
   --yt-text-main: #e2e8f0;             /* Light slate text */
   --yt-text-muted: #94a3b8;            /* Muted slate for secondary text */
+  --line-height: 1.6;                  /* Default line height for verses */
 }
 
 /* Light Theme (Reading Mode) */
@@ -637,7 +638,7 @@ button:disabled {
   border: 1px solid var(--yt-card-border);
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  line-height: 1.8;
+  line-height: var(--line-height);
   font-size: 1.1rem;
   scroll-behavior: smooth;
 }
@@ -2230,6 +2231,88 @@ header {
   font-size: 0.95rem;
   margin: 0 0 1.25rem 0;
   line-height: 1.5;
+}
+
+/* Reading Preferences - Slider Styles */
+.reading-preferences-section {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--yt-card-border);
+}
+
+.setting-group {
+  margin-bottom: 1rem;
+}
+
+.setting-group label {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--yt-text-main);
+  margin-bottom: 0.5rem;
+}
+
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.slider-row input[type="range"] {
+  flex: 1;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--yt-card-border);
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.slider-row input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: var(--yt-accent);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.slider-row input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.slider-row input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: var(--yt-accent);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.slider-label-min,
+.slider-label-max {
+  font-size: 0.75rem;
+  color: var(--yt-text-muted);
+  white-space: nowrap;
+}
+
+.slider-value {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--yt-accent);
+  margin-bottom: 0.25rem;
+}
+
+.setting-hint {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--yt-text-muted);
+  font-style: italic;
 }
 
 .settings-buttons {

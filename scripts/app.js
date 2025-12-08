@@ -87,6 +87,8 @@ const FONT_SIZE_LARGE = 'large';
 const APP_VERSION = '0.9.0-dev5';
 const WELCOME_SEEN_KEY = 'bibleReader.hasSeenWelcome';
 const LAST_SEEN_VERSION_KEY = 'bibleReader.lastSeenVersion';
+const LINE_HEIGHT_KEY = 'bibleReader.lineHeight';
+const LINE_HEIGHT_DEFAULT = '1.6';
 
 // ========================================
 // Search State (must be at top for init order)
@@ -148,6 +150,64 @@ function applyFontSize(size) {
 function changeFontSize(size) {
   applyFontSize(size);
   saveFontSize(size);
+}
+
+// ========================================
+// Line Height Preference
+// ========================================
+
+/**
+ * Get saved line height from localStorage
+ * @returns {string} Line height value or default
+ */
+function getSavedLineHeight() {
+  return localStorage.getItem(LINE_HEIGHT_KEY) || LINE_HEIGHT_DEFAULT;
+}
+
+/**
+ * Save line height preference to localStorage
+ * @param {string} value - Line height value to save
+ */
+function saveLineHeight(value) {
+  localStorage.setItem(LINE_HEIGHT_KEY, value);
+}
+
+/**
+ * Apply line height to the document via CSS custom property
+ * @param {string} value - Line height value to apply
+ */
+function applyLineHeight(value) {
+  document.documentElement.style.setProperty('--line-height', value);
+}
+
+/**
+ * Initialize line height slider in Settings modal
+ * Called when Settings modal opens
+ */
+function initLineHeightSlider() {
+  const slider = document.getElementById('lineHeightSlider');
+  const valueSpan = document.getElementById('lineHeightValue');
+  if (!slider || !valueSpan) return;
+
+  const currentValue = getSavedLineHeight();
+  slider.value = currentValue;
+  valueSpan.textContent = currentValue;
+
+  // Remove old listener if any (prevents duplicates on re-open)
+  slider.removeEventListener('input', handleLineHeightChange);
+  slider.addEventListener('input', handleLineHeightChange);
+}
+
+/**
+ * Handle line height slider change
+ * @param {Event} e - Input event
+ */
+function handleLineHeightChange(e) {
+  const value = e.target.value;
+  const valueSpan = document.getElementById('lineHeightValue');
+  if (valueSpan) valueSpan.textContent = value;
+  applyLineHeight(value);
+  saveLineHeight(value);
 }
 
 /**
@@ -663,6 +723,8 @@ function updateLastReadHint() {
 initTheme();
 // Initialize font size immediately
 initFontSize();
+// Initialize line height immediately
+applyLineHeight(getSavedLineHeight());
 // Initialize version indicator and version manager
 initVersionIndicator();
 initVersionManager();
@@ -2402,6 +2464,8 @@ function openSettingsModal() {
   lockBodyScroll();
   // Render reading plans list fresh each time
   renderReadingPlansList();
+  // Initialize line height slider with current value
+  initLineHeightSlider();
 
   document.getElementById('settingsModalOverlay').classList.add('active');
   // Focus the first button for keyboard navigation

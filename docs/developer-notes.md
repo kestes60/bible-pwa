@@ -413,6 +413,21 @@ All header buttons maintain a minimum tap target size of 36-40px for accessibili
 
 **Future consideration**: If more header controls are added, we may need to move some buttons into an overflow menu.
 
+### Reading preferences (Settings modal)
+
+The Settings modal includes adjustable reading preferences that persist in localStorage.
+
+**Line Height Slider:**
+- Range: 1.4 (Compact) to 1.8 (Spacious), step 0.1
+- Default: 1.6
+- Persisted in: `localStorage.getItem('bibleReader.lineHeight')`
+- Applied via: CSS custom property `--line-height` on `:root`
+- Affects: `.verses-container { line-height: var(--line-height); }`
+- Live update: Changes apply immediately as slider moves
+- **JS functions**: `getSavedLineHeight()`, `saveLineHeight()`, `applyLineHeight()`, `initLineHeightSlider()` in `scripts/app.js`
+
+**Future preferences**: Font family selector, text alignment, margin controls.
+
 ### Reading plans menu
 
 The Reading Plans menu lives inside the Settings modal (⚙ button). It displays reading plan cards using `BibleReading.getPlans()` and `BibleReading.getCurrentPlanId()`.
