@@ -491,6 +491,56 @@ When a modal is open, body scroll is locked to prevent the background content fr
 
 **Modal-to-modal transitions:** `lockBodyScroll()` is idempotent—safe to call multiple times without overwriting the saved scroll position. This allows transitions like Settings → What's New without scroll jumps.
 
+### Parallel View (side-by-side translations)
+
+Displays two Bible versions horizontally side-by-side, inspired by Blue Letter Bible's mobile layout. Always horizontal (no stacking)—users zoom if needed on mobile.
+
+**Core behavior:**
+- Toggle in Settings modal → "Enable Parallel View" checkbox
+- Secondary version picker shows installed versions (excludes current primary)
+- Both panes load same chapter with bidirectional scroll sync
+- Mobile: Tighter gaps/padding (0.5rem) for portrait fit
+
+**Storage keys:**
+- `bibleReader.parallelEnabled` - Boolean for toggle state
+- `bibleReader.parallelVersionId` - Secondary version ID (default: `en-kjv`)
+
+**HTML structure:**
+- `#parallelContainer` - Main flex container (hidden by default)
+- `.parallel-pane.left-pane` - Primary version pane
+- `.parallel-pane.right-pane` - Secondary version pane
+- `#primaryVersesContainer`, `#secondaryVersesContainer` - Verse content
+- `#parallelVersionModalOverlay` - Version picker modal
+
+**CSS classes:**
+- `.parallel-container` - Flex row, always horizontal, responsive height
+- `.parallel-pane` - Individual pane styling with overflow-y auto
+- `.pane-header` - Version name headers (uppercase, accent color)
+- `.pane-verses .verse` - Verse styling within panes
+- Mobile breakpoints at 600px and 400px for tighter layout
+
+**JS functions in `scripts/app.js`:**
+- `isParallelEnabled()`, `setParallelEnabled()` - Toggle state
+- `getSecondaryVersionId()`, `setSecondaryVersionId()` - Version preference
+- `showParallelView()`, `hideParallelView()` - Container visibility
+- `handleParallelToggle()` - Toggle change handler
+- `loadParallelChapter()` - Load both versions into panes
+- `loadVersesToContainer()` - Generic verse loader for any container
+- `initParallelScrollSync()` - Bidirectional scroll sync setup
+- `handleLeftPaneScroll()`, `handleRightPaneScroll()` - Scroll handlers
+- `openParallelVersionModal()`, `closeParallelVersionModal()` - Picker modal
+- `renderParallelVersionList()`, `selectSecondaryVersion()` - Picker logic
+
+**Scroll sync algorithm:**
+- Uses scroll ratio (scrollTop / scrollableHeight) to sync position
+- `isParallelSyncing` flag prevents infinite scroll loops
+- `requestAnimationFrame` clears sync flag for smooth performance
+
+**Future enhancements:**
+- Interlinear toggle (word-by-word alignment)
+- Premium lock for certain version combinations
+- Verse-by-verse sync instead of percentage-based
+
 ---
 
 10. "First Day Back" Checklist

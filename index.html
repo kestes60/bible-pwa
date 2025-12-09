@@ -157,9 +157,22 @@
     <button id="nextBtn" onclick="nextChapter()" aria-label="Go to next chapter">Next →</button>
   </nav>
 
+  <!-- Single view (default) -->
   <main class="verses-container" id="versesContainer" role="main" aria-label="Bible verses">
     <div class="loading">Loading the book of John...</div>
   </main>
+
+  <!-- Parallel view container (hidden by default) -->
+  <div id="parallelContainer" class="parallel-container" style="display: none;" role="main" aria-label="Parallel Bible view">
+    <div class="parallel-pane left-pane">
+      <h3 id="primaryHeader" class="pane-header">Primary: <span id="primaryVersionName">WEB</span></h3>
+      <div id="primaryVersesContainer" class="pane-verses"></div>
+    </div>
+    <div class="parallel-pane right-pane">
+      <h3 id="secondaryHeader" class="pane-header">Secondary: <span id="secondaryVersionName">KJV</span></h3>
+      <div id="secondaryVersesContainer" class="pane-verses"></div>
+    </div>
+  </div>
 
   <!-- Book Selector Modal -->
   <div class="book-modal-overlay" id="bookModalOverlay" onclick="closeBookSelector(event)" role="dialog" aria-labelledby="bookModalTitle" aria-modal="true">
@@ -308,16 +321,30 @@
           <div class="setting-group">
             <label for="lineHeightSlider">Line Height</label>
             <div class="slider-row">
-              <span class="slider-label-min">Compact</span>
-              <input type="range" id="lineHeightSlider" min="1.4" max="1.8" step="0.1" value="1.6" aria-label="Adjust line height">
-              <span class="slider-label-max">Spacious</span>
+              <span class="slider-label-min">Tight</span>
+              <input type="range" id="lineHeightSlider" min="1.2" max="2.0" step="0.1" value="1.6" aria-label="Adjust line height">
+              <span class="slider-label-max">Double</span>
             </div>
             <span id="lineHeightValue" class="slider-value">1.6</span>
             <small class="setting-hint">Adjust spacing between lines for easier reading</small>
             <!-- Preview pane for mobile (shows live line height changes) -->
             <div id="lineHeightPreview" class="line-height-preview">
-              <span class="preview-verse-num">16</span> For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life. <span class="preview-verse-num">17</span> For God sent not his Son into the world to condemn the world; but that the world through him might be saved.
+              <span class="preview-verse-num">16</span> For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.
+              <span class="preview-verse-num">17</span> For God sent not his Son into the world to condemn the world; but that the world through him might be saved.
+              <span class="preview-verse-num">18</span> Whoever believes in him is not condemned, but whoever does not believe stands condemned already because they have not believed in the name of God's one and only Son.
             </div>
+          </div>
+
+          <!-- Parallel View Toggle -->
+          <div class="setting-group parallel-setting">
+            <label class="toggle-label">
+              <input type="checkbox" id="parallelToggle">
+              <span>Enable Parallel View</span>
+            </label>
+            <button id="parallelVersionPicker" class="parallel-picker-btn" style="display:none;" onclick="openParallelVersionModal()">
+              Secondary: <span id="currentSecondaryName">KJV</span> ▾
+            </button>
+            <small class="setting-hint">Side-by-side translations (e.g., English + Hebrew/Greek)</small>
           </div>
         </div>
 
@@ -339,6 +366,22 @@
             See what's new in this version
           </button>
         </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Parallel Version Picker Modal -->
+  <div class="parallel-version-modal-overlay" id="parallelVersionModalOverlay" onclick="closeParallelVersionModal(event)" role="dialog" aria-labelledby="parallelVersionModalTitle" aria-modal="true">
+    <div class="parallel-version-modal" onclick="event.stopPropagation()">
+      <div class="parallel-version-modal-header">
+        <h2 id="parallelVersionModalTitle">Select Secondary Version</h2>
+        <button class="parallel-version-modal-close" onclick="closeParallelVersionModal()" aria-label="Close version picker">×</button>
+      </div>
+      <div class="parallel-version-modal-body">
+        <p class="parallel-version-hint">Choose a translation to display alongside your primary version.</p>
+        <ul id="parallelVersionList" class="parallel-version-list" role="listbox">
+          <!-- Populated by renderParallelVersionList() -->
+        </ul>
       </div>
     </div>
   </div>

@@ -2322,11 +2322,12 @@ header {
   background: var(--yt-bg);
   border: 1px solid var(--yt-card-border);
   border-radius: 6px;
-  font-size: 1rem;
+  font-size: 1rem !important;
   color: var(--yt-text-main);
-  line-height: var(--line-height, 1.6);
-  max-height: 100px;
-  overflow: hidden;
+  line-height: var(--line-height, 1.6) !important;
+  max-height: 140px;
+  overflow-y: auto;
+  white-space: pre-wrap;
 }
 
 .line-height-preview .preview-verse-num {
@@ -2347,6 +2348,267 @@ header {
 /* Reflow trigger class - used to force repaint on mobile */
 .reflow-trigger {
   transform: translateZ(0);
+}
+
+/* ========================================
+   Parallel View Styles
+   ======================================== */
+
+/* Parallel container - always horizontal flex */
+.parallel-container {
+  display: flex;
+  flex-direction: row;
+  height: calc(100vh - 180px);
+  gap: 1rem;
+  overflow: hidden;
+  padding: 0 1rem;
+  margin-top: 0.5rem;
+}
+
+/* Individual panes */
+.parallel-pane {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1rem;
+  background: var(--yt-card-bg);
+  border-radius: 8px;
+  border: 1px solid var(--yt-card-border);
+}
+
+.parallel-pane.right-pane {
+  border-left: 2px solid var(--yt-accent);
+}
+
+/* Pane headers */
+.pane-header {
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem 0;
+  padding-bottom: 0.5rem;
+  color: var(--yt-text-muted);
+  border-bottom: 1px solid var(--yt-card-border);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pane-header span {
+  color: var(--yt-accent);
+}
+
+/* Verses in panes */
+.pane-verses {
+  line-height: var(--line-height, 1.6);
+}
+
+.pane-verses .verse {
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.pane-verses .verse-num {
+  font-weight: 700;
+  color: var(--yt-accent);
+  font-size: 0.75em;
+  vertical-align: super;
+  margin-right: 0.15em;
+}
+
+/* Mobile responsive - tighten for portrait fit */
+@media (max-width: 600px) {
+  .parallel-container {
+    gap: 0.5rem;
+    padding: 0 0.5rem;
+    height: calc(100vh - 160px);
+  }
+
+  .parallel-pane {
+    padding: 0.5rem;
+    border-radius: 6px;
+  }
+
+  .pane-header {
+    font-size: 0.7rem;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.25rem;
+  }
+
+  .pane-verses .verse {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin-bottom: 0.4rem;
+  }
+
+  .pane-verses .verse-num {
+    font-size: 0.7em;
+  }
+}
+
+/* Extra small screens - even tighter */
+@media (max-width: 400px) {
+  .parallel-container {
+    gap: 0.25rem;
+    padding: 0 0.25rem;
+  }
+
+  .parallel-pane {
+    padding: 0.35rem;
+  }
+
+  .pane-verses .verse {
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+}
+
+/* Parallel toggle in Settings */
+.parallel-setting {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--yt-card-border);
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.toggle-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--yt-accent);
+  cursor: pointer;
+}
+
+.parallel-picker-btn {
+  display: block;
+  margin-top: 0.75rem;
+  padding: 0.6rem 1rem;
+  background: var(--yt-bg);
+  border: 1px solid var(--yt-card-border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: var(--yt-text-main);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.parallel-picker-btn:hover {
+  border-color: var(--yt-accent);
+  background: var(--yt-card-bg);
+}
+
+.parallel-picker-btn span {
+  color: var(--yt-accent);
+  font-weight: 600;
+}
+
+/* Parallel Version Picker Modal */
+.parallel-version-modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1200;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+
+.parallel-version-modal-overlay.open {
+  display: flex;
+}
+
+.parallel-version-modal {
+  background: var(--yt-card-bg);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.parallel-version-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--yt-card-border);
+}
+
+.parallel-version-modal-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--yt-text-main);
+}
+
+.parallel-version-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--yt-text-muted);
+  cursor: pointer;
+  padding: 0.25rem;
+  line-height: 1;
+}
+
+.parallel-version-modal-close:hover {
+  color: var(--yt-text-main);
+}
+
+.parallel-version-modal-body {
+  padding: 1rem 1.25rem;
+  overflow-y: auto;
+  max-height: calc(80vh - 60px);
+}
+
+.parallel-version-hint {
+  font-size: 0.85rem;
+  color: var(--yt-text-muted);
+  margin: 0 0 1rem 0;
+}
+
+.parallel-version-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.parallel-version-list li {
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  margin-bottom: 0.5rem;
+  border: 1px solid var(--yt-card-border);
+}
+
+.parallel-version-list li:hover {
+  background: var(--yt-bg);
+  border-color: var(--yt-accent);
+}
+
+.parallel-version-list li.selected {
+  background: var(--yt-accent);
+  color: white;
+  border-color: var(--yt-accent);
+}
+
+.parallel-version-list li .version-name {
+  font-weight: 600;
+  display: block;
+}
+
+.parallel-version-list li .version-lang {
+  font-size: 0.8rem;
+  opacity: 0.8;
 }
 
 .settings-buttons {
@@ -2893,4 +3155,32 @@ body.modal-open {
   height: 100vh;
   position: fixed;
   width: 100%;
+  top: 0;
+  left: 0;
+  /* Allow touch scrolling inside children, just prevent body scroll */
+  touch-action: manipulation;
+  overscroll-behavior: none;
+}
+
+/* Ensure modal scroll containers can scroll freely */
+body.modal-open .settings-modal,
+body.modal-open .settings-modal-content,
+body.modal-open .whats-new-modal,
+body.modal-open .whats-new-body,
+body.modal-open .book-modal,
+body.modal-open .chapter-modal,
+body.modal-open .bookmarks-modal,
+body.modal-open .history-modal,
+body.modal-open .version-manager-modal,
+body.modal-open .parallel-version-modal {
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+}
+
+/* Parallel panes: Allow scroll inside, contain overscroll */
+.parallel-pane,
+.parallel-pane.left-pane,
+.parallel-pane.right-pane {
+  touch-action: pan-y;
+  overscroll-behavior: contain;
 }

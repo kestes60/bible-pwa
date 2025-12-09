@@ -90,6 +90,11 @@ const LAST_SEEN_VERSION_KEY = 'bibleReader.lastSeenVersion';
 const LINE_HEIGHT_KEY = 'bibleReader.lineHeight';
 const LINE_HEIGHT_DEFAULT = '1.6';
 
+// Parallel View Keys
+const PARALLEL_ENABLED_KEY = 'bibleReader.parallelEnabled';
+const PARALLEL_VERSION_KEY = 'bibleReader.parallelVersionId';
+const PARALLEL_DEFAULT_VERSION = 'en-kjv';
+
 // ========================================
 // Search State (must be at top for init order)
 // ========================================
@@ -309,6 +314,395 @@ function handleLineHeightTouch(e) {
   const valueSpan = document.getElementById('lineHeightValue');
   if (valueSpan) valueSpan.textContent = value;
   updateLineHeightPreview(value);
+}
+
+// ========================================
+// Parallel View
+// ========================================
+
+// Sync flag to prevent infinite scroll loops
+let isParallelSyncing = false;
+
+/**
+ * Check if parallel view is enabled
+ * @returns {boolean}
+ */
+function isParallelEnabled() {
+  return localStorage.getItem(PARALLEL_ENABLED_KEY) === 'true';
+}
+
+/**
+ * Get saved secondary version ID
+ * @returns {string}
+ */
+function getSecondaryVersionId() {
+  return localStorage.getItem(PARALLEL_VERSION_KEY) || PARALLEL_DEFAULT_VERSION;
+}
+
+/**
+ * Save parallel enabled state
+ * @param {boolean} enabled
+ */
+function setParallelEnabled(enabled) {
+  localStorage.setItem(PARALLEL_ENABLED_KEY, enabled ? 'true' : 'false');
+}
+
+/**
+ * Save secondary version ID
+ * @param {string} versionId
+ */
+function setSecondaryVersionId(versionId) {
+  localStorage.setItem(PARALLEL_VERSION_KEY, versionId);
+}
+
+/**
+ * Get version display name from versions config
+ * @param {string} versionId
+ * @returns {string}
+ */
+function getVersionDisplayName(versionId) {
+  if (typeof BIBLE_VERSIONS !== 'undefined' && BIBLE_VERSIONS[versionId]) {
+    return BIBLE_VERSIONS[versionId].name || versionId.toUpperCase();
+  }
+  return versionId.toUpperCase();
+}
+
+/**
+ * Initialize parallel view state on page load
+ */
+function initParallelView() {
+  const toggle = document.getElementById('parallelToggle');
+  const picker = document.getElementById('parallelVersionPicker');
+  const secondaryNameSpan = document.getElementById('currentSecondaryName');
+
+  if (!toggle) return;
+
+  const enabled = isParallelEnabled();
+  const secondaryId = getSecondaryVersionId();
+
+  toggle.checked = enabled;
+
+  if (picker) {
+    picker.style.display = enabled ? 'block' : 'none';
+  }
+
+  if (secondaryNameSpan) {
+    secondaryNameSpan.textContent = getVersionDisplayName(secondaryId);
+  }
+
+  // Remove old listener to prevent duplicates, then add new one
+  toggle.removeEventListener('change', handleParallelToggleEvent);
+  toggle.addEventListener('change', handleParallelToggleEvent);
+
+  // Apply parallel view state
+  if (enabled) {
+    showParallelView();
+  } else {
+    hideParallelView();
+  }
+}
+
+/**
+ * Event handler for parallel toggle change
+ * @param {Event} e - Change event
+ */
+function handleParallelToggleEvent(e) {
+  const enabled = e.target.checked;
+  console.log('[Parallel] Toggle changed:', enabled);
+  handleParallelToggle(enabled);
+}
+
+/**
+ * Handle parallel toggle change
+ * @param {boolean} enabled
+ */
+function handleParallelToggle(enabled) {
+  console.log('[Parallel] Toggle:', enabled);
+  setParallelEnabled(enabled);
+
+  const picker = document.getElementById('parallelVersionPicker');
+  if (picker) {
+    picker.style.display = enabled ? 'block' : 'none';
+  }
+
+  if (enabled) {
+    showParallelView();
+    // Reload current chapter in parallel mode
+    displayChapter(currentChapter);
+  } else {
+    hideParallelView();
+    // Reload current chapter in single mode
+    displayChapter(currentChapter);
+  }
+
+  showToast(enabled ? 'Parallel view enabled' : 'Parallel view disabled');
+}
+
+/**
+ * Show parallel view container, hide single view
+ */
+function showParallelView() {
+  const singleView = document.getElementById('versesContainer');
+  const parallelView = document.getElementById('parallelContainer');
+
+  if (singleView) singleView.style.display = 'none';
+  if (parallelView) parallelView.style.display = 'flex';
+
+  // Update headers
+  updateParallelHeaders();
+
+  // Initialize scroll sync
+  initParallelScrollSync();
+}
+
+/**
+ * Hide parallel view container, show single view
+ */
+function hideParallelView() {
+  const singleView = document.getElementById('versesContainer');
+  const parallelView = document.getElementById('parallelContainer');
+
+  if (singleView) singleView.style.display = 'block';
+  if (parallelView) parallelView.style.display = 'none';
+}
+
+/**
+ * Update parallel view headers with version names
+ */
+function updateParallelHeaders() {
+  const primaryName = document.getElementById('primaryVersionName');
+  const secondaryName = document.getElementById('secondaryVersionName');
+
+  const primaryId = getCurrentVersionId();
+  const secondaryId = getSecondaryVersionId();
+
+  if (primaryName) {
+    primaryName.textContent = getVersionDisplayName(primaryId);
+  }
+  if (secondaryName) {
+    secondaryName.textContent = getVersionDisplayName(secondaryId);
+  }
+}
+
+/**
+ * Initialize bidirectional scroll sync between panes
+ */
+function initParallelScrollSync() {
+  const leftPane = document.querySelector('.parallel-pane.left-pane');
+  const rightPane = document.querySelector('.parallel-pane.right-pane');
+
+  if (!leftPane || !rightPane) return;
+
+  // Remove existing listeners to prevent duplicates
+  leftPane.removeEventListener('scroll', handleLeftPaneScroll);
+  rightPane.removeEventListener('scroll', handleRightPaneScroll);
+
+  // Add scroll listeners
+  leftPane.addEventListener('scroll', handleLeftPaneScroll, { passive: true });
+  rightPane.addEventListener('scroll', handleRightPaneScroll, { passive: true });
+}
+
+/**
+ * Handle left pane scroll - sync to right
+ */
+function handleLeftPaneScroll() {
+  if (isParallelSyncing) return;
+  isParallelSyncing = true;
+
+  const leftPane = document.querySelector('.parallel-pane.left-pane');
+  const rightPane = document.querySelector('.parallel-pane.right-pane');
+
+  if (leftPane && rightPane) {
+    const scrollRatio = leftPane.scrollTop / (leftPane.scrollHeight - leftPane.clientHeight);
+    rightPane.scrollTop = scrollRatio * (rightPane.scrollHeight - rightPane.clientHeight);
+  }
+
+  requestAnimationFrame(() => { isParallelSyncing = false; });
+}
+
+/**
+ * Handle right pane scroll - sync to left
+ */
+function handleRightPaneScroll() {
+  if (isParallelSyncing) return;
+  isParallelSyncing = true;
+
+  const leftPane = document.querySelector('.parallel-pane.left-pane');
+  const rightPane = document.querySelector('.parallel-pane.right-pane');
+
+  if (leftPane && rightPane) {
+    const scrollRatio = rightPane.scrollTop / (rightPane.scrollHeight - rightPane.clientHeight);
+    leftPane.scrollTop = scrollRatio * (leftPane.scrollHeight - leftPane.clientHeight);
+  }
+
+  requestAnimationFrame(() => { isParallelSyncing = false; });
+}
+
+/**
+ * Load verses into a specific container (for parallel view)
+ * @param {string} bookName - Book name (e.g., 'John', 'Genesis')
+ * @param {number} chapter - Chapter number
+ * @param {string} versionId - Version ID (e.g., 'en-web', 'en-kjv')
+ * @param {HTMLElement} container - Target container element
+ */
+async function loadVersesToContainer(bookName, chapter, versionId, container) {
+  if (!container) {
+    console.error('[Parallel] Container not found');
+    return;
+  }
+
+  container.innerHTML = '<div class="loading">Loading...</div>';
+  console.log('[Parallel] Loading:', bookName, chapter, versionId);
+
+  try {
+    // Get version config using the helper function from versions.js
+    const versionConfig = getVersion(versionId);
+    if (!versionConfig) {
+      console.error('[Parallel] Version not found:', versionId);
+      container.innerHTML = '<div class="error">Version not found</div>';
+      return;
+    }
+
+    // Check if version is installed
+    if (!isVersionInstalled(versionId)) {
+      container.innerHTML = '<div class="error">Version not installed</div>';
+      showToast('Secondary version not installed—check Manage Versions');
+      return;
+    }
+
+    // Build the data path
+    const dataPath = versionConfig.dataPath || `data/`;
+    const bookPath = `${dataPath}${bookName}.json`;
+    console.log('[Parallel] Fetching:', bookPath);
+
+    const response = await fetch(bookPath);
+
+    if (!response.ok) {
+      console.error('[Parallel] Fetch failed:', response.status);
+      container.innerHTML = '<div class="error">Chapter not available in this version</div>';
+      return;
+    }
+
+    const bookData = await response.json();
+    const chapterData = bookData[chapter]; // Data structure: bookData[chapterNum][verseNum]
+
+    if (!chapterData) {
+      container.innerHTML = '<div class="error">Chapter not found</div>';
+      return;
+    }
+
+    // Render verses - data structure is { "1": "verse text", "2": "verse text", ... }
+    container.innerHTML = '';
+    const verseNums = Object.keys(chapterData).sort((a, b) => parseInt(a) - parseInt(b));
+
+    for (const verseNum of verseNums) {
+      const verseText = chapterData[verseNum];
+      const verseDiv = document.createElement('div');
+      verseDiv.className = `verse v${verseNum}`;
+
+      const verseNumSpan = document.createElement('span');
+      verseNumSpan.className = 'verse-num';
+      verseNumSpan.textContent = verseNum;
+
+      verseDiv.appendChild(verseNumSpan);
+      verseDiv.appendChild(document.createTextNode(' ' + verseText));
+      container.appendChild(verseDiv);
+    }
+
+    if (verseNums.length === 0) {
+      container.innerHTML = '<p class="error">No verses found.</p>';
+    }
+
+    console.log('[Parallel] Loaded', verseNums.length, 'verses for', versionId);
+
+  } catch (error) {
+    console.error('[Parallel] Error loading verses:', error);
+    container.innerHTML = '<div class="error">Failed to load chapter</div>';
+  }
+}
+
+/**
+ * Open parallel version picker modal
+ */
+function openParallelVersionModal() {
+  const overlay = document.getElementById('parallelVersionModalOverlay');
+  if (overlay) {
+    overlay.classList.add('open');
+    lockBodyScroll();
+    renderParallelVersionList();
+  }
+}
+
+/**
+ * Close parallel version picker modal
+ * @param {Event} event
+ */
+function closeParallelVersionModal(event) {
+  if (event && event.target !== event.currentTarget) return;
+
+  const overlay = document.getElementById('parallelVersionModalOverlay');
+  if (overlay) {
+    overlay.classList.remove('open');
+    unlockBodyScroll();
+  }
+}
+
+/**
+ * Render list of available versions in picker modal
+ */
+function renderParallelVersionList() {
+  const list = document.getElementById('parallelVersionList');
+  if (!list || typeof BIBLE_VERSIONS === 'undefined') return;
+
+  const currentSecondary = getSecondaryVersionId();
+  const currentPrimary = getCurrentVersionId();
+
+  list.innerHTML = '';
+
+  // Get installed versions (exclude current primary)
+  Object.entries(BIBLE_VERSIONS).forEach(([versionId, config]) => {
+    if (versionId === currentPrimary) return; // Skip primary version
+
+    const li = document.createElement('li');
+    li.className = versionId === currentSecondary ? 'selected' : '';
+    li.setAttribute('role', 'option');
+    li.setAttribute('aria-selected', versionId === currentSecondary);
+
+    li.innerHTML = `
+      <span class="version-name">${config.name || versionId.toUpperCase()}</span>
+      <span class="version-lang">${config.language || 'Unknown'}</span>
+    `;
+
+    li.onclick = () => selectSecondaryVersion(versionId);
+    list.appendChild(li);
+  });
+}
+
+/**
+ * Select a secondary version from the picker
+ * @param {string} versionId
+ */
+function selectSecondaryVersion(versionId) {
+  console.log('[Parallel] Selected secondary version:', versionId);
+
+  setSecondaryVersionId(versionId);
+
+  // Update UI
+  const secondaryNameSpan = document.getElementById('currentSecondaryName');
+  if (secondaryNameSpan) {
+    secondaryNameSpan.textContent = getVersionDisplayName(versionId);
+  }
+
+  // Close modal
+  closeParallelVersionModal();
+
+  // Reload chapter if parallel is enabled
+  if (isParallelEnabled()) {
+    updateParallelHeaders();
+    displayChapter(currentChapter);
+  }
+
+  showToast(`Secondary: ${getVersionDisplayName(versionId)}`);
 }
 
 /**
@@ -1890,6 +2284,45 @@ function displayChapter(chapterNum) {
 
   // Update "Last read" hint in header
   updateLastReadHint();
+
+  // Handle parallel view loading
+  if (isParallelEnabled()) {
+    loadParallelChapter(currentBook, chapterNum);
+  }
+}
+
+/**
+ * Load chapter content into parallel view panes
+ * @param {string} bookName - Book name (e.g., 'John')
+ * @param {number} chapter - Chapter number
+ */
+async function loadParallelChapter(bookName, chapter) {
+  const primaryContainer = document.getElementById('primaryVersesContainer');
+  const secondaryContainer = document.getElementById('secondaryVersesContainer');
+
+  if (!primaryContainer || !secondaryContainer) {
+    console.error('[Parallel] Pane containers not found');
+    return;
+  }
+
+  const primaryVersionId = getCurrentVersionId();
+  const secondaryVersionId = getSecondaryVersionId();
+
+  console.log('[Parallel] Loading chapter:', bookName, chapter);
+  console.log('[Parallel] Primary:', primaryVersionId, 'Secondary:', secondaryVersionId);
+
+  // Update headers with version names
+  updateParallelHeaders();
+
+  // Load both versions in parallel
+  await Promise.all([
+    loadVersesToContainer(bookName, chapter, primaryVersionId, primaryContainer),
+    loadVersesToContainer(bookName, chapter, secondaryVersionId, secondaryContainer)
+  ]);
+
+  // Re-initialize scroll sync after content loads
+  initParallelScrollSync();
+  console.log('[Parallel] Chapter loaded, scroll sync initialized');
 }
 
 // Update the chapter indicator text
@@ -2069,9 +2502,13 @@ document.addEventListener('keydown', function(event) {
     const versionManager = document.getElementById('versionManagerOverlay');
     const settingsModal = document.getElementById('settingsModalOverlay');
     const whatsNewModal = document.getElementById('whatsNewOverlay');
+    const parallelVersionModal = document.getElementById('parallelVersionModalOverlay');
     const searchInput = document.getElementById('chapterSearchInput');
 
-    if (whatsNewModal && whatsNewModal.classList.contains('active')) {
+    if (parallelVersionModal && parallelVersionModal.classList.contains('open')) {
+      closeParallelVersionModal();
+      event.preventDefault();
+    } else if (whatsNewModal && whatsNewModal.classList.contains('active')) {
       closeWhatsNewModal();
       event.preventDefault();
     } else if (settingsModal && settingsModal.classList.contains('active')) {
@@ -2108,6 +2545,10 @@ restoreReadingState();
 updateLastReadHint();
 // Initialize welcome banner for first-time users
 initWelcomeBanner();
+// Initialize parallel view state (show/hide containers based on saved preference)
+if (isParallelEnabled()) {
+  showParallelView();
+}
 // Show What's New modal if version changed
 if (shouldShowWhatsNew()) {
   openWhatsNewModal();
@@ -2567,6 +3008,8 @@ function openSettingsModal() {
   renderReadingPlansList();
   // Initialize line height slider with current value
   initLineHeightSlider();
+  // Initialize parallel view toggle state
+  initParallelView();
 
   document.getElementById('settingsModalOverlay').classList.add('active');
   // Focus the first button for keyboard navigation
@@ -2871,6 +3314,146 @@ function openWhatsNewFromSettings() {
 window.openWhatsNewModal = openWhatsNewModal;
 window.closeWhatsNewModal = closeWhatsNewModal;
 window.openWhatsNewFromSettings = openWhatsNewFromSettings;
+
+// ========================================
+// Modal Overscroll Prevention
+// ========================================
+
+/**
+ * Initialize overscroll prevention for all modal content areas.
+ * Prevents scroll momentum from bleeding through to body when
+ * user flings past top/bottom of modal content.
+ */
+function initModalOverscrollPrevention() {
+  // All modal overlays in the app
+  const modalSelectors = [
+    '#bookModalOverlay',
+    '#chapterModalOverlay',
+    '#bookmarksModalOverlay',
+    '#historyModalOverlay',
+    '#versionManagerOverlay',
+    '#settingsModalOverlay',
+    '#whatsNewOverlay',
+    '#parallelVersionModalOverlay'
+  ];
+
+  // Content selectors within modals (the scrollable areas)
+  const contentSelectors = [
+    '.book-modal',
+    '.chapter-modal',
+    '.bookmarks-modal',
+    '.history-modal',
+    '.version-manager-modal',
+    '.settings-modal',
+    '.whats-new-modal',
+    '.parallel-version-modal'
+  ];
+
+  // Apply to all modal content areas
+  contentSelectors.forEach(selector => {
+    const content = document.querySelector(selector);
+    if (content) {
+      setupOverscrollPrevention(content);
+    }
+  });
+
+  // Also apply to modal bodies (scrollable inner areas)
+  const scrollableAreas = document.querySelectorAll(
+    '.settings-modal-body, .whats-new-content, .version-manager-content, ' +
+    '.bookmarks-list, .history-list, .parallel-version-modal-body'
+  );
+  scrollableAreas.forEach(area => {
+    setupOverscrollPrevention(area);
+  });
+
+  console.log('[Overscroll] Modal prevention initialized');
+}
+
+/**
+ * Setup overscroll prevention for a single scrollable element.
+ * Only prevents scroll events at boundaries (edge flings) - allows
+ * normal scrolling inside the element.
+ * @param {HTMLElement} element - The scrollable element
+ */
+function setupOverscrollPrevention(element) {
+  if (!element || element.dataset.overscrollPrevented) return;
+
+  let startY = 0;
+
+  element.addEventListener('touchstart', (e) => {
+    startY = e.touches[0].clientY;
+  }, { passive: true });
+
+  element.addEventListener('touchmove', (e) => {
+    // Only apply edge prevention if content is scrollable
+    const isScrollable = element.scrollHeight > element.clientHeight + 1;
+    if (!isScrollable) return; // Let touch events flow naturally
+
+    const currentY = e.touches[0].clientY;
+    const deltaY = currentY - startY;
+
+    // Check if at scroll boundaries
+    const isAtTop = element.scrollTop <= 0;
+    const isAtBottom = element.scrollTop + element.clientHeight >= element.scrollHeight - 1;
+
+    // Trying to scroll up when at top, or down when at bottom
+    const scrollingUp = deltaY > 0;
+    const scrollingDown = deltaY < 0;
+
+    // Only prevent at the actual boundary edge flings
+    if ((isAtTop && scrollingUp) || (isAtBottom && scrollingDown)) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, { passive: false });
+
+  // Wheel events: Only prevent at boundaries when content IS scrollable
+  element.addEventListener('wheel', (e) => {
+    // Only apply edge prevention if content is scrollable
+    const isScrollable = element.scrollHeight > element.clientHeight + 1;
+    if (!isScrollable) return; // Let wheel events flow naturally
+
+    const isAtTop = element.scrollTop <= 0;
+    const isAtBottom = element.scrollTop + element.clientHeight >= element.scrollHeight - 1;
+
+    const scrollingUp = e.deltaY < 0;
+    const scrollingDown = e.deltaY > 0;
+
+    // Only prevent at the actual boundary edge flings
+    if ((isAtTop && scrollingUp) || (isAtBottom && scrollingDown)) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, { passive: false });
+
+  element.dataset.overscrollPrevented = 'true';
+}
+
+/**
+ * Initialize overscroll prevention for parallel view panes.
+ * Prevents scroll from bleeding to body when at pane boundaries.
+ */
+function initParallelPaneOverscrollPrevention() {
+  const leftPane = document.querySelector('.parallel-pane.left-pane');
+  const rightPane = document.querySelector('.parallel-pane.right-pane');
+
+  if (leftPane) setupOverscrollPrevention(leftPane);
+  if (rightPane) setupOverscrollPrevention(rightPane);
+
+  console.log('[Overscroll] Parallel pane prevention initialized');
+}
+
+// Initialize overscroll prevention when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  initModalOverscrollPrevention();
+  initParallelPaneOverscrollPrevention();
+});
+
+// Also run immediately in case DOMContentLoaded already fired
+if (document.readyState !== 'loading') {
+  initModalOverscrollPrevention();
+  initParallelPaneOverscrollPrevention();
+}
 
 // ========================================
 // Service Worker Registration
