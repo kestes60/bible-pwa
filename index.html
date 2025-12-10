@@ -304,63 +304,118 @@
         <button class="settings-modal-close" onclick="closeSettingsModal()" aria-label="Close settings">×</button>
       </div>
       <div class="settings-modal-content">
-        <!-- Reading Plans Section -->
-        <div class="reading-plans-section">
-          <h3 class="settings-section-title">Reading Plans</h3>
-          <p class="settings-description">
-            Track your progress through books or custom plans. More options are coming in future updates.
-          </p>
-          <div id="readingPlansList" class="reading-plans-list">
-            <!-- Populated by renderReadingPlansList() -->
-          </div>
-        </div>
+        <!-- Accordion Table of Contents -->
+        <nav id="settingsToc" class="settings-toc" aria-label="Settings navigation">
+          <a href="#reading-prefs" class="toc-link">Preferences</a>
+          <a href="#reading-plans" class="toc-link">Plans</a>
+          <a href="#backup-restore" class="toc-link">Backup</a>
+          <a href="#manage-versions" class="toc-link">Versions</a>
+          <a href="#appearance" class="toc-link">Appearance</a>
+        </nav>
 
-        <!-- Reading Preferences Section -->
-        <div class="reading-preferences-section">
-          <h3 class="settings-section-title">Reading Preferences</h3>
-          <div class="setting-group">
-            <label for="lineHeightSlider">Line Height</label>
-            <div class="slider-row">
-              <span class="slider-label-min">Tight</span>
-              <input type="range" id="lineHeightSlider" min="1.2" max="2.0" step="0.1" value="1.6" aria-label="Adjust line height">
-              <span class="slider-label-max">Double</span>
+        <!-- Accordion Sections -->
+        <div class="settings-accordion">
+          <!-- 1. Reading Preferences -->
+          <h3 class="accordion-header" data-target="reading-prefs" aria-expanded="false" aria-controls="reading-prefs">
+            <span class="accordion-title">Reading Preferences</span>
+            <span class="accordion-chevron" aria-hidden="true">▶</span>
+          </h3>
+          <div id="reading-prefs" class="accordion-content" aria-expanded="false">
+            <div class="setting-group">
+              <label for="lineHeightSlider">Line Height</label>
+              <div class="slider-row">
+                <span class="slider-label-min">Tight</span>
+                <input type="range" id="lineHeightSlider" min="1.2" max="2.0" step="0.1" value="1.6" aria-label="Adjust line height">
+                <span class="slider-label-max">Double</span>
+              </div>
+              <span id="lineHeightValue" class="slider-value">1.6</span>
+              <small class="setting-hint">Adjust spacing between lines for easier reading</small>
+              <!-- Preview pane for mobile (shows live line height changes) -->
+              <div id="lineHeightPreview" class="line-height-preview">
+                <span class="preview-verse-num">16</span> For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.
+                <span class="preview-verse-num">17</span> For God sent not his Son into the world to condemn the world; but that the world through him might be saved.
+                <span class="preview-verse-num">18</span> Whoever believes in him is not condemned, but whoever does not believe stands condemned already because they have not believed in the name of God's one and only Son.
+              </div>
             </div>
-            <span id="lineHeightValue" class="slider-value">1.6</span>
-            <small class="setting-hint">Adjust spacing between lines for easier reading</small>
-            <!-- Preview pane for mobile (shows live line height changes) -->
-            <div id="lineHeightPreview" class="line-height-preview">
-              <span class="preview-verse-num">16</span> For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.
-              <span class="preview-verse-num">17</span> For God sent not his Son into the world to condemn the world; but that the world through him might be saved.
-              <span class="preview-verse-num">18</span> Whoever believes in him is not condemned, but whoever does not believe stands condemned already because they have not believed in the name of God's one and only Son.
+            <!-- Parallel View Toggle -->
+            <div class="setting-group parallel-setting">
+              <label class="toggle-label">
+                <input type="checkbox" id="parallelToggle">
+                <span>Enable Parallel View</span>
+              </label>
+              <button id="parallelVersionPicker" class="parallel-picker-btn" style="display:none;" onclick="openParallelVersionModal()">
+                Secondary: <span id="currentSecondaryName">KJV</span> ▾
+              </button>
+              <small class="setting-hint">Side-by-side translations (e.g., English + Hebrew/Greek)</small>
             </div>
           </div>
 
-          <!-- Parallel View Toggle -->
-          <div class="setting-group parallel-setting">
-            <label class="toggle-label">
-              <input type="checkbox" id="parallelToggle">
-              <span>Enable Parallel View</span>
-            </label>
-            <button id="parallelVersionPicker" class="parallel-picker-btn" style="display:none;" onclick="openParallelVersionModal()">
-              Secondary: <span id="currentSecondaryName">KJV</span> ▾
-            </button>
-            <small class="setting-hint">Side-by-side translations (e.g., English + Hebrew/Greek)</small>
+          <!-- 2. Reading Plans -->
+          <h3 class="accordion-header" data-target="reading-plans" aria-expanded="false" aria-controls="reading-plans">
+            <span class="accordion-title">Reading Plans</span>
+            <span class="accordion-chevron" aria-hidden="true">▶</span>
+          </h3>
+          <div id="reading-plans" class="accordion-content" aria-expanded="false">
+            <p class="settings-description">
+              Track your progress through books or custom plans. More options are coming in future updates.
+            </p>
+            <div id="readingPlansList" class="reading-plans-list">
+              <!-- Populated by renderReadingPlansList() -->
+            </div>
+          </div>
+
+          <!-- 3. Backup & Restore -->
+          <h3 class="accordion-header" data-target="backup-restore" aria-expanded="false" aria-controls="backup-restore">
+            <span class="accordion-title">Backup & Restore</span>
+            <span class="accordion-chevron" aria-hidden="true">▶</span>
+          </h3>
+          <div id="backup-restore" class="accordion-content" aria-expanded="false">
+            <p class="settings-description">
+              Download a backup of your Bible Reader data (reading history, plan progress, preferences). You can restore it later if your browser data is cleared.
+            </p>
+            <div class="settings-buttons">
+              <button class="settings-primary-btn" onclick="exportBibleBackup()">Download backup</button>
+              <button class="settings-secondary-btn" onclick="openBackupFilePicker()">Restore from backup file</button>
+            </div>
+            <p class="settings-note">
+              Backups are stored only on your device. Restoring will overwrite your current Bible Reader data.
+            </p>
+            <input type="file" id="backupFileInput" accept="application/json" style="display:none" onchange="handleBackupFileSelected(event)" />
+          </div>
+
+          <!-- 4. Manage Versions -->
+          <h3 class="accordion-header" data-target="manage-versions" aria-expanded="false" aria-controls="manage-versions">
+            <span class="accordion-title">Manage Versions</span>
+            <span class="accordion-chevron" aria-hidden="true">▶</span>
+          </h3>
+          <div id="manage-versions" class="accordion-content" aria-expanded="false">
+            <p class="settings-description">
+              Switch between Bible translations or manage downloaded versions for offline reading.
+            </p>
+            <div class="settings-buttons">
+              <button class="settings-primary-btn" onclick="closeSettingsModal(); openVersionManager();">Open Version Manager</button>
+            </div>
+          </div>
+
+          <!-- 5. Appearance -->
+          <h3 class="accordion-header" data-target="appearance" aria-expanded="false" aria-controls="appearance">
+            <span class="accordion-title">Appearance</span>
+            <span class="accordion-chevron" aria-hidden="true">▶</span>
+          </h3>
+          <div id="appearance" class="accordion-content" aria-expanded="false">
+            <div class="setting-group">
+              <label class="toggle-label appearance-toggle">
+                <span>Dark Mode</span>
+                <button type="button" id="settingsThemeToggle" class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Toggle dark/light theme">
+                  <span class="theme-icon">🌙</span>
+                </button>
+              </label>
+              <small class="setting-hint">Switch between light and dark color schemes</small>
+            </div>
           </div>
         </div>
 
-        <h3 class="settings-section-title">Backup & Restore</h3>
-        <p class="settings-description">
-          Download a backup of your Bible Reader data (reading history, plan progress, preferences). You can restore it later if your browser data is cleared.
-        </p>
-        <div class="settings-buttons">
-          <button class="settings-primary-btn" onclick="exportBibleBackup()">Download backup</button>
-          <button class="settings-secondary-btn" onclick="openBackupFilePicker()">Restore from backup file</button>
-        </div>
-        <p class="settings-note">
-          Backups are stored only on your device. Restoring will overwrite your current Bible Reader data.
-        </p>
-        <input type="file" id="backupFileInput" accept="application/json" style="display:none" onchange="handleBackupFileSelected(event)" />
-
+        <!-- Footer link -->
         <p class="settings-whats-new-link">
           <button type="button" class="link-button" onclick="openWhatsNewFromSettings()">
             See what's new in this version

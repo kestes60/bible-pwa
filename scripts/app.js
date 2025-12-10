@@ -43,14 +43,25 @@ function applyTheme(theme) {
   // Add the selected theme
   document.body.classList.add(theme);
 
-  // Update toggle button text and aria-label
+  // Update header toggle button text and aria-label
   const toggleBtn = document.getElementById('themeToggle');
-  if (theme === THEME_DARK) {
-    toggleBtn.textContent = '☀ Light';
-    toggleBtn.setAttribute('aria-label', 'Switch to light theme');
-  } else {
-    toggleBtn.textContent = '🌙 Dark';
-    toggleBtn.setAttribute('aria-label', 'Switch to dark theme');
+  if (toggleBtn) {
+    if (theme === THEME_DARK) {
+      toggleBtn.textContent = '☀ Light';
+      toggleBtn.setAttribute('aria-label', 'Switch to light theme');
+    } else {
+      toggleBtn.textContent = '🌙 Dark';
+      toggleBtn.setAttribute('aria-label', 'Switch to dark theme');
+    }
+  }
+
+  // Update settings modal theme button if it exists
+  const settingsBtn = document.getElementById('settingsThemeToggle');
+  if (settingsBtn) {
+    const icon = settingsBtn.querySelector('.theme-icon');
+    if (icon) {
+      icon.textContent = theme === THEME_DARK ? '🌙' : '☀️';
+    }
   }
 }
 
@@ -2999,6 +3010,241 @@ function renderReadingPlansList() {
   });
 }
 
+// ========================================
+// Settings Accordion State (Single-Open Mode)
+// ========================================
+const SETTINGS_EXPANDED_KEY = 'bibleReader.settingsExpanded';
+const SETTINGS_DEFAULT_SECTION = 'reading-prefs';
+
+// Track currently active section (module-level for access across functions)
+let _currentActiveSection = null;
+
+// Valid section IDs for validation
+const VALID_SECTION_IDS = ['reading-prefs', 'reading-plans', 'backup-restore', 'manage-versions', 'appearance'];
+
+/**
+ * Get persisted active accordion section
+ * Handles migration from old array format to new string format.
+ * @returns {string|null} Active section ID or null
+ */
+function getActiveSection() {
+  const stored = localStorage.getItem(SETTINGS_EXPANDED_KEY);
+  if (!stored) return null;
+
+  // Handle legacy array format: '["reading-prefs"]' or '["reading-prefs","backup-restore"]'
+  if (stored.startsWith('[')) {
+    try {
+      const arr = JSON.parse(stored);
+      if (Array.isArray(arr) && arr.length > 0 && VALID_SECTION_IDS.includes(arr[0])) {
+        // Migrate to new format
+        const firstSection = arr[0];
+        localStorage.setItem(SETTINGS_EXPANDED_KEY, firstSection);
+        return firstSection;
+      }
+    } catch {
+      // Invalid JSON, clear it
+      localStorage.removeItem(SETTINGS_EXPANDED_KEY);
+      return null;
+    }
+  }
+
+  // Validate stored value is a known section ID
+  if (VALID_SECTION_IDS.includes(stored)) {
+    return stored;
+  }
+
+  // Invalid value, clear and return null
+  localStorage.removeItem(SETTINGS_EXPANDED_KEY);
+  return null;
+}
+
+/**
+ * Save active accordion section to localStorage
+ * @param {string|null} sectionId - Section ID or null to clear
+ */
+function saveActiveSection(sectionId) {
+  if (sectionId) {
+    localStorage.setItem(SETTINGS_EXPANDED_KEY, sectionId);
+  } else {
+    localStorage.removeItem(SETTINGS_EXPANDED_KEY);
+  }
+}
+
+/**
+ * Collapse a specific accordion section
+ * @param {string} targetId - Section ID to collapse
+ */
+function collapseSection(targetId) {
+  // Validate targetId before using in selector
+  if (!targetId || !VALID_SECTION_IDS.includes(targetId)) {
+    console.warn('[Accordion] Invalid targetId for collapse:', targetId);
+    return;
+  }
+  const header = document.querySelector(`[data-target="${targetId}"]`);
+  const content = document.getElementById(targetId);
+  if (header && content) {
+    header.setAttribute('aria-expanded', 'false');
+    content.setAttribute('aria-expanded', 'false');
+  }
+}
+
+/**
+ * Expand a specific accordion section
+ * @param {string} targetId - Section ID to expand
+ * @param {boolean} scroll - Whether to scroll to header
+ */
+function expandSection(targetId, scroll = true) {
+  // Validate targetId before using in selector
+  if (!targetId || !VALID_SECTION_IDS.includes(targetId)) {
+    console.warn('[Accordion] Invalid targetId for expand:', targetId);
+    return;
+  }
+  const header = document.querySelector(`[data-target="${targetId}"]`);
+  const content = document.getElementById(targetId);
+  if (header && content) {
+    header.setAttribute('aria-expanded', 'true');
+    content.setAttribute('aria-expanded', 'true');
+    if (scroll) {
+      setTimeout(() => {
+        header.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 50);
+    }
+  }
+}
+
+/**
+ * Toggle accordion section (single-open mode)
+ * Clicking a new section closes any open one first.
+ * Clicking the active section collapses it (all closed).
+ * @param {string} targetId - Section ID to toggle
+ */
+function toggleAccordionSection(targetId) {
+  // Validate targetId
+  if (!targetId || !VALID_SECTION_IDS.includes(targetId)) {
+    console.warn('[Accordion] Invalid targetId for toggle:', targetId);
+    return;
+  }
+
+  if (targetId === _currentActiveSection) {
+    // Toggle off: collapse active section
+    collapseSection(targetId);
+    _currentActiveSection = null;
+    saveActiveSection(null);
+  } else {
+    // Close current if any, then open new
+    if (_currentActiveSection) {
+      collapseSection(_currentActiveSection);
+    }
+    expandSection(targetId);
+    _currentActiveSection = targetId;
+    saveActiveSection(targetId);
+  }
+}
+
+/**
+ * Initialize accordion behavior for settings modal (single-open mode)
+ * Only one section can be expanded at a time.
+ */
+function initSettingsAccordion() {
+  const headers = document.querySelectorAll('.accordion-header');
+
+  // Get persisted or default section
+  const savedSection = getActiveSection();
+  const initialSection = savedSection || SETTINGS_DEFAULT_SECTION;
+
+  // Reset all sections to collapsed first
+  headers.forEach(header => {
+    const targetId = header.dataset.target;
+    const content = document.getElementById(targetId);
+    if (!content) return;
+
+    header.setAttribute('aria-expanded', 'false');
+    content.setAttribute('aria-expanded', 'false');
+
+    // Remove existing listeners (prevent duplicates on re-open)
+    header.removeEventListener('click', header._accordionClickHandler);
+    header.removeEventListener('keydown', header._accordionKeyHandler);
+
+    // Add click handler
+    header._accordionClickHandler = () => toggleAccordionSection(targetId);
+    header.addEventListener('click', header._accordionClickHandler);
+
+    // Keyboard accessibility
+    header.setAttribute('tabindex', '0');
+    header._accordionKeyHandler = (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleAccordionSection(targetId);
+      }
+    };
+    header.addEventListener('keydown', header._accordionKeyHandler);
+  });
+
+  // Expand initial section (without scroll on first load)
+  _currentActiveSection = null; // Reset tracking
+
+  // Validate initialSection before using in selector
+  const validInitial = initialSection && VALID_SECTION_IDS.includes(initialSection) ? initialSection : SETTINGS_DEFAULT_SECTION;
+
+  if (validInitial) {
+    const initialHeader = document.querySelector(`[data-target="${validInitial}"]`);
+    if (initialHeader) {
+      expandSection(validInitial, false);
+      _currentActiveSection = validInitial;
+    } else if (headers.length > 0) {
+      // Fallback to first section if saved one doesn't exist
+      const firstId = headers[0].dataset.target;
+      if (firstId && VALID_SECTION_IDS.includes(firstId)) {
+        expandSection(firstId, false);
+        _currentActiveSection = firstId;
+      }
+    }
+  }
+
+  // ToC navigation (single-open mode)
+  const tocLinks = document.querySelectorAll('.settings-toc .toc-link');
+  tocLinks.forEach(link => {
+    link.removeEventListener('click', link._tocClickHandler);
+    link._tocClickHandler = (e) => {
+      e.preventDefault();
+      const targetId = link.getAttribute('href').slice(1);
+
+      // Validate targetId before using in selector
+      if (!targetId || !VALID_SECTION_IDS.includes(targetId)) {
+        console.warn('[Accordion] Invalid ToC targetId:', targetId);
+        return;
+      }
+
+      const header = document.querySelector(`[data-target="${targetId}"]`);
+      if (header) {
+        // If not already active, switch to it
+        if (_currentActiveSection !== targetId) {
+          toggleAccordionSection(targetId);
+        }
+        // Scroll to header
+        setTimeout(() => {
+          header.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+      }
+    };
+    link.addEventListener('click', link._tocClickHandler);
+  });
+}
+
+/**
+ * Update theme toggle button in Settings to reflect current theme
+ */
+function updateSettingsThemeButton() {
+  const btn = document.getElementById('settingsThemeToggle');
+  if (!btn) return;
+
+  const isDark = document.body.classList.contains(THEME_DARK);
+  const icon = btn.querySelector('.theme-icon');
+  if (icon) {
+    icon.textContent = isDark ? '🌙' : '☀️';
+  }
+}
+
 /**
  * Open the settings modal
  */
@@ -3010,12 +3256,16 @@ function openSettingsModal() {
   initLineHeightSlider();
   // Initialize parallel view toggle state
   initParallelView();
+  // Initialize accordion behavior
+  initSettingsAccordion();
+  // Update theme button state
+  updateSettingsThemeButton();
 
   document.getElementById('settingsModalOverlay').classList.add('active');
-  // Focus the first button for keyboard navigation
+  // Focus the first accordion header for keyboard navigation
   setTimeout(() => {
-    const firstBtn = document.querySelector('.settings-primary-btn');
-    if (firstBtn) firstBtn.focus();
+    const firstHeader = document.querySelector('.accordion-header');
+    if (firstHeader) firstHeader.focus();
   }, 0);
 }
 

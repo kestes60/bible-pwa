@@ -413,9 +413,39 @@ All header buttons maintain a minimum tap target size of 36-40px for accessibili
 
 **Future consideration**: If more header controls are added, we may need to move some buttons into an overflow menu.
 
-### Reading preferences (Settings modal)
+### Settings Modal (Accordion ToC)
 
-The Settings modal includes adjustable reading preferences that persist in localStorage.
+The Settings modal uses an accordion layout with a sticky Table of Contents (ToC) for easy navigation.
+
+**Accordion Structure:**
+- 5 collapsible sections: Reading Preferences, Reading Plans, Backup & Restore, Manage Versions, Appearance
+- Sticky ToC bar at top with quick-jump links to each section
+- Collapsed by default on first open; first section auto-expands if none persisted
+- Click header or ToC link to expand/collapse sections with smooth CSS transitions
+- Chevron (▶/▼) rotates 90° on expand via CSS transform
+- Persisted state in: `localStorage.getItem('bibleReader.settingsExpanded')` (JSON array of section IDs)
+
+**ARIA Accessibility:**
+- Headers: `aria-expanded`, `aria-controls`, `tabindex="0"`, keyboard Enter/Space toggle
+- Content: `aria-expanded` synced with header
+- ToC links: `aria-label` for navigation context
+
+**Key CSS classes:**
+- `.settings-toc` - Sticky ToC bar (`position: sticky; top: 0`)
+- `.accordion-header` - Clickable section headers
+- `.accordion-content` - Collapsible content areas (`max-height: 0` → `1200px` on expand)
+- `.accordion-chevron` - Rotating arrow indicator
+
+**JS functions** (in `scripts/app.js`):
+- `initSettingsAccordion()` - Sets up handlers, restores state, ToC navigation
+- `toggleAccordionSection(header, forceOpen)` - Toggle with optional force
+- `getExpandedSections()` / `saveExpandedSections()` - localStorage persistence
+
+---
+
+### Reading preferences (inside Settings accordion)
+
+The Reading Preferences section includes adjustable settings that persist in localStorage.
 
 **Line Height Slider:**
 - Range: 1.4 (Compact) to 1.8 (Spacious), step 0.1

@@ -2212,9 +2212,168 @@ header {
 }
 
 .settings-modal-content {
-  padding: 1.5rem;
+  padding: 0;
   flex: 1;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ========================================
+   Settings Accordion & ToC
+   ======================================== */
+
+/* Sticky Table of Contents */
+.settings-toc {
+  position: sticky;
+  top: 0;
+  background: var(--yt-card-bg);
+  padding: 0.75rem 1rem;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--yt-card-border);
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.settings-toc .toc-link {
+  color: var(--yt-accent);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.15s ease;
+  white-space: nowrap;
+}
+
+.settings-toc .toc-link:hover {
+  background-color: var(--yt-card-border);
+}
+
+.settings-toc .toc-link:focus-visible {
+  outline: 2px solid var(--yt-accent);
+  outline-offset: 2px;
+}
+
+/* Accordion Container */
+.settings-accordion {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Accordion Header (clickable) */
+.accordion-header {
+  cursor: pointer;
+  padding: 1rem 1.25rem;
+  margin: 0;
+  background: var(--yt-bg);
+  border-bottom: 1px solid var(--yt-card-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--yt-text-main);
+  transition: background-color 0.15s ease;
+  user-select: none;
+}
+
+.accordion-header:hover {
+  background: var(--yt-card-border);
+}
+
+.accordion-header:focus-visible {
+  outline: 2px solid var(--yt-accent);
+  outline-offset: -2px;
+}
+
+.accordion-title {
+  flex: 1;
+}
+
+.accordion-chevron {
+  font-size: 0.7rem;
+  color: var(--yt-text-muted);
+  transition: transform 0.2s ease;
+  margin-left: 0.5rem;
+}
+
+.accordion-header[aria-expanded="true"] .accordion-chevron {
+  transform: rotate(90deg);
+}
+
+/* Accordion Content (collapsible) */
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  background: var(--yt-card-bg);
+  padding: 0 1.25rem;
+}
+
+.accordion-content[aria-expanded="true"] {
+  max-height: 1200px;
+  padding: 1.25rem;
+  border-bottom: 1px solid var(--yt-card-border);
+}
+
+/* Settings footer link (outside accordion) */
+.settings-whats-new-link {
+  padding: 1rem 1.25rem;
+  margin: 0;
+  text-align: center;
+  border-top: 1px solid var(--yt-card-border);
+  flex-shrink: 0;
+}
+
+/* Theme toggle button in Settings */
+.theme-toggle-btn {
+  background: var(--yt-card-border);
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 1.25rem;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.theme-toggle-btn:hover {
+  background: var(--yt-accent);
+  transform: scale(1.05);
+}
+
+.appearance-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.appearance-toggle span {
+  font-weight: 600;
+}
+
+/* Mobile Accordion Adjustments */
+@media (max-width: 600px) {
+  .settings-toc {
+    padding: 0.5rem 0.75rem;
+    gap: 0.25rem;
+  }
+
+  .settings-toc .toc-link {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.4rem;
+  }
+
+  .accordion-header {
+    padding: 0.875rem 1rem;
+  }
+
+  .accordion-content[aria-expanded="true"] {
+    padding: 1rem;
+  }
 }
 
 .settings-section-title {
