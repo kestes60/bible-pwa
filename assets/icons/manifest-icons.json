@@ -1,94 +1,85 @@
 {
-  "name": "Yahtsar Bible Reader",
-  "short_name": "Bible",
-  "description": "PWA for Bible reading, plans, parallel, and study",
-  "start_url": "./",
-  "display": "standalone",
-  "orientation": "portrait",
-  "categories": ["books", "education"],
-  "background_color": "#F5E6C8",
-  "theme_color": "#D4A84B",
   "icons": [
     {
-      "src": "assets/icons/icon-72x72.png",
+      "src": "icons/icon-72x72.png",
       "sizes": "72x72",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/icon-96x96.png",
+      "src": "icons/icon-96x96.png",
       "sizes": "96x96",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/icon-128x128.png",
+      "src": "icons/icon-128x128.png",
       "sizes": "128x128",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/icon-144x144.png",
+      "src": "icons/icon-144x144.png",
       "sizes": "144x144",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/icon-152x152.png",
+      "src": "icons/icon-152x152.png",
       "sizes": "152x152",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/icon-167x167.png",
+      "src": "icons/icon-167x167.png",
       "sizes": "167x167",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/icon-180x180.png",
+      "src": "icons/icon-180x180.png",
       "sizes": "180x180",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/icon-192x192.png",
+      "src": "icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/icon-192x192-maskable.png",
+      "src": "icons/icon-192x192-maskable.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "assets/icons/icon-228x228.png",
+      "src": "icons/icon-228x228.png",
       "sizes": "228x228",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/icon-256x256.png",
+      "src": "icons/icon-256x256.png",
       "sizes": "256x256",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/icon-384x384.png",
+      "src": "icons/icon-384x384.png",
       "sizes": "384x384",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/icon-512x512.png",
+      "src": "icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/icon-512x512-maskable.png",
+      "src": "icons/icon-512x512-maskable.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
