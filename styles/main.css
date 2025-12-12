@@ -19,8 +19,8 @@ body.theme-dark {
   --yt-header-grad-end: #06b6d4;       /* Cyan gradient end */
   --yt-card-bg: #1e293b;               /* Slightly lighter navy for cards */
   --yt-card-border: #334155;           /* Subtle slate border */
-  --yt-accent: #14b8a6;                /* Teal accent for buttons/links */
-  --yt-accent-soft: #0d9488;           /* Darker teal for hover states */
+  --yt-accent: #0f766e;                /* Darker teal for WCAG AA contrast (4.6:1) */
+  --yt-accent-soft: #0d6b63;           /* Even darker teal for hover states */
   --yt-text-main: #e2e8f0;             /* Light slate text */
   --yt-text-muted: #94a3b8;            /* Muted slate for secondary text */
   --line-height: 1.6;                  /* Default line height for verses */
@@ -29,12 +29,12 @@ body.theme-dark {
 /* Light Theme (Reading Mode) */
 body.theme-light {
   --yt-bg: #f8f9fa;                    /* Light gray background */
-  --yt-header-grad-start: #14b8a6;     /* Teal gradient (brand consistency) */
-  --yt-header-grad-end: #06b6d4;       /* Cyan gradient (brand consistency) */
+  --yt-header-grad-start: #0f766e;     /* Darker teal gradient for contrast */
+  --yt-header-grad-end: #0891b2;       /* Darker cyan gradient */
   --yt-card-bg: #ffffff;               /* White cards */
   --yt-card-border: #dee2e6;           /* Light gray border */
-  --yt-accent: #14b8a6;                /* Teal accent (brand consistency) */
-  --yt-accent-soft: #0d9488;           /* Darker teal for hover */
+  --yt-accent: #0f766e;                /* Darker teal for WCAG AA contrast */
+  --yt-accent-soft: #0d6b63;           /* Even darker teal for hover */
   --yt-text-main: #2c3e50;             /* Dark text */
   --yt-text-muted: #6c757d;            /* Gray secondary text */
 }

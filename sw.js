@@ -1,5 +1,5 @@
 // Cache version constant - increment this to bust the cache
-const CACHE_VERSION = "bible-pwa-v40";
+const CACHE_VERSION = "bible-pwa-v41";
 
 // Get the base path from the service worker's own location
 // e.g., if SW is at /bible-pwa/sw.js, base is /bible-pwa/
@@ -377,16 +377,21 @@ self.addEventListener("install", (event) => {
         `${BASE_PATH}styles/main.css`,
         `${BASE_PATH}scripts/config/versions.js`,
         `${BASE_PATH}scripts/app.js`,
-        // Icons
-        `${BASE_PATH}icons/icon-72x72.png`,
-        `${BASE_PATH}icons/icon-96x96.png`,
-        `${BASE_PATH}icons/icon-128x128.png`,
-        `${BASE_PATH}icons/icon-144x144.png`,
-        `${BASE_PATH}icons/icon-152x152.png`,
-        `${BASE_PATH}icons/icon-192x192.png`,
-        `${BASE_PATH}icons/icon-256x256.png`,
-        `${BASE_PATH}icons/icon-384x384.png`,
-        `${BASE_PATH}icons/icon-512x512.png`,
+        // Icons (in assets/icons/)
+        `${BASE_PATH}assets/icons/icon-72x72.png`,
+        `${BASE_PATH}assets/icons/icon-96x96.png`,
+        `${BASE_PATH}assets/icons/icon-128x128.png`,
+        `${BASE_PATH}assets/icons/icon-144x144.png`,
+        `${BASE_PATH}assets/icons/icon-152x152.png`,
+        `${BASE_PATH}assets/icons/icon-167x167.png`,
+        `${BASE_PATH}assets/icons/icon-180x180.png`,
+        `${BASE_PATH}assets/icons/icon-192x192.png`,
+        `${BASE_PATH}assets/icons/icon-192x192-maskable.png`,
+        `${BASE_PATH}assets/icons/icon-228x228.png`,
+        `${BASE_PATH}assets/icons/icon-256x256.png`,
+        `${BASE_PATH}assets/icons/icon-384x384.png`,
+        `${BASE_PATH}assets/icons/icon-512x512.png`,
+        `${BASE_PATH}assets/icons/icon-512x512-maskable.png`,
         // Bible data files (WEB)
         ...PRECACHE_FILES,
         // KJV Bible data files
