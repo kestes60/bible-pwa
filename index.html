@@ -106,7 +106,7 @@
         </p>
       </div>
       <div class="welcome-banner-actions">
-        <button type="button" class="welcome-banner-btn" onclick="dismissWelcomeBanner()">
+        <button type="button" class="welcome-banner-btn" onclick="dismissWelcomeBanner()" aria-label="Dismiss welcome banner">
           Got it
         </button>
         <button
@@ -176,15 +176,17 @@
   </main>
 
   <!-- Parallel view container (hidden by default) -->
-  <div id="parallelContainer" class="parallel-container" style="display: none;" role="main" aria-label="Parallel Bible view">
+  <div id="parallelContainer" class="parallel-container" style="display: none;" role="region" aria-label="Parallel Bible view">
     <div class="parallel-pane left-pane">
-      <h3 id="primaryHeader" class="pane-header">Primary: <span id="primaryVersionName">WEB</span></h3>
+      <h2 id="primaryHeader" class="pane-header">Primary: <span id="primaryVersionName">WEB</span></h2>
       <div id="primaryVersesContainer" class="pane-verses"></div>
     </div>
     <div class="parallel-pane right-pane">
-      <h3 id="secondaryHeader" class="pane-header">Secondary: <span id="secondaryVersionName">KJV</span></h3>
+      <h2 id="secondaryHeader" class="pane-header">Secondary: <span id="secondaryVersionName">KJV</span></h2>
       <div id="secondaryVersesContainer" class="pane-verses"></div>
     </div>
+    <!-- Back to top button for parallel view -->
+    <button id="parallelBackToTopBtn" class="parallel-back-to-top" onclick="scrollParallelPanesToTop()" aria-label="Scroll both panes to top">↑</button>
   </div>
 
   <!-- Book Selector Modal -->
@@ -256,10 +258,10 @@
         </div>
 
         <div class="version-manager-footer">
-          <button class="version-manager-browse" disabled aria-disabled="true">
+          <button class="version-manager-browse" disabled aria-disabled="true" aria-label="Browse more versions, coming soon">
             Browse more versions (coming soon)
           </button>
-          <button class="version-manager-close-btn" onclick="closeVersionManager()">Close</button>
+          <button class="version-manager-close-btn" onclick="closeVersionManager()" aria-label="Close version manager">Close</button>
         </div>
       </div>
     </div>
@@ -304,7 +306,7 @@
         </p>
       </div>
       <div class="whats-new-actions">
-        <button type="button" class="whats-new-primary" onclick="closeWhatsNewModal()">Got it</button>
+        <button type="button" class="whats-new-primary" onclick="closeWhatsNewModal()" aria-label="Dismiss what's new">Got it</button>
       </div>
     </div>
   </div>
@@ -356,7 +358,7 @@
                 <input type="checkbox" id="parallelToggle">
                 <span>Enable Parallel View</span>
               </label>
-              <button id="parallelVersionPicker" class="parallel-picker-btn" style="display:none;" onclick="openParallelVersionModal()">
+              <button id="parallelVersionPicker" class="parallel-picker-btn" style="display:none;" onclick="openParallelVersionModal()" aria-label="Select secondary Bible version">
                 Secondary: <span id="currentSecondaryName">KJV</span> ▾
               </button>
               <small class="setting-hint">Side-by-side translations (e.g., English + Hebrew/Greek)</small>
@@ -387,8 +389,8 @@
               Download a backup of your Bible Reader data (reading history, plan progress, preferences). You can restore it later if your browser data is cleared.
             </p>
             <div class="settings-buttons">
-              <button class="settings-primary-btn" onclick="exportBibleBackup()">Download backup</button>
-              <button class="settings-secondary-btn" onclick="openBackupFilePicker()">Restore from backup file</button>
+              <button class="settings-primary-btn" onclick="exportBibleBackup()" aria-label="Download backup file">Download backup</button>
+              <button class="settings-secondary-btn" onclick="openBackupFilePicker()" aria-label="Restore from backup file">Restore from backup file</button>
             </div>
             <p class="settings-note">
               Backups are stored only on your device. Restoring will overwrite your current Bible Reader data.
@@ -406,7 +408,7 @@
               Switch between Bible translations or manage downloaded versions for offline reading.
             </p>
             <div class="settings-buttons">
-              <button class="settings-primary-btn" onclick="closeSettingsModal(); openVersionManager();">Open Version Manager</button>
+              <button class="settings-primary-btn" onclick="closeSettingsModal(); openVersionManager();" aria-label="Open version manager">Open Version Manager</button>
             </div>
           </div>
 
@@ -430,7 +432,7 @@
 
         <!-- Footer link -->
         <p class="settings-whats-new-link">
-          <button type="button" class="link-button" onclick="openWhatsNewFromSettings()">
+          <button type="button" class="link-button" onclick="openWhatsNewFromSettings()" aria-label="See what's new in this version">
             See what's new in this version
           </button>
         </p>

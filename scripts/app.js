@@ -464,6 +464,9 @@ function showParallelView() {
 
   // Initialize scroll sync
   initParallelScrollSync();
+
+  // Initialize back-to-top button for parallel view
+  initParallelBackToTop();
 }
 
 /**
@@ -475,6 +478,9 @@ function hideParallelView() {
 
   if (singleView) singleView.style.display = 'block';
   if (parallelView) parallelView.style.display = 'none';
+
+  // Hide back-to-top button for parallel view
+  hideParallelBackToTop();
 }
 
 /**
@@ -604,6 +610,16 @@ async function loadVersesToContainer(bookName, chapter, versionId, container) {
 
     // Render verses - data structure is { "1": "verse text", "2": "verse text", ... }
     container.innerHTML = '';
+
+    // Set RTL direction for Hebrew and Arabic versions
+    if (versionConfig.direction === 'RTL') {
+      container.setAttribute('dir', 'rtl');
+      container.style.textAlign = 'right';
+    } else {
+      container.setAttribute('dir', 'ltr');
+      container.style.textAlign = 'left';
+    }
+
     const verseNums = Object.keys(chapterData).sort((a, b) => parseInt(a) - parseInt(b));
 
     for (const verseNum of verseNums) {
@@ -2246,6 +2262,16 @@ function displayChapter(chapterNum) {
   // Clear previous content
   container.innerHTML = '';
 
+  // Set RTL direction for Hebrew and Arabic versions
+  const currentVersion = typeof getVersion === 'function' ? getVersion(getCurrentVersionId()) : null;
+  if (currentVersion && currentVersion.direction === 'RTL') {
+    container.setAttribute('dir', 'rtl');
+    container.style.textAlign = 'right';
+  } else {
+    container.setAttribute('dir', 'ltr');
+    container.style.textAlign = 'left';
+  }
+
   // Create header div safely
   const headerDiv = document.createElement('div');
   headerDiv.style.marginBottom = '1.5rem';
@@ -2864,6 +2890,62 @@ window.addEventListener('scroll', () => {
     }
   }
 });
+
+// ========================================
+// Parallel View Back-to-Top
+// ========================================
+
+/**
+ * Scroll both parallel panes to top.
+ * Respects prefers-reduced-motion.
+ */
+function scrollParallelPanesToTop() {
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const leftPane = document.querySelector('.parallel-pane.left-pane');
+  const rightPane = document.querySelector('.parallel-pane.right-pane');
+
+  if (leftPane) {
+    leftPane.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'instant' : 'smooth' });
+  }
+  if (rightPane) {
+    rightPane.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'instant' : 'smooth' });
+  }
+}
+
+/**
+ * Initialize scroll listeners for parallel panes to show/hide back-to-top button.
+ * Called when parallel view is enabled.
+ */
+function initParallelBackToTop() {
+  const leftPane = document.querySelector('.parallel-pane.left-pane');
+  const rightPane = document.querySelector('.parallel-pane.right-pane');
+  const backToTopBtn = document.getElementById('parallelBackToTopBtn');
+
+  if (!leftPane || !rightPane || !backToTopBtn) return;
+
+  const updateButtonVisibility = () => {
+    // Show if either pane is scrolled down more than 200px
+    const shouldShow = leftPane.scrollTop > 200 || rightPane.scrollTop > 200;
+    backToTopBtn.style.display = shouldShow ? 'flex' : 'none';
+  };
+
+  // Add scroll listeners to both panes
+  leftPane.addEventListener('scroll', updateButtonVisibility);
+  rightPane.addEventListener('scroll', updateButtonVisibility);
+
+  // Initial check
+  updateButtonVisibility();
+}
+
+/**
+ * Hide parallel back-to-top button (called when parallel view is disabled).
+ */
+function hideParallelBackToTop() {
+  const backToTopBtn = document.getElementById('parallelBackToTopBtn');
+  if (backToTopBtn) {
+    backToTopBtn.style.display = 'none';
+  }
+}
 
 // ========================================
 // Settings Modal & Backup/Restore

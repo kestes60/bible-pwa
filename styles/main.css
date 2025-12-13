@@ -47,6 +47,37 @@ html {
   box-sizing: border-box;
 }
 
+/* ========================================
+   Global Focus Styles for Accessibility
+   Gold outline for keyboard navigation
+   ======================================== */
+
+/* Universal focus-visible for keyboard navigation */
+:focus-visible {
+  outline: 2px solid #D4A84B;
+  outline-offset: 2px;
+}
+
+/* Remove default focus outline (we use focus-visible instead) */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Enhanced focus for interactive elements */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible,
+[role="tab"]:focus-visible,
+[role="option"]:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid #D4A84B;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(212, 168, 75, 0.25);
+}
+
 body {
   font-family: system-ui, -apple-system, sans-serif;
   margin: 0;
@@ -327,8 +358,9 @@ button:hover:not(:disabled) {
 }
 
 button:focus-visible {
-  outline: 3px solid var(--yt-accent);
+  outline: 2px solid #D4A84B;
   outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(212, 168, 75, 0.25);
 }
 
 button:active:not(:disabled) {
@@ -677,6 +709,19 @@ body[data-font-size="medium"] .verses-container {
 
 body[data-font-size="large"] .verses-container {
   font-size: 1.7rem;
+}
+
+/* Font size variants for parallel view panes */
+body[data-font-size="small"] .pane-verses .verse {
+  font-size: 0.95rem;
+}
+
+body[data-font-size="medium"] .pane-verses .verse {
+  font-size: 1.15rem;
+}
+
+body[data-font-size="large"] .pane-verses .verse {
+  font-size: 1.35rem;
 }
 
 .verse {
@@ -1054,8 +1099,9 @@ header {
 }
 
 .bookmark-button:focus-visible {
-  outline: 3px solid var(--yt-accent);
+  outline: 2px solid #D4A84B;
   outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(212, 168, 75, 0.25);
 }
 
 .bookmark-button:active:not(:disabled) {
@@ -2601,6 +2647,19 @@ header {
   .pane-verses .verse-num {
     font-size: 0.7em;
   }
+
+  /* Mobile font size variants for parallel panes */
+  body[data-font-size="small"] .pane-verses .verse {
+    font-size: 0.8rem;
+  }
+
+  body[data-font-size="medium"] .pane-verses .verse {
+    font-size: 0.95rem;
+  }
+
+  body[data-font-size="large"] .pane-verses .verse {
+    font-size: 1.1rem;
+  }
 }
 
 /* Extra small screens - even tighter */
@@ -2617,6 +2676,67 @@ header {
   .pane-verses .verse {
     font-size: 0.8rem;
     line-height: 1.4;
+  }
+
+  /* Extra small font size variants for parallel panes */
+  body[data-font-size="small"] .pane-verses .verse {
+    font-size: 0.7rem;
+  }
+
+  body[data-font-size="medium"] .pane-verses .verse {
+    font-size: 0.85rem;
+  }
+
+  body[data-font-size="large"] .pane-verses .verse {
+    font-size: 0.95rem;
+  }
+}
+
+/* Parallel view back-to-top button */
+.parallel-back-to-top {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  z-index: 100;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #f4c542 0%, #d4a528 100%);
+  color: #1a1a2e;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(244, 197, 66, 0.4);
+  transition: all 0.3s ease;
+  display: none; /* Hidden by default */
+  align-items: center;
+  justify-content: center;
+}
+
+.parallel-back-to-top:hover {
+  background: linear-gradient(135deg, #ffd966 0%, #f4c542 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(244, 197, 66, 0.5);
+}
+
+.parallel-back-to-top:active {
+  transform: translateY(-1px);
+}
+
+.parallel-back-to-top:focus-visible {
+  outline: 3px solid #f4c542;
+  outline-offset: 3px;
+}
+
+/* Mobile responsive for parallel back-to-top */
+@media (max-width: 600px) {
+  .parallel-back-to-top {
+    right: 1rem;
+    bottom: 1rem;
+    width: 44px;
+    height: 44px;
+    font-size: 1.2rem;
   }
 }
 

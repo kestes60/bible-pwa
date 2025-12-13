@@ -8,17 +8,30 @@
  * - status: "installed" (available offline), "coming-soon" (planned), or "remote" (downloadable)
  * - storageStrategy: "bundled" (included in app) or "remote" (user-downloaded)
  * - estimatedSizeMB: Approximate size for UI display
+ * - direction: "RTL" for Arabic/Hebrew, "LTR" for others (default)
  *
- * Currently installed:
+ * Currently installed (16 versions):
  * - en-web: World English Bible (English)
  * - en-kjv: King James Version (English)
+ * - ko-krv: Korean Revised Version
+ * - he-modern: Hebrew Modern (RTL)
+ * - es-rvr: Reina Valera 1909 (Spanish)
+ * - zh-cuv: Chinese Union Version
+ * - ara-svd: Arabic Smith Van Dyke (RTL)
+ * - fra-lsg: Louis Segond 1910 (French)
+ * - deu-lut: Luther Bibel 1545 (German)
+ * - jpn-kougo: Kougo-yaku (Japanese)
+ * - por-almeida: Almeida (Portuguese)
+ * - rus-synodal: Synodal (Russian)
+ * - swa-sbe: Swahili Bible Edition (African)
+ * - hi-irv: Hindi Indian Revised Version
+ * - bn-irv: Bengali Indian Revised Version
+ * - id-tb: Indonesian Terjemahan Baru
  *
- * Planned translations (coming-soon):
- * - Korean, Spanish, Chinese, Arabic, Hindi, French, Bengali,
- *   Portuguese, Russian, Indonesian, Urdu, German, Japanese
+ * Note: Urdu translation not yet available in public domain sources
  *
  * NOTE: Bible data is stored in JSON format in /data/ directory.
- * Future versions will be converted from OSIS format using open-bibles tools.
+ * Versions are converted from GetBible API or OSIS/USFX formats.
  */
 
 // Current active version (default)
@@ -81,6 +94,26 @@ const bibleVersions = {
   },
 
   // ========================================
+  // INSTALLED VERSIONS (Hebrew)
+  // ========================================
+  "he-modern": {
+    id: "he-modern",
+    name: "Hebrew Modern",
+    shortName: "HEB",
+    language: "he",
+    languageName: "Hebrew",
+    status: "installed",
+    storageStrategy: "bundled",
+    dataPath: "data/heb-modern/",
+    booksFile: "books.json",
+    estimatedSizeMB: 4,
+    sourceUrl: "https://api.getbible.net/v2/modernhebrew.json",
+    sourceFormat: "getbible-json",
+    direction: "RTL",
+    description: "Modern Hebrew Bible translation"
+  },
+
+  // ========================================
   // INSTALLED VERSIONS (Spanish and Chinese)
   // ========================================
   "es-rvr": {
@@ -115,149 +148,186 @@ const bibleVersions = {
   },
 
   // ========================================
-  // PLANNED VERSIONS (coming soon)
+  // INSTALLED VERSIONS (Arabic)
   // ========================================
-  "ar-svd": {
-    id: "ar-svd",
-    name: "Smith & Van Dyck Arabic",
+  "ara-svd": {
+    id: "ara-svd",
+    name: "Arabic Smith Van Dyke",
     shortName: "SVD",
     language: "ar",
     languageName: "Arabic",
-    status: "coming-soon",
-    storageStrategy: "remote",
-    dataPath: "data/svd/",
+    status: "installed",
+    storageStrategy: "bundled",
+    dataPath: "data/ara-svd/",
     booksFile: "books.json",
-    estimatedSizeMB: 3,
-    sourceUrl: null,
-    sourceFormat: null,
-    description: "Arabic translation (source not yet available in open-bibles)"
+    estimatedSizeMB: 6,
+    sourceUrl: "https://api.getbible.net/v2/arabicsv.json",
+    sourceFormat: "getbible-json",
+    direction: "RTL",
+    description: "Arabic Smith Van Dyke translation, public domain"
   },
-  "hi-irv": {
-    id: "hi-irv",
-    name: "Indian Revised Version",
-    shortName: "IRV",
-    language: "hi",
-    languageName: "Hindi",
-    status: "coming-soon",
-    storageStrategy: "remote",
-    dataPath: "data/irv/",
-    booksFile: "books.json",
-    estimatedSizeMB: 3,
-    sourceUrl: null,
-    sourceFormat: null,
-    description: "Hindi translation (source not yet available in open-bibles)"
-  },
-  "fr-lsg": {
-    id: "fr-lsg",
-    name: "Louis Segond",
+
+  // ========================================
+  // INSTALLED VERSIONS (French)
+  // ========================================
+  "fra-lsg": {
+    id: "fra-lsg",
+    name: "Louis Segond 1910",
     shortName: "LSG",
     language: "fr",
     languageName: "French",
-    status: "coming-soon",
-    storageStrategy: "remote",
-    dataPath: "data/lsg/",
+    status: "installed",
+    storageStrategy: "bundled",
+    dataPath: "data/fra-lsg/",
     booksFile: "books.json",
-    estimatedSizeMB: 3,
-    sourceRepo: null,
-    description: "Classic French translation, public domain"
+    estimatedSizeMB: 4,
+    sourceUrl: "https://api.getbible.net/v2/ls1910.json",
+    sourceFormat: "getbible-json",
+    description: "Classic French translation from 1910, public domain"
   },
-  "bn-bsi": {
-    id: "bn-bsi",
-    name: "Bengali Common Language",
-    shortName: "BCL",
-    language: "bn",
-    languageName: "Bengali",
-    status: "coming-soon",
-    storageStrategy: "remote",
-    dataPath: "data/bcl/",
-    booksFile: "books.json",
-    estimatedSizeMB: 3,
-    sourceRepo: null,
-    description: "Bengali translation, public domain"
-  },
-  "pt-ara": {
-    id: "pt-ara",
-    name: "Almeida Revista e Atualizada",
-    shortName: "ARA",
-    language: "pt",
-    languageName: "Portuguese",
-    status: "coming-soon",
-    storageStrategy: "remote",
-    dataPath: "data/ara/",
-    booksFile: "books.json",
-    estimatedSizeMB: 3,
-    sourceRepo: null,
-    description: "Portuguese translation, public domain"
-  },
-  "ru-synod": {
-    id: "ru-synod",
-    name: "Synodal Translation",
-    shortName: "SYNOD",
-    language: "ru",
-    languageName: "Russian",
-    status: "coming-soon",
-    storageStrategy: "remote",
-    dataPath: "data/synod/",
-    booksFile: "books.json",
-    estimatedSizeMB: 3,
-    sourceRepo: null,
-    description: "Russian Synodal translation, public domain"
-  },
-  "id-tb": {
-    id: "id-tb",
-    name: "Terjemahan Baru",
-    shortName: "TB",
-    language: "id",
-    languageName: "Indonesian",
-    status: "coming-soon",
-    storageStrategy: "remote",
-    dataPath: "data/tb/",
-    booksFile: "books.json",
-    estimatedSizeMB: 3,
-    sourceRepo: null,
-    description: "Indonesian translation, public domain"
-  },
-  "ur-geo": {
-    id: "ur-geo",
-    name: "Urdu Geo Version",
-    shortName: "UGV",
-    language: "ur",
-    languageName: "Urdu",
-    status: "coming-soon",
-    storageStrategy: "remote",
-    dataPath: "data/ugv/",
-    booksFile: "books.json",
-    estimatedSizeMB: 3,
-    sourceRepo: null,
-    description: "Urdu translation, public domain"
-  },
-  "de-lut": {
-    id: "de-lut",
-    name: "Luther Bibel",
+
+  // ========================================
+  // INSTALLED VERSIONS (German)
+  // ========================================
+  "deu-lut": {
+    id: "deu-lut",
+    name: "Luther Bibel 1545",
     shortName: "LUT",
     language: "de",
     languageName: "German",
-    status: "coming-soon",
-    storageStrategy: "remote",
-    dataPath: "data/lut/",
+    status: "installed",
+    storageStrategy: "bundled",
+    dataPath: "data/deu-lut/",
     booksFile: "books.json",
-    estimatedSizeMB: 3,
-    sourceRepo: null,
-    description: "German Luther translation, public domain"
+    estimatedSizeMB: 4,
+    sourceUrl: "https://api.getbible.net/v2/luther1545.json",
+    sourceFormat: "getbible-json",
+    description: "German Luther translation from 1545, public domain"
   },
-  "ja-kougo": {
-    id: "ja-kougo",
-    name: "Kougo-yaku",
-    shortName: "JCB",
+
+  // ========================================
+  // INSTALLED VERSIONS (Japanese)
+  // ========================================
+  "jpn-kougo": {
+    id: "jpn-kougo",
+    name: "Japanese Kougo-yaku",
+    shortName: "JKG",
     language: "ja",
     languageName: "Japanese",
-    status: "coming-soon",
-    storageStrategy: "remote",
-    dataPath: "data/kougo/",
+    status: "installed",
+    storageStrategy: "bundled",
+    dataPath: "data/jpn-kougo/",
+    booksFile: "books.json",
+    estimatedSizeMB: 4,
+    sourceUrl: "https://api.getbible.net/v2/japkougo.json",
+    sourceFormat: "getbible-json",
+    description: "Japanese Colloquial translation, public domain"
+  },
+
+  // ========================================
+  // INSTALLED VERSIONS (Portuguese)
+  // ========================================
+  "por-almeida": {
+    id: "por-almeida",
+    name: "Portuguese Almeida",
+    shortName: "ALM",
+    language: "pt",
+    languageName: "Portuguese",
+    status: "installed",
+    storageStrategy: "bundled",
+    dataPath: "data/por-almeida/",
+    booksFile: "books.json",
+    estimatedSizeMB: 4,
+    sourceUrl: "https://api.getbible.net/v2/almeida.json",
+    sourceFormat: "getbible-json",
+    description: "Portuguese Almeida translation, public domain"
+  },
+
+  // ========================================
+  // INSTALLED VERSIONS (Russian)
+  // ========================================
+  "rus-synodal": {
+    id: "rus-synodal",
+    name: "Russian Synodal",
+    shortName: "SYN",
+    language: "ru",
+    languageName: "Russian",
+    status: "installed",
+    storageStrategy: "bundled",
+    dataPath: "data/rus-synodal/",
+    booksFile: "books.json",
+    estimatedSizeMB: 6,
+    sourceUrl: "https://api.getbible.net/v2/synodal.json",
+    sourceFormat: "getbible-json",
+    description: "Russian Synodal translation, public domain"
+  },
+
+  // ========================================
+  // INSTALLED VERSIONS (Swahili - African)
+  // ========================================
+  "swa-sbe": {
+    id: "swa-sbe",
+    name: "Swahili Bible Edition",
+    shortName: "SWA",
+    language: "sw",
+    languageName: "Swahili",
+    status: "installed",
+    storageStrategy: "bundled",
+    dataPath: "data/swa-sbe/",
     booksFile: "books.json",
     estimatedSizeMB: 3,
-    sourceRepo: null,
-    description: "Japanese Colloquial translation, public domain"
+    sourceUrl: "https://github.com/shemmjunior/swahili-bible-edition",
+    sourceFormat: "swahili-bible-edition-json",
+    description: "Swahili Bible Edition (full OT/NT), MIT license"
+  },
+
+  // ========================================
+  // INSTALLED VERSIONS (South/Southeast Asian)
+  // ========================================
+  "hi-irv": {
+    id: "hi-irv",
+    name: "Hindi Indian Revised Version",
+    shortName: "IRV",
+    language: "hi",
+    languageName: "Hindi",
+    status: "installed",
+    storageStrategy: "bundled",
+    dataPath: "data/hi-irv/",
+    booksFile: "books.json",
+    estimatedSizeMB: 4,
+    sourceUrl: "https://github.com/godlytalias/Bible-Database",
+    sourceFormat: "godlytalias-json",
+    description: "Hindi Indian Revised Version, public domain"
+  },
+  "bn-irv": {
+    id: "bn-irv",
+    name: "Bengali Indian Revised Version",
+    shortName: "BIR",
+    language: "bn",
+    languageName: "Bengali",
+    status: "installed",
+    storageStrategy: "bundled",
+    dataPath: "data/bn-irv/",
+    booksFile: "books.json",
+    estimatedSizeMB: 5,
+    sourceUrl: "https://github.com/godlytalias/Bible-Database",
+    sourceFormat: "godlytalias-json",
+    description: "Bengali Indian Revised Version, public domain"
+  },
+  "id-tb": {
+    id: "id-tb",
+    name: "Alkitab Terjemahan Baru",
+    shortName: "TB",
+    language: "id",
+    languageName: "Indonesian",
+    status: "installed",
+    storageStrategy: "bundled",
+    dataPath: "data/id-tb/",
+    booksFile: "books.json",
+    estimatedSizeMB: 3,
+    sourceUrl: "https://github.com/godlytalias/Bible-Database",
+    sourceFormat: "godlytalias-json",
+    description: "Indonesian Terjemahan Baru (New Translation), public domain"
   }
 };
 
