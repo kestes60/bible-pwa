@@ -34,6 +34,26 @@
   <link rel="stylesheet" href="styles/main.css" />
 </head>
 <body>
+  <!-- Splash Screen -->
+  <div id="splashScreen" class="splash-screen" aria-hidden="true">
+    <div class="splash-banner">
+      <div id="splashVerse" class="splash-verse">
+        In the beginning was the Word, and the Word was with God, and the Word was God.
+        <span class="splash-verse-ref">— John 1:1</span>
+      </div>
+    </div>
+    <video
+      id="splashVideo"
+      class="splash-video"
+      src="assets/videos/dove-map.mp4"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="auto"
+    ></video>
+  </div>
+
   <!-- Offline Indicator Banner -->
   <div class="offline-indicator" id="offlineIndicator" role="status" aria-live="polite" aria-label="Connection status">
     📡 You're offline - showing cached content

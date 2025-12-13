@@ -85,6 +85,70 @@ function initTheme() {
 }
 
 // ========================================
+// Splash Screen Management
+// ========================================
+
+/**
+ * Hide the splash screen with fade-out animation
+ */
+function hideSplash() {
+  const splashScreen = document.getElementById('splashScreen');
+  const splashVideo = document.getElementById('splashVideo');
+
+  if (!splashScreen) return;
+
+  // Add hidden class to trigger CSS fade-out
+  splashScreen.classList.add('hidden');
+
+  // Remove from DOM after animation completes
+  setTimeout(() => {
+    if (splashVideo) {
+      splashVideo.pause();
+      splashVideo.src = ''; // Release video resource
+    }
+    splashScreen.remove();
+  }, 1000);
+}
+
+/**
+ * Initialize splash screen - hides after 8s AND DOM ready
+ */
+function initSplash() {
+  const splashScreen = document.getElementById('splashScreen');
+
+  if (!splashScreen) return;
+
+  let domReady = false;
+  let timeElapsed = false;
+
+  function checkHideSplash() {
+    if (domReady && timeElapsed) {
+      hideSplash();
+    }
+  }
+
+  // Wait 8 seconds for verse read time
+  setTimeout(() => {
+    timeElapsed = true;
+    checkHideSplash();
+  }, 8000);
+
+  // Track DOM ready state
+  if (document.readyState === 'complete') {
+    domReady = true;
+    checkHideSplash();
+  } else {
+    window.addEventListener('load', () => {
+      domReady = true;
+      checkHideSplash();
+    });
+  }
+}
+
+// Initialize splash screen immediately
+initSplash();
+
+// ========================================
 // Font Size Management
 // ========================================
 const FONT_SIZE_STORAGE_KEY = 'bibleReader.fontSize';
