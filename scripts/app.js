@@ -8,7 +8,17 @@
  * - Bookmark system
  * - Full-text search within chapters
  * - Service Worker registration
+ *
+ * ARCHITECTURE NOTE: This app uses ES modules for a cleaner codebase.
+ * The modules attach APIs to window for backwards compatibility.
+ * Available modules: window.Storage, window.BibleData, window.UI, window.Reading
  */
+
+// ========================================
+// Module Imports (ES Modules)
+// ========================================
+// Import all modules - they self-attach to window for global access
+import './modules/index.js';
 
 // ========================================
 // Theme Management
@@ -85,72 +95,10 @@ function initTheme() {
 }
 
 // ========================================
-// Splash Screen Management
-// ========================================
-
-/**
- * Hide the splash screen with fade-out animation
- */
-function hideSplash() {
-  const splashScreen = document.getElementById('splashScreen');
-  const splashVideo = document.getElementById('splashVideo');
-
-  if (!splashScreen) return;
-
-  // Add hidden class to trigger CSS fade-out
-  splashScreen.classList.add('hidden');
-
-  // Remove from DOM after animation completes
-  setTimeout(() => {
-    if (splashVideo) {
-      splashVideo.pause();
-      splashVideo.src = ''; // Release video resource
-    }
-    splashScreen.remove();
-  }, 1000);
-}
-
-/**
- * Initialize splash screen - hides after 8s AND DOM ready
- */
-function initSplash() {
-  const splashScreen = document.getElementById('splashScreen');
-
-  if (!splashScreen) return;
-
-  let domReady = false;
-  let timeElapsed = false;
-
-  function checkHideSplash() {
-    if (domReady && timeElapsed) {
-      hideSplash();
-    }
-  }
-
-  // Wait 8 seconds for verse read time
-  setTimeout(() => {
-    timeElapsed = true;
-    checkHideSplash();
-  }, 8000);
-
-  // Track DOM ready state
-  if (document.readyState === 'complete') {
-    domReady = true;
-    checkHideSplash();
-  } else {
-    window.addEventListener('load', () => {
-      domReady = true;
-      checkHideSplash();
-    });
-  }
-}
-
-// Initialize splash screen immediately
-initSplash();
-
-// ========================================
 // Font Size Management
 // ========================================
+// Note: Splash screen timer is now in inline <script> in index.html
+// to ensure it runs BEFORE module imports (which block execution)
 const FONT_SIZE_STORAGE_KEY = 'bibleReader.fontSize';
 const FONT_SIZE_SMALL = 'small';
 const FONT_SIZE_MEDIUM = 'medium';
@@ -3861,3 +3809,295 @@ if ('serviceWorker' in navigator) {
     .then(() => console.log('Service Worker registered'))
     .catch(err => console.error('SW registration failed', err));
 }
+
+// ========================================
+// Premium / Stripe Integration
+// ========================================
+
+const PREMIUM_STORAGE_KEY = 'isPremium';
+const STRIPE_PUBLISHABLE_KEY = 'pk_test_51Se0ShK2HZNqMuLgjDtBitDHmU9sgYOYhQzGpEDpHieTJFJCymkLDXQ9yH6kudMdFMv0X1zrasMMUhPLvHnR60Sj00UGCRQc9u'; // Replace with actual test key
+const STRIPE_PRICE_ID = 'price_1Se5YEK2HZNqMuLgAPrt74P4';
+
+/**
+ * Check if user has premium access
+ * @returns {boolean}
+ */
+function isPremiumUser() {
+  return localStorage.getItem(PREMIUM_STORAGE_KEY) === 'true';
+}
+
+/**
+ * Set premium status
+ * @param {boolean} status
+ */
+function setPremiumStatus(status) {
+  localStorage.setItem(PREMIUM_STORAGE_KEY, status ? 'true' : 'false');
+  updatePremiumUI();
+}
+
+/**
+ * Update UI based on premium status
+ */
+function updatePremiumUI() {
+  const isPremium = isPremiumUser();
+  const unlockGroup = document.getElementById('premiumUnlockGroup');
+  const activeGroup = document.getElementById('premiumActiveGroup');
+
+  if (unlockGroup && activeGroup) {
+    unlockGroup.style.display = isPremium ? 'none' : 'block';
+    activeGroup.style.display = isPremium ? 'block' : 'none';
+  }
+
+  // Gate premium features - hide notes UI if not premium
+  const notesUI = document.querySelectorAll('.premium-feature');
+  notesUI.forEach(el => {
+    el.style.display = isPremium ? '' : 'none';
+  });
+}
+
+// Debounce flag to prevent double-clicks and extension interference
+let isCheckoutInProgress = false;
+let lastCheckoutAttempt = 0;
+const CHECKOUT_DEBOUNCE_MS = 2000;
+
+/**
+ * Start Stripe Checkout for premium unlock (debounced)
+ * @param {Event} [event] - Optional click event
+ */
+async function startPremiumCheckout(event) {
+  // Prevent default if event exists
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+  }
+
+  // Debounce check - prevent rapid double-clicks
+  const now = Date.now();
+  if (isCheckoutInProgress || (now - lastCheckoutAttempt) < CHECKOUT_DEBOUNCE_MS) {
+    console.log('Checkout debounced - already in progress or too soon');
+    return;
+  }
+
+  lastCheckoutAttempt = now;
+  isCheckoutInProgress = true;
+
+  const btn = document.getElementById('premiumUnlockBtn');
+
+  try {
+    // Check if Stripe is loaded
+    if (typeof Stripe === 'undefined') {
+      showToast('Payment system loading. Please try again.');
+      isCheckoutInProgress = false;
+      return;
+    }
+
+    // Show loading state
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = 'Loading...';
+      btn.style.pointerEvents = 'none';
+    }
+
+    console.log('Starting Stripe checkout...');
+    const stripe = Stripe(STRIPE_PUBLISHABLE_KEY);
+
+    // Get current URL for success/cancel redirects
+    const currentUrl = window.location.origin + window.location.pathname;
+
+    // Redirect to Stripe Checkout
+    const { error } = await stripe.redirectToCheckout({
+      lineItems: [{ price: STRIPE_PRICE_ID, quantity: 1 }],
+      mode: 'payment',
+      successUrl: currentUrl + '?premium=success',
+      cancelUrl: currentUrl + '?premium=cancelled',
+    });
+
+    if (error) {
+      console.error('Stripe checkout error:', error);
+
+      // Handle specific error types
+      if (error.message && error.message.includes('No such price')) {
+        showToast('Configuration error. Please contact support.');
+        console.error('Price ID mismatch - ensure test/live modes match');
+      } else {
+        showToast('Payment failed: ' + (error.message || 'Please try again.'));
+      }
+
+      // Reset button
+      resetPremiumButton(btn);
+    }
+  } catch (err) {
+    console.error('Checkout error:', err);
+
+    // Ignore extension-related errors (runtime.sendMessage, etc.)
+    if (err.message && (
+      err.message.includes('runtime.sendMessage') ||
+      err.message.includes('Extension context') ||
+      err.message.includes('message port closed')
+    )) {
+      console.log('Ignoring extension-related error');
+      // Don't show toast for extension errors - checkout may still work
+      return;
+    }
+
+    showToast('Unable to start checkout. Please try again.');
+    resetPremiumButton(btn);
+  }
+}
+
+/**
+ * Reset the premium unlock button to default state
+ * @param {HTMLElement} btn - Button element
+ */
+function resetPremiumButton(btn) {
+  isCheckoutInProgress = false;
+  if (btn) {
+    btn.disabled = false;
+    btn.textContent = 'Unlock V2 Lifetime ($5)';
+    btn.style.pointerEvents = 'auto';
+  }
+}
+
+/**
+ * Handle premium success from URL parameter
+ */
+function handlePremiumSuccess() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const premiumStatus = urlParams.get('premium');
+
+  if (premiumStatus === 'success') {
+    // Set premium flag
+    setPremiumStatus(true);
+
+    // Show success toast
+    showToast('Premium unlocked! Reload to access all features.', 5000);
+
+    // Clean up URL
+    const cleanUrl = window.location.origin + window.location.pathname;
+    window.history.replaceState({}, document.title, cleanUrl);
+
+    console.log('Premium unlocked successfully!');
+  } else if (premiumStatus === 'cancelled') {
+    // Clean up URL silently
+    const cleanUrl = window.location.origin + window.location.pathname;
+    window.history.replaceState({}, document.title, cleanUrl);
+  }
+}
+
+// Initialize premium system
+handlePremiumSuccess();
+
+/**
+ * Initialize premium UI and button event listeners
+ * Uses multiple binding strategies to overcome extension interference
+ */
+function initPremiumSystem() {
+  updatePremiumUI();
+
+  const unlockBtn = document.getElementById('premiumUnlockBtn');
+  if (unlockBtn) {
+    // Remove any existing listeners by cloning (prevents duplicate bindings)
+    const newBtn = unlockBtn.cloneNode(true);
+    unlockBtn.parentNode.replaceChild(newBtn, unlockBtn);
+
+    // Bind with capture phase to get events before extensions
+    newBtn.addEventListener('click', startPremiumCheckout, { capture: true, passive: false });
+
+    // Also bind to touchend for mobile (fires before click on touch devices)
+    newBtn.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      startPremiumCheckout(e);
+    }, { capture: true, passive: false });
+
+    // Bind mousedown as early fallback
+    newBtn.addEventListener('mousedown', function(e) {
+      // Mark that we're handling this
+      newBtn.dataset.clicking = 'true';
+    }, { capture: true });
+
+    // Ensure pointer events are enabled
+    newBtn.style.pointerEvents = 'auto';
+
+    console.log('Premium unlock button initialized with hardened listeners');
+  }
+}
+
+// Initialize on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', initPremiumSystem);
+
+// Also try to initialize immediately if DOM is already ready
+if (document.readyState !== 'loading') {
+  initPremiumSystem();
+}
+
+// ========================================
+// Global Window Exposures for onclick Handlers
+// ========================================
+// These functions are called from HTML onclick attributes and must be
+// exposed to the global window object. Without this, onclick handlers
+// will fail with "ReferenceError: function is not defined".
+
+// Navigation (includes dynamically assigned .onclick handlers)
+window.openBookSelector = openBookSelector;
+window.closeBookSelector = closeBookSelector;
+window.switchTestament = switchTestament;
+window.openChapterSelector = openChapterSelector;
+window.closeChapterSelector = closeChapterSelector;
+window.previousChapter = previousChapter;
+window.nextChapter = nextChapter;
+window.selectBook = selectBook;
+window.selectChapter = selectChapter;
+window.displayChapter = displayChapter;
+window.populateBookLists = populateBookLists;
+window.populateChapters = populateChapters;
+
+// Version Management
+window.openVersionManager = openVersionManager;
+window.closeVersionManager = closeVersionManager;
+
+// Parallel View (selectSecondaryVersion assigned via .onclick arrow function)
+window.openParallelVersionModal = openParallelVersionModal;
+window.closeParallelVersionModal = closeParallelVersionModal;
+window.scrollParallelPanesToTop = scrollParallelPanesToTop;
+window.selectSecondaryVersion = selectSecondaryVersion;
+
+// Bookmarks (includes dynamically generated onclick handlers)
+window.openBookmarksModal = openBookmarksModal;
+window.closeBookmarksModal = closeBookmarksModal;
+window.toggleBookmark = toggleBookmark;
+window.navigateToBookmark = navigateToBookmark;
+window.removeBookmark = removeBookmark;
+
+// Reading History (navigateToHistoryItem uses addEventListener, not onclick string)
+window.openReadingHistory = openReadingHistory;
+window.closeReadingHistory = closeReadingHistory;
+window.navigateToHistoryItem = navigateToHistoryItem;
+
+// Settings
+window.openSettingsModal = openSettingsModal;
+window.closeSettingsModal = closeSettingsModal;
+
+// Search
+window.performChapterSearch = performChapterSearch;
+window.clearChapterSearch = clearChapterSearch;
+window.goToPreviousMatch = goToPreviousMatch;
+window.goToNextMatch = goToNextMatch;
+
+// Reading Plans
+window.continueCurrentBookPlan = continueCurrentBookPlan;
+
+// Backup/Restore
+window.exportBibleBackup = exportBibleBackup;
+window.openBackupFilePicker = openBackupFilePicker;
+
+// Premium
+window.startPremiumCheckout = startPremiumCheckout;
+
+// Misc UI
+window.scrollToTop = scrollToTop;
+window.toggleTheme = toggleTheme;
+window.changeFontSize = changeFontSize;
+window.showToast = showToast;
+
+console.log('[App] Global onclick handlers exposed to window');

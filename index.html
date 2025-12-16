@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-title" content="Bible" />
   <meta name="theme-color" content="#D4A84B" />
   <meta name="description" content="Free PWA for Bible reading with multiple translations, reading plans, parallel view, bookmarks, and offline support." />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; base-uri 'self'; form-action 'none'; frame-ancestors 'none';" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://js.stripe.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.stripe.com; font-src 'self'; connect-src 'self' https://api.stripe.com https://*.stripe.com; manifest-src 'self'; base-uri 'self'; form-action https://checkout.stripe.com; frame-src https://js.stripe.com https://hooks.stripe.com https://checkout.stripe.com;" />
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
@@ -32,27 +32,42 @@
 
   <!-- External Stylesheet -->
   <link rel="stylesheet" href="styles/main.css" />
+
+  <!-- Stripe.js for payments -->
+  <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
-  <!-- Splash Screen -->
+  <!-- Splash Screen - Gold verse on navy -->
   <div id="splashScreen" class="splash-screen" aria-hidden="true">
-    <div class="splash-banner">
-      <div id="splashVerse" class="splash-verse">
-        In the beginning was the Word, and the Word was with God, and the Word was God.
-        <span class="splash-verse-ref">— John 1:1</span>
-      </div>
+    <div class="splash-verse">
+      In the beginning was the Word, and the Word was with God, and the Word was God.
+      <span class="splash-verse-ref">— John 1:1</span>
     </div>
-    <video
-      id="splashVideo"
-      class="splash-video"
-      src="assets/videos/dove-map.mp4"
-      autoplay
-      muted
-      loop
-      playsinline
-      preload="auto"
-    ></video>
   </div>
+
+  <!-- Splash Screen Timer - runs BEFORE modules load -->
+  <script>
+  (function() {
+    var splashHidden = false;
+    function hideSplash() {
+      if (splashHidden) return;
+      var splash = document.getElementById('splashScreen');
+      if (!splash) return;
+      splashHidden = true;
+      splash.classList.add('hidden');
+      setTimeout(function() {
+        var el = document.getElementById('splashScreen');
+        if (el) el.remove();
+      }, 1000);
+    }
+    // Hide after 8 seconds - guaranteed to run
+    setTimeout(hideSplash, 8000);
+    // Also hide on load event as backup
+    window.addEventListener('load', function() {
+      setTimeout(hideSplash, 100);
+    });
+  })();
+  </script>
 
   <!-- Offline Indicator Banner -->
   <div class="offline-indicator" id="offlineIndicator" role="status" aria-live="polite" aria-label="Connection status">
@@ -447,6 +462,28 @@
               </label>
               <small class="setting-hint">Switch between light and dark color schemes</small>
             </div>
+
+            <!-- Premium Unlock -->
+            <div class="setting-group premium-unlock-group" id="premiumUnlockGroup">
+              <div class="premium-unlock-header">
+                <span class="premium-badge">V2</span>
+                <span class="premium-title">Premium Features</span>
+              </div>
+              <p class="settings-description">Unlock verse notes, bookmark folders, and more.</p>
+              <button type="button" class="premium-unlock-btn" id="premiumUnlockBtn" onclick="startPremiumCheckout()" aria-label="Unlock V2 premium features for $5">
+                Unlock V2 Lifetime ($5)
+              </button>
+              <small class="setting-hint">One-time purchase. Secure payment via Stripe.</small>
+            </div>
+
+            <!-- Premium Active Badge (shown when unlocked) -->
+            <div class="setting-group premium-active-group" id="premiumActiveGroup" style="display: none;">
+              <div class="premium-active-badge">
+                <span class="premium-check">✓</span>
+                <span>V2 Premium Unlocked</span>
+              </div>
+              <small class="setting-hint">Thank you for supporting Bible Reader!</small>
+            </div>
           </div>
         </div>
 
@@ -484,7 +521,7 @@
   <script src="scripts/config/versions.js"></script>
   <!-- Reading plans & history storage (available as window.BibleReading) -->
   <script src="scripts/storage/reading-plans.js"></script>
-  <!-- Main application logic -->
-  <script src="scripts/app.js"></script>
+  <!-- Main application logic (ES module for new modular architecture) -->
+  <script type="module" src="scripts/app.js"></script>
 </body>
 </html>
