@@ -470,9 +470,7 @@
                 <span class="premium-title">Premium Features</span>
               </div>
               <p class="settings-description">Unlock verse notes, bookmark folders, and more.</p>
-              <button type="button" class="premium-unlock-btn" id="premiumUnlockBtn" onclick="startPremiumCheckout()" aria-label="Unlock V2 premium features for $5">
-                Unlock V2 Lifetime ($5)
-              </button>
+              <a href="https://buy.stripe.com/28EdRad6r8xjaPYg6HbjW00" target="_blank" rel="noopener" class="premium-unlock-btn" id="premiumUnlockBtn" aria-label="Unlock V2 premium features for $5">Unlock V2 Lifetime ($5)</a>
               <small class="setting-hint">One-time purchase. Secure payment via Stripe.</small>
             </div>
 
@@ -513,12 +511,32 @@
     </div>
   </div>
 
+  <!-- Verse Notes Modal (Premium Feature) -->
+  <div class="notes-modal-overlay" id="notesModalOverlay" onclick="closeNotesModal(event)" role="dialog" aria-labelledby="notesModalTitle" aria-modal="true">
+    <div class="notes-modal" onclick="event.stopPropagation()">
+      <div class="notes-modal-header">
+        <h2 id="notesModalTitle">Verse Note</h2>
+        <button class="notes-modal-close" onclick="closeNotesModal()" aria-label="Close notes">×</button>
+      </div>
+      <div class="notes-modal-body">
+        <p class="notes-verse-ref" id="notesVerseRef">Isaiah 42:1</p>
+        <textarea id="notesTextarea" class="notes-textarea" placeholder="Write your note here..." rows="6"></textarea>
+      </div>
+      <div class="notes-modal-footer">
+        <button class="notes-delete-btn" id="notesDeleteBtn" onclick="deleteVerseNote()" aria-label="Delete note">Delete</button>
+        <button class="notes-save-btn" onclick="saveVerseNote()" aria-label="Save note">Save</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Back to Top Button -->
   <button id="backToTopBtn" class="back-to-top" onclick="scrollToTop()" aria-label="Back to top">↑ Top</button>
 
   <!-- External Scripts -->
   <!-- Load version configuration first (app.js depends on it) -->
   <script src="scripts/config/versions.js"></script>
+  <!-- Environment config for test/live Stripe toggle -->
+  <script src="scripts/config.js"></script>
   <!-- Reading plans & history storage (available as window.BibleReading) -->
   <script src="scripts/storage/reading-plans.js"></script>
   <!-- Main application logic (ES module for new modular architecture) -->

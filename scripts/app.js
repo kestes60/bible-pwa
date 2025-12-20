@@ -2334,6 +2334,9 @@ function displayChapter(chapterNum) {
   // Update "Last read" hint in header
   updateLastReadHint();
 
+  // Setup verse note handlers (for premium note-taking feature)
+  setupVerseNoteHandlers(currentBook, chapterNum);
+
   // Handle parallel view loading
   if (isParallelEnabled()) {
     loadParallelChapter(currentBook, chapterNum);
@@ -2372,6 +2375,9 @@ async function loadParallelChapter(bookName, chapter) {
   // Re-initialize scroll sync after content loads
   initParallelScrollSync();
   console.log('[Parallel] Chapter loaded, scroll sync initialized');
+
+  // Setup verse note handlers for parallel view containers
+  setupVerseNoteHandlers(bookName, chapter);
 }
 
 // Update the chapter indicator text
@@ -3815,8 +3821,19 @@ if ('serviceWorker' in navigator) {
 // ========================================
 
 const PREMIUM_STORAGE_KEY = 'isPremium';
-const STRIPE_PUBLISHABLE_KEY = 'pk_test_51Se0ShK2HZNqMuLgjDtBitDHmU9sgYOYhQzGpEDpHieTJFJCymkLDXQ9yH6kudMdFMv0X1zrasMMUhPLvHnR60Sj00UGCRQc9u'; // Replace with actual test key
-const STRIPE_PRICE_ID = 'price_1Se5YEK2HZNqMuLgAPrt74P4';
+
+// Get Stripe config from environment-based config.js
+function getStripeSettings() {
+  if (window.BibleConfig && window.BibleConfig.getStripeConfig) {
+    return window.BibleConfig.getStripeConfig();
+  }
+  // Fallback to test mode if config not loaded
+  console.warn('[Premium] BibleConfig not found, using test fallback');
+  return {
+    url: 'https://buy.stripe.com/test_28EdRad6r8xjaPYg6HbjW00',
+    key: 'pk_test_51Se0ShK2HZNqMuLgjDtBitDHmU9sgYOYhQzGpEDpHieTJFJCymkLDXQ9yH6kudMdFMv0X1zrasMMUhPLvHnR60Sj00UGCRQc9u'
+  };
+}
 
 /**
  * Check if user has premium access
@@ -3961,27 +3978,38 @@ function resetPremiumButton(btn) {
 
 /**
  * Handle premium success from URL parameter
+ * Hardened with try-catch and explicit localStorage setting
  */
 function handlePremiumSuccess() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const premiumStatus = urlParams.get('premium');
+  try {
+    const urlParams = new URLSearchParams(window.location.search);
+    const premiumStatus = urlParams.get('premium');
 
-  if (premiumStatus === 'success') {
-    // Set premium flag
-    setPremiumStatus(true);
+    if (premiumStatus === 'success') {
+      console.log('Premium success detected in URL');
 
-    // Show success toast
-    showToast('Premium unlocked! Reload to access all features.', 5000);
+      // Set premium flag directly in localStorage
+      localStorage.setItem('isPremium', 'true');
+      console.log('localStorage.isPremium set to true');
 
-    // Clean up URL
-    const cleanUrl = window.location.origin + window.location.pathname;
-    window.history.replaceState({}, document.title, cleanUrl);
+      // Update UI to gate/show premium features
+      updatePremiumUI();
 
-    console.log('Premium unlocked successfully!');
-  } else if (premiumStatus === 'cancelled') {
-    // Clean up URL silently
-    const cleanUrl = window.location.origin + window.location.pathname;
-    window.history.replaceState({}, document.title, cleanUrl);
+      // Show success toast
+      showToast('Unlocked! Reload.', 5000);
+
+      // Clean up URL
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+
+      console.log('Premium unlocked successfully!');
+    } else if (premiumStatus === 'cancelled') {
+      // Clean up URL silently
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+    }
+  } catch (err) {
+    console.error('Error handling premium success:', err);
   }
 }
 
@@ -3989,37 +4017,26 @@ function handlePremiumSuccess() {
 handlePremiumSuccess();
 
 /**
- * Initialize premium UI and button event listeners
- * Uses multiple binding strategies to overcome extension interference
+ * Initialize premium UI and Payment Link click logging
  */
 function initPremiumSystem() {
   updatePremiumUI();
 
   const unlockBtn = document.getElementById('premiumUnlockBtn');
   if (unlockBtn) {
-    // Remove any existing listeners by cloning (prevents duplicate bindings)
-    const newBtn = unlockBtn.cloneNode(true);
-    unlockBtn.parentNode.replaceChild(newBtn, unlockBtn);
+    // Get environment-based Stripe config
+    const stripeConfig = getStripeSettings();
+    const env = window.BibleConfig?.getEnvironment?.() || 'test';
 
-    // Bind with capture phase to get events before extensions
-    newBtn.addEventListener('click', startPremiumCheckout, { capture: true, passive: false });
+    // Update button href dynamically based on environment
+    unlockBtn.href = stripeConfig.url;
 
-    // Also bind to touchend for mobile (fires before click on touch devices)
-    newBtn.addEventListener('touchend', function(e) {
-      e.preventDefault();
-      startPremiumCheckout(e);
-    }, { capture: true, passive: false });
+    // Log clicks with environment info
+    unlockBtn.addEventListener('click', function() {
+      console.log(`[Premium] Payment Link opened (${env} mode)`);
+    });
 
-    // Bind mousedown as early fallback
-    newBtn.addEventListener('mousedown', function(e) {
-      // Mark that we're handling this
-      newBtn.dataset.clicking = 'true';
-    }, { capture: true });
-
-    // Ensure pointer events are enabled
-    newBtn.style.pointerEvents = 'auto';
-
-    console.log('Premium unlock button initialized with hardened listeners');
+    console.log(`[Premium] Payment Link initialized (${env}): ${stripeConfig.url}`);
   }
 }
 
@@ -4029,6 +4046,297 @@ document.addEventListener('DOMContentLoaded', initPremiumSystem);
 // Also try to initialize immediately if DOM is already ready
 if (document.readyState !== 'loading') {
   initPremiumSystem();
+}
+
+// ========================================
+// Verse Notes (Premium Feature)
+// ========================================
+
+const NOTES_STORAGE_KEY = 'bibleNotes';
+let currentNoteContext = null; // { book, chapter, verse }
+
+/**
+ * Get all notes from localStorage
+ * @returns {Object} Notes object: { book: { chapter: { verse: text } } }
+ */
+function getAllNotes() {
+  try {
+    const notes = localStorage.getItem(NOTES_STORAGE_KEY);
+    return notes ? JSON.parse(notes) : {};
+  } catch (e) {
+    console.error('Error reading notes:', e);
+    return {};
+  }
+}
+
+/**
+ * Get note for specific verse
+ * @param {string} book
+ * @param {number|string} chapter
+ * @param {number|string} verse
+ * @returns {string|null}
+ */
+function getVerseNote(book, chapter, verse) {
+  const notes = getAllNotes();
+  return notes[book]?.[chapter]?.[verse] || null;
+}
+
+/**
+ * Save note for specific verse
+ * @param {string} book
+ * @param {number|string} chapter
+ * @param {number|string} verse
+ * @param {string} text
+ */
+function setVerseNote(book, chapter, verse, text) {
+  const notes = getAllNotes();
+
+  if (!notes[book]) notes[book] = {};
+  if (!notes[book][chapter]) notes[book][chapter] = {};
+
+  if (text && text.trim()) {
+    notes[book][chapter][verse] = text.trim();
+  } else {
+    delete notes[book][chapter][verse];
+    // Clean up empty objects
+    if (Object.keys(notes[book][chapter]).length === 0) {
+      delete notes[book][chapter];
+    }
+    if (Object.keys(notes[book]).length === 0) {
+      delete notes[book];
+    }
+  }
+
+  localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(notes));
+}
+
+/**
+ * Handle verse tap - open notes modal if premium
+ * @param {Event} event
+ */
+function handleVerseTap(event) {
+  const verseDiv = event.currentTarget;
+  const book = verseDiv.dataset.book;
+  const chapter = verseDiv.dataset.chapter;
+  const verse = verseDiv.dataset.verse;
+
+  if (!book || !chapter || !verse) {
+    console.error('Missing verse data attributes');
+    return;
+  }
+
+  // Check premium status
+  if (!isPremiumUser()) {
+    showToast('Unlock V2 for notes');
+    return;
+  }
+
+  // Open notes modal
+  openNotesModal(book, chapter, verse);
+}
+
+/**
+ * Open the notes modal for a verse
+ * @param {string} book
+ * @param {number|string} chapter
+ * @param {number|string} verse
+ */
+function openNotesModal(book, chapter, verse) {
+  currentNoteContext = { book, chapter, verse };
+
+  const overlay = document.getElementById('notesModalOverlay');
+  const verseRef = document.getElementById('notesVerseRef');
+  const textarea = document.getElementById('notesTextarea');
+  const deleteBtn = document.getElementById('notesDeleteBtn');
+
+  // Set verse reference
+  verseRef.textContent = `${book} ${chapter}:${verse}`;
+
+  // Load existing note
+  const existingNote = getVerseNote(book, chapter, verse);
+  textarea.value = existingNote || '';
+
+  // Enable/disable delete button
+  deleteBtn.disabled = !existingNote;
+
+  // Show modal
+  overlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
+
+  // Focus textarea
+  setTimeout(() => textarea.focus(), 100);
+}
+
+/**
+ * Close the notes modal
+ * @param {Event} [event]
+ */
+function closeNotesModal(event) {
+  if (event && event.target !== event.currentTarget) return;
+
+  const overlay = document.getElementById('notesModalOverlay');
+  overlay.classList.remove('active');
+  document.body.style.overflow = '';
+  currentNoteContext = null;
+}
+
+/**
+ * Save the current note
+ */
+function saveVerseNote() {
+  if (!currentNoteContext) return;
+
+  const { book, chapter, verse } = currentNoteContext;
+  const textarea = document.getElementById('notesTextarea');
+  const text = textarea.value;
+
+  setVerseNote(book, chapter, verse, text);
+
+  // Update verse indicator in DOM
+  updateVerseNoteIndicator(book, chapter, verse, !!text.trim());
+
+  showToast(text.trim() ? 'Note saved' : 'Note removed');
+  closeNotesModal();
+}
+
+/**
+ * Delete the current note
+ */
+function deleteVerseNote() {
+  if (!currentNoteContext) return;
+
+  const { book, chapter, verse } = currentNoteContext;
+
+  setVerseNote(book, chapter, verse, '');
+  updateVerseNoteIndicator(book, chapter, verse, false);
+
+  showToast('Note deleted');
+  closeNotesModal();
+}
+
+/**
+ * Update the note indicator on a verse element
+ * @param {string} book
+ * @param {number|string} chapter
+ * @param {number|string} verse
+ * @param {boolean} hasNote
+ */
+function updateVerseNoteIndicator(book, chapter, verse, hasNote) {
+  // Find all matching verses (could be in multiple containers)
+  const verseDivs = document.querySelectorAll(
+    `.verse[data-book="${book}"][data-chapter="${chapter}"][data-verse="${verse}"]`
+  );
+
+  verseDivs.forEach(verseDiv => {
+    verseDiv.classList.toggle('has-note', hasNote);
+
+    // Add or remove the 📝 emoji indicator
+    let indicator = verseDiv.querySelector('.note-indicator');
+
+    if (hasNote && !indicator) {
+      // Add emoji before the verse number
+      indicator = document.createElement('span');
+      indicator.className = 'note-indicator';
+      indicator.textContent = '📝';
+      verseDiv.insertBefore(indicator, verseDiv.firstChild);
+    } else if (!hasNote && indicator) {
+      // Remove emoji
+      indicator.remove();
+    }
+  });
+}
+
+/**
+ * Add note indicators to all verses that have notes
+ * Call after chapter load to show existing notes
+ * @param {string} book
+ * @param {number|string} chapter
+ */
+function addNoteIndicators(book, chapter) {
+  const notes = getAllNotes();
+  const chapterNotes = notes[book]?.[chapter] || {};
+
+  // Find all verses in all containers
+  const containers = [
+    document.getElementById('versesContainer'),
+    document.getElementById('primaryVersesContainer'),
+    document.getElementById('secondaryVersesContainer')
+  ].filter(Boolean);
+
+  containers.forEach(container => {
+    const verses = container.querySelectorAll('.verse');
+    verses.forEach(verseDiv => {
+      const verseNum = verseDiv.dataset.verse;
+      if (!verseNum) return;
+
+      const hasNote = !!chapterNotes[verseNum];
+
+      if (hasNote) {
+        verseDiv.classList.add('has-note');
+
+        // Add emoji if not already present
+        if (!verseDiv.querySelector('.note-indicator')) {
+          const indicator = document.createElement('span');
+          indicator.className = 'note-indicator';
+          indicator.textContent = '📝';
+          verseDiv.insertBefore(indicator, verseDiv.firstChild);
+        }
+      }
+    });
+  });
+
+  const noteCount = Object.keys(chapterNotes).length;
+  if (noteCount > 0) {
+    console.log(`[Notes] ${noteCount} note indicator(s) added for ${book} ${chapter}`);
+  }
+}
+
+/**
+ * Add data attributes and click handlers to verse elements
+ * Call this after rendering verses (works for single and parallel views)
+ * @param {string} book
+ * @param {number|string} chapter
+ */
+function setupVerseNoteHandlers(book, chapter) {
+  // Query all verse containers: main, primary parallel, secondary parallel
+  const containers = [
+    document.getElementById('versesContainer'),
+    document.getElementById('primaryVersesContainer'),
+    document.getElementById('secondaryVersesContainer')
+  ].filter(Boolean);
+
+  if (containers.length === 0) return;
+
+  const notes = getAllNotes();
+  const chapterNotes = notes[book]?.[chapter] || {};
+
+  containers.forEach(container => {
+    const verses = container.querySelectorAll('.verse');
+    verses.forEach(verseDiv => {
+      // Skip if already has handler attached
+      if (verseDiv.dataset.noteHandler) return;
+
+      // Get verse number from the verse-number span (or verse-num class)
+      const verseNumSpan = verseDiv.querySelector('.verse-number, .verse-num');
+      if (!verseNumSpan) return;
+
+      const verseNum = verseNumSpan.textContent.trim();
+
+      // Add data attributes
+      verseDiv.dataset.book = book;
+      verseDiv.dataset.chapter = chapter;
+      verseDiv.dataset.verse = verseNum;
+      verseDiv.dataset.noteHandler = 'true';
+
+      // Add click handler
+      verseDiv.addEventListener('click', handleVerseTap);
+    });
+  });
+
+  // Add note indicators (📝 emoji + teal glow) for verses with notes
+  addNoteIndicators(book, chapter);
+
+  console.log(`[Notes] Handlers attached for ${book} ${chapter}`);
 }
 
 // ========================================
@@ -4093,6 +4401,12 @@ window.openBackupFilePicker = openBackupFilePicker;
 
 // Premium
 window.startPremiumCheckout = startPremiumCheckout;
+
+// Verse Notes (Premium Feature)
+window.openNotesModal = openNotesModal;
+window.closeNotesModal = closeNotesModal;
+window.saveVerseNote = saveVerseNote;
+window.deleteVerseNote = deleteVerseNote;
 
 // Misc UI
 window.scrollToTop = scrollToTop;
