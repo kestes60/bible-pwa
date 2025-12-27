@@ -4078,7 +4078,7 @@ async function checkForUpdates() {
       // If no update found after 3 seconds, notify user
       setTimeout(() => {
         if (!reg.installing && !reg.waiting) {
-          showToast('You have the latest version (v72)');
+          showToast('You have the latest version (v73)');
         }
       }, 3000);
     } else {
@@ -4639,7 +4639,8 @@ function showSyncQR() {
 }
 
 /**
- * Generate QR code using qrcode-generator library
+ * Generate scannable QR code using qrcode-generator library
+ * Creates 300x300 canvas for reliable camera scanning
  */
 function generateQRCode(data) {
   const display = document.getElementById('qrCodeDisplay');
@@ -4647,44 +4648,77 @@ function generateQRCode(data) {
 
   // Use qrcode-generator library (loaded via CDN)
   if (typeof qrcode !== 'undefined') {
+    // Type 0 = auto-detect size, 'M' = medium error correction
     const qr = qrcode(0, 'M');
     qr.addData(data);
     qr.make();
 
-    const img = document.createElement('div');
-    img.innerHTML = qr.createSvgTag(5, 0);
-    img.style.background = '#fff';
-    img.style.padding = '10px';
-    img.style.borderRadius = '8px';
-    display.appendChild(img);
+    // Create 300x300 canvas for reliable scanning
+    const canvas = document.createElement('canvas');
+    const size = 300;
+    const moduleCount = qr.getModuleCount();
+    const cellSize = Math.floor(size / moduleCount);
+    const actualSize = cellSize * moduleCount;
+
+    canvas.width = actualSize;
+    canvas.height = actualSize;
+    canvas.style.display = 'block';
+    canvas.style.margin = '0 auto';
+    canvas.style.borderRadius = '8px';
+
+    const ctx = canvas.getContext('2d');
+
+    // White background
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, actualSize, actualSize);
+
+    // Draw QR modules (black squares)
+    ctx.fillStyle = '#000000';
+    for (let row = 0; row < moduleCount; row++) {
+      for (let col = 0; col < moduleCount; col++) {
+        if (qr.isDark(row, col)) {
+          ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
+        }
+      }
+    }
+
+    // Wrap canvas in white container for contrast
+    const wrapper = document.createElement('div');
+    wrapper.style.background = '#ffffff';
+    wrapper.style.padding = '16px';
+    wrapper.style.borderRadius = '12px';
+    wrapper.style.display = 'inline-block';
+    wrapper.appendChild(canvas);
+    display.appendChild(wrapper);
   } else {
-    // Fallback: show URL as text with instructions
-    const fallback = document.createElement('div');
-    fallback.style.textAlign = 'center';
-    fallback.style.padding = '1rem';
-    fallback.innerHTML = `
-      <p style="color: var(--yt-text-muted); margin-bottom: 0.5rem;">📱 Copy this link:</p>
-      <input type="text" value="${data}" readonly
-        style="width: 100%; padding: 0.5rem; font-size: 0.7rem; border-radius: 4px; border: 1px solid var(--yt-border);"
-        onclick="this.select(); document.execCommand('copy'); showToast('Link copied!');">
-    `;
+    // Fallback: show error message
+    const fallback = document.createElement('p');
+    fallback.style.color = 'var(--yt-text-muted)';
+    fallback.textContent = 'QR library not loaded. Use Copy URL button below.';
     display.appendChild(fallback);
   }
 
-  // Show URL below QR for manual copy
-  const urlText = document.createElement('p');
-  urlText.style.fontSize = '0.65rem';
-  urlText.style.color = 'var(--yt-text-muted)';
-  urlText.style.marginTop = '0.75rem';
-  urlText.style.wordBreak = 'break-all';
-  urlText.style.maxWidth = '250px';
-  urlText.style.cursor = 'pointer';
-  urlText.textContent = data;
-  urlText.title = 'Click to copy';
-  urlText.onclick = () => {
-    navigator.clipboard.writeText(data).then(() => showToast('Link copied!'));
+  // Add Copy URL button (not text that interferes with scanning)
+  const copyBtn = document.createElement('button');
+  copyBtn.type = 'button';
+  copyBtn.className = 'qr-copy-btn';
+  copyBtn.textContent = '📋 Copy URL';
+  copyBtn.style.marginTop = '1rem';
+  copyBtn.style.padding = '0.5rem 1rem';
+  copyBtn.style.background = 'var(--yt-card-bg)';
+  copyBtn.style.color = 'var(--yt-text-main)';
+  copyBtn.style.border = '1px solid var(--yt-card-border)';
+  copyBtn.style.borderRadius = '6px';
+  copyBtn.style.cursor = 'pointer';
+  copyBtn.style.fontSize = '0.85rem';
+  copyBtn.onclick = () => {
+    navigator.clipboard.writeText(data).then(() => {
+      showToast('URL copied! Paste in browser on other device.');
+      copyBtn.textContent = '✓ Copied!';
+      setTimeout(() => { copyBtn.textContent = '📋 Copy URL'; }, 2000);
+    });
   };
-  display.appendChild(urlText);
+  display.appendChild(copyBtn);
 }
 
 
