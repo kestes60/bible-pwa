@@ -4049,6 +4049,59 @@ if (document.readyState !== 'loading') {
 }
 
 // ========================================
+// PWA Update Detection
+// ========================================
+
+/**
+ * Check for PWA updates manually
+ * Helps users stuck on old cached versions
+ */
+async function checkForUpdates() {
+  try {
+    const reg = await navigator.serviceWorker.getRegistration();
+    if (reg) {
+      showToast('Checking for updates...');
+      await reg.update();
+
+      // Listen for new SW found
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        if (newWorker) {
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              showToast('Update found! Tap to refresh.');
+            }
+          });
+        }
+      });
+
+      // If no update found after 3 seconds, notify user
+      setTimeout(() => {
+        if (!reg.installing && !reg.waiting) {
+          showToast('You have the latest version (v72)');
+        }
+      }, 3000);
+    } else {
+      showToast('No service worker found');
+    }
+  } catch (e) {
+    console.error('[Update] Error checking for updates:', e);
+    showToast('Update check failed');
+  }
+}
+
+// Listen for controller change (new SW activated)
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    console.log('[SW] New service worker activated');
+    // Auto-reload to get fresh content
+    if (confirm('New version available! Reload now?')) {
+      window.location.reload();
+    }
+  });
+}
+
+// ========================================
 // Verse Notes (Premium Feature)
 // ========================================
 
@@ -4133,6 +4186,16 @@ function handleVerseTap(event) {
 
   // Open notes modal
   openNotesModal(book, chapter, verse);
+
+  // Show BLB deep link toast after a delay (V2 feature)
+  setTimeout(() => {
+    showBLBToast(book, chapter, verse);
+  }, 500);
+
+  // Check if this chapter has a map location
+  if (BIBLE_LOCATIONS[book]?.[chapter]) {
+    console.log(`[Maps] Location available for ${book} ${chapter}`);
+  }
 }
 
 /**
@@ -4340,6 +4403,493 @@ function setupVerseNoteHandlers(book, chapter) {
 }
 
 // ========================================
+// V2 Premium Features
+// ========================================
+
+// --- Bookmark Folders ---
+const BOOKMARK_FOLDERS_KEY = 'bibleBookmarkFolders';
+let currentBookmarkFolder = 'default';
+
+/**
+ * Get all bookmark folders
+ * @returns {Object} Folders object: { folderName: [{book, chapter, verse, createdAt}] }
+ */
+function getBookmarkFolders() {
+  try {
+    const folders = localStorage.getItem(BOOKMARK_FOLDERS_KEY);
+    return folders ? JSON.parse(folders) : { default: [] };
+  } catch (e) {
+    console.error('Error loading bookmark folders:', e);
+    return { default: [] };
+  }
+}
+
+/**
+ * Save bookmark folders to localStorage
+ */
+function saveBookmarkFolders(folders) {
+  localStorage.setItem(BOOKMARK_FOLDERS_KEY, JSON.stringify(folders));
+}
+
+/**
+ * Create a new bookmark folder
+ */
+function createBookmarkFolder() {
+  if (!isPremiumUser()) {
+    showToast('Unlock V2 for bookmark folders');
+    return;
+  }
+
+  const folderName = prompt('Enter folder name:');
+  if (!folderName || !folderName.trim()) return;
+
+  const folders = getBookmarkFolders();
+  const safeName = folderName.trim();
+
+  if (folders[safeName]) {
+    showToast('Folder already exists');
+    return;
+  }
+
+  folders[safeName] = [];
+  saveBookmarkFolders(folders);
+  updateFolderDropdown();
+  showToast(`Folder "${safeName}" created`);
+}
+
+/**
+ * Update the folder dropdown in settings
+ */
+function updateFolderDropdown() {
+  const select = document.getElementById('bookmarkFolderSelect');
+  if (!select) return;
+
+  const folders = getBookmarkFolders();
+  select.innerHTML = '';
+
+  Object.keys(folders).forEach(name => {
+    const option = document.createElement('option');
+    option.value = name;
+    option.textContent = name === 'default' ? 'Default' : name;
+    if (name === currentBookmarkFolder) option.selected = true;
+    select.appendChild(option);
+  });
+
+  select.onchange = () => {
+    currentBookmarkFolder = select.value;
+    showToast(`Bookmarks saving to: ${currentBookmarkFolder}`);
+  };
+}
+
+/**
+ * Add bookmark to current folder (V2 enhanced)
+ */
+function addBookmarkToFolder(book, chapter, verse) {
+  if (!isPremiumUser()) return;
+
+  const folders = getBookmarkFolders();
+  const folder = folders[currentBookmarkFolder] || [];
+
+  folder.push({
+    book,
+    chapter,
+    verse,
+    createdAt: new Date().toISOString()
+  });
+
+  folders[currentBookmarkFolder] = folder;
+  saveBookmarkFolders(folders);
+  showToast(`Bookmarked to ${currentBookmarkFolder}`);
+}
+
+// --- Bible Maps ---
+let bibleMap = null;
+
+// Bible locations data (sample - Jericho for Joshua)
+const BIBLE_LOCATIONS = {
+  'Joshua': {
+    '6': { name: 'Jericho', lat: 31.8711, lon: 35.4444, description: 'The walls of Jericho fell' }
+  },
+  'Genesis': {
+    '12': { name: 'Canaan', lat: 31.5, lon: 35.0, description: 'Abraham enters the Promised Land' }
+  },
+  'Exodus': {
+    '14': { name: 'Red Sea', lat: 28.0, lon: 33.5, description: 'Crossing of the Red Sea' }
+  },
+  'Matthew': {
+    '2': { name: 'Bethlehem', lat: 31.7054, lon: 35.2024, description: 'Birth of Jesus' }
+  },
+  'John': {
+    '4': { name: 'Samaria', lat: 32.2833, lon: 35.2, description: 'Woman at the well' }
+  }
+};
+
+/**
+ * Open map modal for current verse location
+ */
+function openMapForVerse(book, chapter) {
+  if (!isPremiumUser()) {
+    showToast('Unlock V2 for Bible maps');
+    return;
+  }
+
+  const location = BIBLE_LOCATIONS[book]?.[chapter];
+  if (!location) {
+    showToast('No map location for this passage');
+    return;
+  }
+
+  document.getElementById('mapModalOverlay').classList.add('active');
+  document.getElementById('mapLocationName').textContent = `${location.name}: ${location.description}`;
+  document.body.style.overflow = 'hidden';
+
+  // Initialize map after modal is visible
+  setTimeout(() => {
+    if (bibleMap) {
+      bibleMap.remove();
+    }
+
+    bibleMap = L.map('bibleMap').setView([location.lat, location.lon], 10);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap'
+    }).addTo(bibleMap);
+
+    L.marker([location.lat, location.lon])
+      .addTo(bibleMap)
+      .bindPopup(`<b>${location.name}</b><br>${location.description}`)
+      .openPopup();
+  }, 100);
+}
+
+/**
+ * Close map modal
+ */
+function closeMapModal(event) {
+  if (event && event.target !== event.currentTarget) return;
+  document.getElementById('mapModalOverlay').classList.remove('active');
+  document.body.style.overflow = '';
+  if (bibleMap) {
+    bibleMap.remove();
+    bibleMap = null;
+  }
+}
+
+// --- QR Cross-Device Sync ---
+const SYNC_KEY_PREFIX = 'yahtsar-unlock-';
+let qrScannerStream = null;
+let qrMode = 'display'; // 'display' or 'scan'
+
+/**
+ * Generate a unique sync key hash
+ */
+function generateSyncKey() {
+  const timestamp = Date.now().toString(36);
+  const random = Math.random().toString(36).substring(2, 8);
+  return SYNC_KEY_PREFIX + timestamp + random;
+}
+
+/**
+ * Get or create the sync key for this device
+ */
+function getSyncKey() {
+  let key = localStorage.getItem('premiumSyncKey');
+  if (!key) {
+    key = generateSyncKey();
+    localStorage.setItem('premiumSyncKey', key);
+  }
+  return key;
+}
+
+/**
+ * Validate a sync key
+ */
+function validateSyncKey(key) {
+  return key && key.startsWith(SYNC_KEY_PREFIX) && key.length > SYNC_KEY_PREFIX.length + 5;
+}
+
+/**
+ * Get the sync URL for QR code
+ */
+function getSyncURL() {
+  const syncKey = getSyncKey();
+  // Use production URL - works on any device when scanned
+  return `https://kestes60.github.io/bible-pwa/?unlock=${encodeURIComponent(syncKey)}`;
+}
+
+/**
+ * Show QR code for syncing
+ */
+function showSyncQR() {
+  if (!isPremiumUser()) {
+    showToast('Premium required to sync');
+    return;
+  }
+
+  qrMode = 'display';
+  document.getElementById('qrModalOverlay').classList.add('active');
+  document.getElementById('qrInstruction').textContent = 'Scan this code on another device to sync premium';
+  document.getElementById('qrActionBtn').textContent = 'Switch to Scan';
+  document.getElementById('qrScanner').style.display = 'none';
+  document.getElementById('qrCodeDisplay').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+
+  const syncURL = getSyncURL();
+  generateQRCode(syncURL);
+  showToast('Scan on other devices');
+}
+
+/**
+ * Generate QR code using qrcode-generator library
+ */
+function generateQRCode(data) {
+  const display = document.getElementById('qrCodeDisplay');
+  display.innerHTML = '';
+
+  // Use qrcode-generator library (loaded via CDN)
+  if (typeof qrcode !== 'undefined') {
+    const qr = qrcode(0, 'M');
+    qr.addData(data);
+    qr.make();
+
+    const img = document.createElement('div');
+    img.innerHTML = qr.createSvgTag(5, 0);
+    img.style.background = '#fff';
+    img.style.padding = '10px';
+    img.style.borderRadius = '8px';
+    display.appendChild(img);
+  } else {
+    // Fallback: show URL as text with instructions
+    const fallback = document.createElement('div');
+    fallback.style.textAlign = 'center';
+    fallback.style.padding = '1rem';
+    fallback.innerHTML = `
+      <p style="color: var(--yt-text-muted); margin-bottom: 0.5rem;">📱 Copy this link:</p>
+      <input type="text" value="${data}" readonly
+        style="width: 100%; padding: 0.5rem; font-size: 0.7rem; border-radius: 4px; border: 1px solid var(--yt-border);"
+        onclick="this.select(); document.execCommand('copy'); showToast('Link copied!');">
+    `;
+    display.appendChild(fallback);
+  }
+
+  // Show URL below QR for manual copy
+  const urlText = document.createElement('p');
+  urlText.style.fontSize = '0.65rem';
+  urlText.style.color = 'var(--yt-text-muted)';
+  urlText.style.marginTop = '0.75rem';
+  urlText.style.wordBreak = 'break-all';
+  urlText.style.maxWidth = '250px';
+  urlText.style.cursor = 'pointer';
+  urlText.textContent = data;
+  urlText.title = 'Click to copy';
+  urlText.onclick = () => {
+    navigator.clipboard.writeText(data).then(() => showToast('Link copied!'));
+  };
+  display.appendChild(urlText);
+}
+
+
+/**
+ * Scan QR code for syncing
+ */
+async function scanSyncQR() {
+  qrMode = 'scan';
+  document.getElementById('qrModalOverlay').classList.add('active');
+  document.getElementById('qrInstruction').textContent = 'Point camera at QR code or enter key manually';
+  document.getElementById('qrActionBtn').textContent = 'Enter Key Manually';
+  document.getElementById('qrCodeDisplay').style.display = 'none';
+  document.getElementById('qrScanner').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+
+  try {
+    const video = document.getElementById('qrScanner');
+    qrScannerStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    video.srcObject = qrScannerStream;
+  } catch (e) {
+    console.error('Camera access denied:', e);
+    showToast('Camera access denied. Enter key manually.');
+  }
+}
+
+/**
+ * Toggle between display and scan mode, or enter key manually
+ */
+function toggleQRMode() {
+  if (qrMode === 'display') {
+    scanSyncQR();
+  } else {
+    // Manual key entry
+    const key = prompt('Enter sync key:');
+    if (key && validateSyncKey(key)) {
+      localStorage.setItem('isPremium', 'true');
+      localStorage.setItem('premiumSyncKey', key);
+      showToast('Premium synced successfully!');
+      closeQRModal();
+      updatePremiumUI();
+    } else if (key) {
+      showToast('Invalid sync key');
+    }
+  }
+}
+
+/**
+ * Close QR modal
+ */
+function closeQRModal(event) {
+  if (event && event.target !== event.currentTarget) return;
+  document.getElementById('qrModalOverlay').classList.remove('active');
+  document.body.style.overflow = '';
+
+  if (qrScannerStream) {
+    qrScannerStream.getTracks().forEach(track => track.stop());
+    qrScannerStream = null;
+  }
+}
+
+/**
+ * Generate QR on premium success
+ */
+function onPremiumSuccessQR() {
+  if (isPremiumUser()) {
+    const key = getSyncKey();
+    console.log('[Premium] Sync key generated:', key);
+    showToast('Scan QR in Settings to sync other devices');
+  }
+}
+
+// --- Study Companions / BLB Integration ---
+
+/**
+ * Generate Blue Letter Bible deep link for verse
+ */
+function getBLBLink(book, chapter, verse) {
+  // BLB uses specific book abbreviations
+  const blbBooks = {
+    'Genesis': 'Gen', 'Exodus': 'Exo', 'Leviticus': 'Lev', 'Numbers': 'Num',
+    'Deuteronomy': 'Deu', 'Joshua': 'Jos', 'Judges': 'Jdg', 'Ruth': 'Rth',
+    '1 Samuel': '1Sa', '2 Samuel': '2Sa', '1 Kings': '1Ki', '2 Kings': '2Ki',
+    'Psalms': 'Psa', 'Proverbs': 'Pro', 'Isaiah': 'Isa', 'Jeremiah': 'Jer',
+    'Matthew': 'Mat', 'Mark': 'Mar', 'Luke': 'Luk', 'John': 'Jhn',
+    'Acts': 'Act', 'Romans': 'Rom', '1 Corinthians': '1Co', '2 Corinthians': '2Co',
+    'Galatians': 'Gal', 'Ephesians': 'Eph', 'Philippians': 'Php', 'Colossians': 'Col',
+    'Revelation': 'Rev'
+  };
+
+  const abbr = blbBooks[book] || book.substring(0, 3);
+  return `https://www.blueletterbible.org/kjv/${abbr}/${chapter}/${verse}/`;
+}
+
+/**
+ * Show BLB toast on verse tap (premium only)
+ */
+function showBLBToast(book, chapter, verse) {
+  if (!isPremiumUser()) return;
+
+  const link = getBLBLink(book, chapter, verse);
+  const toast = document.createElement('div');
+  toast.className = 'toast-notification show';
+  toast.innerHTML = `Deep dive with <a href="${link}" target="_blank" rel="noopener" class="blb-toast-link">Blue Letter Bible</a>?`;
+  toast.style.cursor = 'pointer';
+
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+}
+
+/**
+ * Handle ?unlock= URL parameter for QR sync
+ */
+function handleUnlockParam() {
+  console.log('[QR Sync] Checking for unlock param...');
+  const urlParams = new URLSearchParams(window.location.search);
+  const unlockKey = urlParams.get('unlock');
+  console.log('[QR Sync] Key found:', unlockKey ? 'yes' : 'no');
+
+  if (unlockKey) {
+    const decodedKey = decodeURIComponent(unlockKey);
+    console.log('[QR Sync] Validating key...');
+
+    if (validateSyncKey(decodedKey)) {
+      console.log('[QR Sync] Key valid, setting premium...');
+      localStorage.setItem('isPremium', 'true');
+      localStorage.setItem('premiumSyncKey', decodedKey);
+      showToast('Premium synced successfully!');
+      updatePremiumUI();
+
+      // Clean URL without reload
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+
+      // Prompt to install PWA if running in browser (not standalone PWA)
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                          window.navigator.standalone === true;
+      if (!isStandalone) {
+        console.log('[QR Sync] Running in browser, prompting Add to Home Screen');
+        setTimeout(() => {
+          showToast('Add to Home Screen for offline premium!');
+        }, 2500);
+      }
+    } else {
+      console.log('[QR Sync] Invalid key format');
+      showToast('Invalid sync key');
+    }
+  }
+}
+
+// Run handleUnlockParam immediately if DOM is ready (for QR scan flow)
+if (document.readyState !== 'loading') {
+  handleUnlockParam();
+}
+
+/**
+ * Manual sync key entry fallback
+ * For users who can't scan QR code
+ */
+function manualSync() {
+  const input = document.getElementById('manualSyncKey');
+  if (!input) return;
+
+  const rawKey = input.value.trim();
+  if (!rawKey) {
+    showToast('Please enter a sync key');
+    return;
+  }
+
+  // Add prefix if user entered just the code portion
+  const fullKey = rawKey.startsWith(SYNC_KEY_PREFIX) ? rawKey : SYNC_KEY_PREFIX + rawKey;
+
+  if (validateSyncKey(fullKey)) {
+    localStorage.setItem('isPremium', 'true');
+    localStorage.setItem('premiumSyncKey', fullKey);
+    showToast('Premium synced successfully!');
+    updatePremiumUI();
+    input.value = '';
+  } else {
+    showToast('Invalid sync key');
+  }
+}
+
+// Initialize V2 features
+function initV2Features() {
+  updateFolderDropdown();
+
+  const urlParams = new URLSearchParams(window.location.search);
+
+  // Handle QR unlock param first
+  handleUnlockParam();
+
+  // Call onPremiumSuccessQR if premium was just unlocked via Stripe
+  if (urlParams.get('premium') === 'success') {
+    onPremiumSuccessQR();
+  }
+}
+
+// Initialize on DOM ready
+document.addEventListener('DOMContentLoaded', initV2Features);
+
+// ========================================
 // Global Window Exposures for onclick Handlers
 // ========================================
 // These functions are called from HTML onclick attributes and must be
@@ -4407,6 +4957,19 @@ window.openNotesModal = openNotesModal;
 window.closeNotesModal = closeNotesModal;
 window.saveVerseNote = saveVerseNote;
 window.deleteVerseNote = deleteVerseNote;
+
+// V2 Premium Features
+window.createBookmarkFolder = createBookmarkFolder;
+window.addBookmarkToFolder = addBookmarkToFolder;
+window.openMapForVerse = openMapForVerse;
+window.closeMapModal = closeMapModal;
+window.showSyncQR = showSyncQR;
+window.scanSyncQR = scanSyncQR;
+window.toggleQRMode = toggleQRMode;
+window.closeQRModal = closeQRModal;
+window.showBLBToast = showBLBToast;
+window.manualSync = manualSync;
+window.checkForUpdates = checkForUpdates;
 
 // Misc UI
 window.scrollToTop = scrollToTop;

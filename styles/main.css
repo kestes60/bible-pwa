@@ -3818,3 +3818,334 @@ body.modal-open .parallel-version-modal {
 .verse:active {
   background: rgba(14, 165, 157, 0.15);
 }
+
+/* ========================================
+   V2 Premium Features Styles
+   ======================================== */
+
+/* Premium Feature Sections in Settings */
+.premium-feature-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--yt-card-border);
+}
+
+.premium-feature-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--yt-text-main);
+  margin: 0 0 0.5rem 0;
+}
+
+/* Bookmark Folders */
+.folder-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.folder-select {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid var(--yt-card-border);
+  border-radius: 6px;
+  background: var(--yt-bg);
+  color: var(--yt-text-main);
+  font-size: 0.9rem;
+}
+
+.folder-create-btn {
+  padding: 0.5rem 0.75rem;
+  background: linear-gradient(135deg, var(--yt-header-grad-start), var(--yt-header-grad-end));
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* QR Sync Controls */
+.qr-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.qr-btn {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  background: var(--yt-card-bg);
+  color: var(--yt-text-main);
+  border: 1px solid var(--yt-card-border);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.qr-btn:hover {
+  background: var(--yt-accent-soft);
+  color: #fff;
+}
+
+/* Manual Sync Input */
+.manual-sync-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.manual-sync-input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid var(--yt-card-border);
+  border-radius: 4px;
+  background: var(--yt-card-bg);
+  color: var(--yt-text-main);
+  font-size: 0.8rem;
+}
+
+.manual-sync-input::placeholder {
+  color: var(--yt-text-muted);
+}
+
+/* Settings Update Button */
+.settings-update-btn {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--yt-card-bg);
+  color: var(--yt-text-main);
+  border: 1px solid var(--yt-card-border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.settings-update-btn:hover {
+  background: var(--yt-accent-soft);
+  border-color: var(--yt-accent-soft);
+  color: #fff;
+}
+
+/* Study Companions */
+.companion-links {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.companion-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  background: var(--yt-card-bg);
+  border: 1px solid var(--yt-card-border);
+  border-radius: 8px;
+  color: var(--yt-text-main);
+  text-decoration: none;
+  font-size: 0.8rem;
+  transition: all 0.2s;
+}
+
+.companion-link:hover {
+  background: var(--yt-accent);
+  color: #fff;
+  border-color: var(--yt-accent);
+}
+
+.companion-icon {
+  font-size: 1.1rem;
+}
+
+/* QR Modal */
+.qr-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9000;
+  padding: 1rem;
+}
+
+.qr-modal-overlay.active {
+  display: flex;
+}
+
+.qr-modal {
+  background: var(--yt-card-bg);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 350px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--yt-card-border);
+}
+
+.qr-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--yt-card-border);
+  background: linear-gradient(135deg, var(--yt-header-grad-start), var(--yt-header-grad-end));
+}
+
+.qr-modal-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.qr-modal-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.qr-modal-body {
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.qr-code-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  margin-bottom: 1rem;
+}
+
+.qr-code-display canvas,
+.qr-code-display img {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+.qr-instruction {
+  color: var(--yt-text-muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.qr-scanner {
+  width: 100%;
+  max-height: 250px;
+  border-radius: 8px;
+  background: #000;
+}
+
+.qr-modal-footer {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--yt-card-border);
+}
+
+.qr-action-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background: linear-gradient(135deg, var(--yt-header-grad-start), var(--yt-header-grad-end));
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Map Modal */
+.map-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9000;
+  padding: 1rem;
+}
+
+.map-modal-overlay.active {
+  display: flex;
+}
+
+.map-modal {
+  background: var(--yt-card-bg);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--yt-card-border);
+}
+
+.map-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--yt-card-border);
+  background: linear-gradient(135deg, var(--yt-header-grad-start), var(--yt-header-grad-end));
+}
+
+.map-modal-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.map-modal-close {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: #fff;
+  font-size: 1.5rem;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.map-modal-body {
+  padding: 0;
+}
+
+.bible-map {
+  width: 100%;
+  height: 350px;
+}
+
+.map-location {
+  padding: 0.75rem 1.25rem;
+  margin: 0;
+  background: var(--yt-bg);
+  color: var(--yt-text-main);
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-align: center;
+  border-top: 1px solid var(--yt-card-border);
+}
+
+/* BLB Toast Link */
+.blb-toast-link {
+  color: var(--yt-accent);
+  text-decoration: underline;
+  cursor: pointer;
+}

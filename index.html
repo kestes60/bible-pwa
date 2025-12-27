@@ -481,8 +481,75 @@
                 <span>V2 Premium Unlocked</span>
               </div>
               <small class="setting-hint">Thank you for supporting Bible Reader!</small>
+
+              <!-- Bookmark Folders (Premium) -->
+              <div class="premium-feature-section" id="bookmarkFoldersSection">
+                <h4 class="premium-feature-title">📂 Bookmark Folders</h4>
+                <div class="folder-controls">
+                  <select id="bookmarkFolderSelect" class="folder-select" aria-label="Select bookmark folder">
+                    <option value="default">Default</option>
+                  </select>
+                  <button type="button" class="folder-create-btn" onclick="createBookmarkFolder()" aria-label="Create new folder">+ New</button>
+                </div>
+                <small class="setting-hint">Organize bookmarks into custom folders</small>
+              </div>
+
+              <!-- QR Cross-Device Sync (Premium) -->
+              <div class="premium-feature-section" id="qrSyncSection">
+                <h4 class="premium-feature-title">📱 Cross-Device Sync</h4>
+                <div class="qr-controls">
+                  <button type="button" class="qr-btn" onclick="showSyncQR()" aria-label="Show QR code">Show QR</button>
+                  <button type="button" class="qr-btn qr-scan-btn" onclick="scanSyncQR()" aria-label="Scan QR code">Scan QR</button>
+                </div>
+                <div class="manual-sync-controls" style="margin-top: 0.5rem;">
+                  <input type="text" id="manualSyncKey" class="manual-sync-input" placeholder="Enter sync code" aria-label="Enter sync code">
+                  <button type="button" class="qr-btn" onclick="manualSync()" aria-label="Sync manually">Sync</button>
+                </div>
+                <small class="setting-hint">Sync premium to other devices offline</small>
+              </div>
+            </div>
+
+            <!-- Study Companions (Premium Teaser) -->
+            <div class="setting-group premium-feature" id="studyCompanionsSection">
+              <h3 class="setting-section-title">📖 Study Companions</h3>
+              <p class="settings-description">Deep dive into Scripture with trusted resources</p>
+              <div class="companion-links">
+                <a href="https://www.blueletterbible.org/" target="_blank" rel="noopener" class="companion-link">
+                  <span class="companion-icon">📘</span>
+                  <span>Blue Letter Bible</span>
+                </a>
+                <a href="https://www.biblegateway.com/" target="_blank" rel="noopener" class="companion-link">
+                  <span class="companion-icon">🚪</span>
+                  <span>Bible Gateway</span>
+                </a>
+                <a href="https://www.awmi.net/" target="_blank" rel="noopener" class="companion-link">
+                  <span class="companion-icon">🙏</span>
+                  <span>Andrew Wommack Ministries</span>
+                </a>
+                <a href="https://www.icr.org/" target="_blank" rel="noopener" class="companion-link">
+                  <span class="companion-icon">🔬</span>
+                  <span>Institute for Creation Research</span>
+                </a>
+                <a href="https://armstronginstitute.org/" target="_blank" rel="noopener" class="companion-link">
+                  <span class="companion-icon">🏛️</span>
+                  <span>Armstrong Institute</span>
+                </a>
+                <a href="https://www.oneforisrael.org/" target="_blank" rel="noopener" class="companion-link">
+                  <span class="companion-icon">✡️</span>
+                  <span>One for Israel</span>
+                </a>
+              </div>
+              <small class="setting-hint">Tap a verse while reading for quick BLB lookup</small>
             </div>
           </div>
+        </div>
+
+        <!-- App Updates -->
+        <div class="setting-group">
+          <button type="button" class="settings-update-btn" onclick="checkForUpdates()" aria-label="Check for app updates">
+            🔄 Check for Updates (v72)
+          </button>
+          <small class="setting-hint">Force check for new version if app seems outdated</small>
         </div>
 
         <!-- Footer link -->
@@ -529,8 +596,47 @@
     </div>
   </div>
 
+  <!-- QR Sync Modal (Premium Feature) -->
+  <div class="qr-modal-overlay" id="qrModalOverlay" onclick="closeQRModal(event)" role="dialog" aria-labelledby="qrModalTitle" aria-modal="true">
+    <div class="qr-modal" onclick="event.stopPropagation()">
+      <div class="qr-modal-header">
+        <h2 id="qrModalTitle">Sync QR Code</h2>
+        <button class="qr-modal-close" onclick="closeQRModal()" aria-label="Close QR modal">×</button>
+      </div>
+      <div class="qr-modal-body">
+        <div id="qrCodeDisplay" class="qr-code-display"></div>
+        <p class="qr-instruction" id="qrInstruction">Scan this code on another device to sync premium</p>
+        <video id="qrScanner" class="qr-scanner" style="display: none;" autoplay playsinline></video>
+      </div>
+      <div class="qr-modal-footer">
+        <button class="qr-action-btn" id="qrActionBtn" onclick="toggleQRMode()">Switch to Scan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bible Map Modal (Premium Feature) -->
+  <div class="map-modal-overlay" id="mapModalOverlay" onclick="closeMapModal(event)" role="dialog" aria-labelledby="mapModalTitle" aria-modal="true">
+    <div class="map-modal" onclick="event.stopPropagation()">
+      <div class="map-modal-header">
+        <h2 id="mapModalTitle">Bible Map</h2>
+        <button class="map-modal-close" onclick="closeMapModal()" aria-label="Close map">×</button>
+      </div>
+      <div class="map-modal-body">
+        <div id="bibleMap" class="bible-map"></div>
+        <p class="map-location" id="mapLocationName">Loading location...</p>
+      </div>
+    </div>
+  </div>
+
   <!-- Back to Top Button -->
   <button id="backToTopBtn" class="back-to-top" onclick="scrollToTop()" aria-label="Back to top">↑ Top</button>
+
+  <!-- Leaflet CSS/JS for maps -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+  <!-- QR Code generator for cross-device sync -->
+  <script src="https://unpkg.com/qrcode-generator@1.4.4/qrcode.js"></script>
 
   <!-- External Scripts -->
   <!-- Load version configuration first (app.js depends on it) -->
