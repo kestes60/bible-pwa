@@ -1,0 +1,107 @@
+{
+  "type": "FeatureCollection",
+  "book": "Genesis",
+  "chapter": "2",
+  "title": "Garden of Eden",
+  "center": [
+    35.5,
+    40
+  ],
+  "zoom": 5,
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Garden of Eden (Theory 1: Armenian Highlands)",
+        "status": "disputed",
+        "popup": "DISPUTED: David Rohl's identification - Genesis 2:8-14",
+        "description": "Egyptologist David Rohl proposes Eden was near Tabriz, Iran, where four rivers converge from the Armenian highlands.",
+        "verse": "2:8-14",
+        "theory": "Rohl/Armenian",
+        "debate": "This theory places Eden at the headwaters where Tigris and Euphrates originate, with Pishon and Gihon as other regional rivers.",
+        "link": "https://armstronginstitute.org/343-adam-and-eves-fig-leaves-in-archaeobotany"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          46.3,
+          38.1
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Garden of Eden (Theory 2: Southern Mesopotamia)",
+        "status": "disputed",
+        "popup": "DISPUTED: Traditional Sumerian location - Genesis 2:8-14",
+        "description": "Traditional view places Eden in southern Iraq where Tigris and Euphrates converge before emptying into Persian Gulf.",
+        "verse": "2:8-14",
+        "theory": "Traditional/Sumerian",
+        "debate": "Ancient Sumerians called this region 'Dilmun' - a paradise. Pre-Flood geography may have been drastically different."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          47.5,
+          30.5
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tigris River (Hiddekel)",
+        "status": "confirmed",
+        "popup": "Third river of Eden - Genesis 2:14",
+        "description": "The Tigris (Hebrew: Hiddekel) flows east of Assyria. One of the four rivers flowing from Eden.",
+        "verse": "2:14",
+        "archaeology": "The Tigris remains one of the major rivers of Mesopotamia, supporting the region's identification with Eden.",
+        "link": "https://armstronginstitute.org/126-the-case-for-adam-and-eve"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.4,
+          33.3
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Euphrates River",
+        "status": "confirmed",
+        "popup": "Fourth river of Eden - Genesis 2:14",
+        "description": "The Euphrates is the only river named without further description, suggesting it was well-known to the original audience.",
+        "verse": "2:14"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          40,
+          36
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Land of Havilah (Pishon River Region)",
+        "status": "disputed",
+        "popup": "DISPUTED: Land of gold and bdellium - Genesis 2:11-12",
+        "description": "The Pishon flowed around Havilah, known for gold, bdellium, and onyx. Some identify this with Arabia or the dried Wadi Batin.",
+        "verse": "2:11-12",
+        "theory": "Arabian Peninsula",
+        "debate": "Satellite imagery reveals a dried riverbed (Wadi Batin/Kuwait River) that once flowed through Arabia - possibly the ancient Pishon."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          47,
+          28.5
+        ]
+      }
+    }
+  ]
+}

@@ -26,6 +26,7 @@ import './modules/index.js';
 const THEME_STORAGE_KEY = 'bibleReaderTheme';
 const THEME_DARK = 'theme-dark';
 const THEME_LIGHT = 'theme-light';
+const COMPANIONS_NEW_TAB_KEY = 'openCompanionsInNewTab';
 
 /**
  * Get saved theme from localStorage
@@ -92,6 +93,38 @@ function initTheme() {
   const savedTheme = getSavedTheme();
   const theme = savedTheme || THEME_DARK; // Default to dark theme
   applyTheme(theme);
+}
+
+// ========================================
+// Companion Links Settings
+// ========================================
+/**
+ * Get setting for opening companions in new tab (default: true)
+ */
+function getCompanionsNewTab() {
+  const saved = localStorage.getItem(COMPANIONS_NEW_TAB_KEY);
+  return saved === null ? true : saved === 'true';
+}
+
+/**
+ * Save companion links new tab preference
+ */
+function setCompanionsNewTab(value) {
+  localStorage.setItem(COMPANIONS_NEW_TAB_KEY, value ? 'true' : 'false');
+}
+
+/**
+ * Initialize companion settings checkbox
+ */
+function initCompanionSettings() {
+  const checkbox = document.getElementById('companionsNewTabCheckbox');
+  if (checkbox) {
+    checkbox.checked = getCompanionsNewTab();
+    checkbox.addEventListener('change', () => {
+      setCompanionsNewTab(checkbox.checked);
+      showToast(checkbox.checked ? 'Companions open in new tab' : 'Companions open in same tab');
+    });
+  }
 }
 
 // ========================================
@@ -4078,7 +4111,7 @@ async function checkForUpdates() {
       // If no update found after 3 seconds, notify user
       setTimeout(() => {
         if (!reg.installing && !reg.waiting) {
-          showToast('You have the latest version (v73)');
+          showToast('You have the latest version (v76)');
         }
       }, 3000);
     } else {
@@ -4399,7 +4432,74 @@ function setupVerseNoteHandlers(book, chapter) {
   // Add note indicators (📝 emoji + teal glow) for verses with notes
   addNoteIndicators(book, chapter);
 
+  // Add map buttons for chapters with map locations (premium only)
+  addMapButtons(book, chapter);
+
   console.log(`[Notes] Handlers attached for ${book} ${chapter}`);
+}
+
+/**
+ * Add 🗺️ map buttons to verses in chapters with map locations (premium only)
+ * Also adds book-level conquest map button if available
+ * @param {string} book
+ * @param {string|number} chapter
+ */
+function addMapButtons(book, chapter) {
+  // Only show map buttons for premium users
+  if (!isPremiumUser()) return;
+
+  const containers = [
+    document.getElementById('versesContainer'),
+    document.getElementById('primaryVersesContainer'),
+    document.getElementById('secondaryVersesContainer')
+  ].filter(Boolean);
+
+  // Check if this book has a conquest/overview map (Joshua 1-12)
+  const hasBookMap = BOOK_MAPS[book];
+  const chapterNum = parseInt(chapter, 10);
+  const showBookMapButton = hasBookMap && chapterNum >= 1 && chapterNum <= 12;
+
+  // Check if this chapter has a specific map location
+  const location = BIBLE_LOCATIONS[book]?.[String(chapter)];
+
+  containers.forEach(container => {
+    const firstVerse = container.querySelector('.verse');
+    if (!firstVerse) return;
+
+    // Skip if already has map buttons
+    if (firstVerse.querySelector('.map-button')) return;
+
+    // Add book-level conquest map button (for Joshua 1-12)
+    if (showBookMapButton) {
+      const conquestBtn = document.createElement('button');
+      conquestBtn.type = 'button';
+      conquestBtn.className = 'map-button conquest-map-button';
+      conquestBtn.title = `View ${hasBookMap.title} Overview`;
+      conquestBtn.textContent = '🗺️';
+      conquestBtn.style.marginRight = '4px';
+      conquestBtn.onclick = (e) => {
+        e.stopPropagation();
+        openBookMap(book);
+      };
+      firstVerse.insertBefore(conquestBtn, firstVerse.firstChild);
+      console.log(`[Maps] Conquest button added for ${book} ${chapter}`);
+    }
+
+    // Add chapter-specific map button if location exists
+    if (location) {
+      const mapBtn = document.createElement('button');
+      mapBtn.type = 'button';
+      mapBtn.className = 'map-button chapter-map-button';
+      mapBtn.title = `View map: ${location.name}`;
+      mapBtn.textContent = '📍';
+      mapBtn.onclick = (e) => {
+        e.stopPropagation();
+        openMapForVerse(book, String(chapter));
+      };
+      firstVerse.insertBefore(mapBtn, firstVerse.firstChild);
+      console.log(`[Maps] Chapter button added for ${book} ${chapter} - ${location.name}`);
+    }
+  });
 }
 
 // ========================================
@@ -4511,6 +4611,16 @@ const BIBLE_LOCATIONS = {
     '6': { name: 'Jericho', lat: 31.8711, lon: 35.4444, description: 'The walls of Jericho fell' }
   },
   'Genesis': {
+    '1': { name: 'Creation', lat: 33.0, lon: 44.0, description: 'Creation Week - Ancient Near East setting' },
+    '2': { name: 'Garden of Eden', lat: 38.1, lon: 46.3, description: 'Paradise with four rivers' },
+    '3': { name: 'Fall of Man', lat: 38.0, lon: 46.0, description: 'Expulsion from Eden' },
+    '4': { name: 'Cain and Abel', lat: 37.0, lon: 47.0, description: 'First murder, Land of Nod' },
+    '5': { name: 'Adam to Noah', lat: 37.5, lon: 46.5, description: 'Pre-Flood patriarchs' },
+    '6': { name: 'Corruption & Ark', lat: 37.0, lon: 45.0, description: 'Noah builds the ark' },
+    '7': { name: 'The Great Flood', lat: 35.0, lon: 40.0, description: 'Global cataclysm' },
+    '8': { name: 'Mountains of Ararat', lat: 39.7, lon: 44.3, description: 'Ark lands after Flood' },
+    '9': { name: 'Noahic Covenant', lat: 39.5, lon: 44.0, description: 'Rainbow covenant, vineyard' },
+    '10': { name: 'Table of Nations', lat: 35.0, lon: 35.0, description: 'Descendants spread across earth' },
     '12': { name: 'Canaan', lat: 31.5, lon: 35.0, description: 'Abraham enters the Promised Land' }
   },
   'Exodus': {
@@ -4521,15 +4631,93 @@ const BIBLE_LOCATIONS = {
   },
   'John': {
     '4': { name: 'Samaria', lat: 32.2833, lon: 35.2, description: 'Woman at the well' }
+  },
+  'Judges': {
+    '1': { name: 'Conquest After Joshua', lat: 31.7, lon: 35.2, description: 'Judah and Simeon conquer southern Canaan' }
   }
 };
 
 /**
- * Open map modal for current verse location
+ * Books with overview/conquest maps
+ * Each entry defines the geoJSON file and display info
  */
-function openMapForVerse(book, chapter) {
+const BOOK_MAPS = {
+  'Joshua': {
+    file: 'joshua-conquest.json',
+    title: 'Conquest of Canaan',
+    description: 'Joshua 1-12: Military Campaign',
+    chapters: [1, 12]
+  },
+  'Genesis': {
+    file: 'genesis-primeval.json',
+    title: 'Primeval History',
+    description: 'Genesis 1-10: Creation to Nations',
+    chapters: [1, 10]
+  }
+};
+
+/**
+ * Dynamically load Leaflet if not already loaded
+ * Returns a promise that resolves when Leaflet is ready
+ */
+async function ensureLeafletLoaded() {
+  if (typeof L !== 'undefined') return true;
+
+  console.log('[Maps] Leaflet not loaded, attempting dynamic load...');
+  showToast('Loading map...');
+
+  return new Promise((resolve, reject) => {
+    // Load CSS first
+    if (!document.querySelector('link[href*="leaflet.css"]')) {
+      const css = document.createElement('link');
+      css.rel = 'stylesheet';
+      css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      css.crossOrigin = '';
+      document.head.appendChild(css);
+    }
+
+    // Then load JS
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    script.crossOrigin = '';
+    script.onload = () => {
+      console.log('[Maps] Leaflet loaded dynamically');
+      resolve(true);
+    };
+    script.onerror = () => {
+      console.error('[Maps] Failed to load Leaflet dynamically');
+      reject(new Error('Failed to load map library'));
+    };
+    document.head.appendChild(script);
+
+    // Timeout after 10 seconds
+    setTimeout(() => reject(new Error('Map library load timeout')), 10000);
+  });
+}
+
+/**
+ * Open map modal for current verse location
+ * Fetches geoJSON data if available, otherwise uses static BIBLE_LOCATIONS
+ */
+async function openMapForVerse(book, chapter) {
   if (!isPremiumUser()) {
     showToast('Unlock V2 for Bible maps');
+    return;
+  }
+
+  // Ensure Leaflet is loaded (static or dynamic fallback)
+  try {
+    await ensureLeafletLoaded();
+  } catch (e) {
+    console.error('[Maps] Leaflet load failed:', e.message);
+    showToast('Map library not available - check your connection');
+    return;
+  }
+
+  // Double-check L is available
+  if (typeof L === 'undefined') {
+    console.error('[Maps] Leaflet still not loaded after dynamic load');
+    showToast('Map library not available');
     return;
   }
 
@@ -4544,21 +4732,122 @@ function openMapForVerse(book, chapter) {
   document.body.style.overflow = 'hidden';
 
   // Initialize map after modal is visible
-  setTimeout(() => {
+  setTimeout(async () => {
+    // Clean up existing map
     if (bibleMap) {
       bibleMap.remove();
+      bibleMap = null;
     }
 
-    bibleMap = L.map('bibleMap').setView([location.lat, location.lon], 10);
+    // Initialize Leaflet map
+    const mapContainer = document.getElementById('bibleMap');
+    if (!mapContainer) {
+      console.error('[Maps] Map container not found');
+      return;
+    }
+
+    bibleMap = L.map('bibleMap', {
+      center: [location.lat, location.lon],
+      zoom: 11
+    });
+
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap'
     }).addTo(bibleMap);
 
-    L.marker([location.lat, location.lon])
-      .addTo(bibleMap)
-      .bindPopup(`<b>${location.name}</b><br>${location.description}`)
-      .openPopup();
-  }, 100);
+    // Try to fetch geoJSON data for this chapter
+    const geoJsonPath = `data/maps/${book.toLowerCase()}${chapter}.json`;
+    try {
+      const response = await fetch(geoJsonPath);
+      if (response.ok) {
+        const geoData = await response.json();
+
+        // Update map center and zoom from geoJSON
+        if (geoData.center) {
+          bibleMap.setView(geoData.center, geoData.zoom || 12);
+        }
+
+        // Update title
+        if (geoData.title) {
+          document.getElementById('mapLocationName').textContent = geoData.title;
+        }
+
+        // Add all geoJSON features as markers with custom icons and rich popups
+        L.geoJSON(geoData, {
+          pointToLayer: (feature, latlng) => {
+            const status = feature.properties.status || 'confirmed';
+            return L.marker(latlng, { icon: getMarkerIcon(status) });
+          },
+          onEachFeature: (feature, layer) => {
+            const props = feature.properties;
+            const status = props.status || 'confirmed';
+            const statusBadge = status === 'disputed'
+              ? '<span style="background:#f97316;color:white;padding:2px 6px;border-radius:4px;font-size:11px;">DISPUTED</span>'
+              : '<span style="background:#3b82f6;color:white;padding:2px 6px;border-radius:4px;font-size:11px;">CONFIRMED</span>';
+
+            let popupContent = `
+              <div style="max-width: 250px;">
+                <div style="margin-bottom: 6px;">${statusBadge}</div>
+                <b style="font-size: 14px;">${props.name}</b><br>
+                <p style="margin: 6px 0; color: #555;">${props.description || props.popup}</p>
+            `;
+
+            if (props.verse) {
+              popupContent += `<em style="color: #667eea;">${geoData.book || book} ${props.verse}</em><br>`;
+            }
+
+            if (props.theory) {
+              popupContent += `<div style="margin-top: 6px; font-size: 11px; color: #888;">Theory: ${props.theory}</div>`;
+            }
+
+            if (props.alternateTheories && props.alternateTheories.length > 0) {
+              popupContent += `<div style="margin-top: 4px; font-size: 10px; color: #666;">
+                <b>Alt theories:</b> ${props.alternateTheories.map(t => t.name).join(', ')}
+              </div>`;
+            }
+
+            if (props.debate) {
+              popupContent += `<div style="margin-top: 6px; padding: 6px; background: #fef3c7; border-radius: 4px; font-size: 11px;">
+                ${props.debate}
+              </div>`;
+            }
+
+            if (props.archaeologyNote) {
+              popupContent += `<div style="margin-top: 6px; padding: 6px; background: #e0f2fe; border-radius: 4px; font-size: 11px;">
+                ${props.archaeologyNote}
+              </div>`;
+            }
+
+            if (props.archaeology) {
+              popupContent += `<a href="${props.archaeology}" target="_blank" rel="noopener" style="display:block;margin-top:8px;color:#667eea;font-size:12px;font-weight:500;">📖 Read Archaeology Article →</a>`;
+            }
+
+            if (props.video) {
+              popupContent += `<a href="${props.video}" target="_blank" rel="noopener" style="display:block;margin-top:4px;color:#dc2626;font-size:12px;font-weight:500;">▶️ Expedition Bible Video →</a>`;
+            }
+
+            popupContent += '</div>';
+            layer.bindPopup(popupContent, { maxWidth: 300, maxHeight: 400 });
+          }
+        }).addTo(bibleMap);
+
+        console.log(`[Maps] Loaded geoJSON with ${geoData.features?.length || 0} pins`);
+      } else {
+        // Fallback to single marker from BIBLE_LOCATIONS
+        L.marker([location.lat, location.lon])
+          .addTo(bibleMap)
+          .bindPopup(`<b>${location.name}</b><br>${location.description}`)
+          .openPopup();
+      }
+    } catch (e) {
+      // Fallback to single marker
+      console.log('[Maps] No geoJSON found, using fallback marker:', e.message);
+      L.marker([location.lat, location.lon])
+        .addTo(bibleMap)
+        .bindPopup(`<b>${location.name}</b><br>${location.description}`)
+        .openPopup();
+    }
+  }, 150);
 }
 
 /**
@@ -4573,6 +4862,178 @@ function closeMapModal(event) {
     bibleMap = null;
   }
 }
+
+// --- Book-Level Overview Maps ---
+
+/**
+ * Custom marker icons for confirmed vs disputed locations
+ */
+function getMarkerIcon(status) {
+  const color = status === 'disputed' ? '#f97316' : '#3b82f6'; // orange vs blue
+  return L.divIcon({
+    className: 'custom-map-marker',
+    html: `<div style="
+      background-color: ${color};
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 3px solid white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    "></div>`,
+    iconSize: [24, 24],
+    iconAnchor: [12, 12],
+    popupAnchor: [0, -12]
+  });
+}
+
+/**
+ * Open book-level overview map (e.g., Joshua Conquest)
+ * Shows all locations with colored markers for confirmed/disputed
+ */
+async function openBookMap(book) {
+  if (!isPremiumUser()) {
+    showToast('Unlock V2 for Bible maps');
+    return;
+  }
+
+  const bookMap = BOOK_MAPS[book];
+  if (!bookMap) {
+    showToast('No overview map for this book');
+    return;
+  }
+
+  // Ensure Leaflet is loaded
+  try {
+    await ensureLeafletLoaded();
+  } catch (e) {
+    console.error('[Maps] Leaflet load failed:', e.message);
+    showToast('Map library not available - check your connection');
+    return;
+  }
+
+  if (typeof L === 'undefined') {
+    showToast('Map library not available');
+    return;
+  }
+
+  document.getElementById('mapModalOverlay').classList.add('active');
+  document.getElementById('mapLocationName').textContent = `${bookMap.title} - ${bookMap.description}`;
+  document.body.style.overflow = 'hidden';
+
+  setTimeout(async () => {
+    // Clean up existing map
+    if (bibleMap) {
+      bibleMap.remove();
+      bibleMap = null;
+    }
+
+    const mapContainer = document.getElementById('bibleMap');
+    if (!mapContainer) return;
+
+    // Load geoJSON
+    const geoJsonPath = `data/maps/${bookMap.file}`;
+    try {
+      const response = await fetch(geoJsonPath);
+      if (!response.ok) throw new Error('Failed to load map data');
+
+      const geoData = await response.json();
+
+      // Initialize map
+      bibleMap = L.map('bibleMap', {
+        center: geoData.center || [31.78, 35.25],
+        zoom: geoData.zoom || 9
+      });
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+      }).addTo(bibleMap);
+
+      // Update title
+      if (geoData.title) {
+        document.getElementById('mapModalTitle').textContent = geoData.title;
+      }
+
+      // Add legend
+      const legend = L.control({ position: 'bottomright' });
+      legend.onAdd = function() {
+        const div = L.DomUtil.create('div', 'map-legend');
+        div.innerHTML = `
+          <div style="background: white; padding: 8px 12px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 12px;">
+            <div style="margin-bottom: 4px;"><span style="display:inline-block;width:12px;height:12px;background:#3b82f6;border-radius:50%;margin-right:6px;"></span>Confirmed</div>
+            <div><span style="display:inline-block;width:12px;height:12px;background:#f97316;border-radius:50%;margin-right:6px;"></span>Disputed</div>
+          </div>
+        `;
+        return div;
+      };
+      legend.addTo(bibleMap);
+
+      // Add markers with custom icons based on status
+      L.geoJSON(geoData, {
+        pointToLayer: (feature, latlng) => {
+          const status = feature.properties.status || 'confirmed';
+          return L.marker(latlng, { icon: getMarkerIcon(status) });
+        },
+        onEachFeature: (feature, layer) => {
+          const props = feature.properties;
+          const status = props.status || 'confirmed';
+          const statusBadge = status === 'disputed'
+            ? '<span style="background:#f97316;color:white;padding:2px 6px;border-radius:4px;font-size:11px;">DISPUTED</span>'
+            : '<span style="background:#3b82f6;color:white;padding:2px 6px;border-radius:4px;font-size:11px;">CONFIRMED</span>';
+
+          let popupContent = `
+            <div style="max-width: 250px;">
+              <div style="margin-bottom: 6px;">${statusBadge}</div>
+              <b style="font-size: 14px;">${props.name}</b><br>
+              <p style="margin: 6px 0; color: #555;">${props.description || props.popup}</p>
+          `;
+
+          if (props.verse) {
+            popupContent += `<em style="color: #667eea;">Joshua ${props.verse}</em><br>`;
+          }
+
+          if (props.theory) {
+            popupContent += `<div style="margin-top: 6px; font-size: 11px; color: #888;">Theory: ${props.theory}</div>`;
+          }
+
+          if (props.debate) {
+            popupContent += `<div style="margin-top: 6px; padding: 6px; background: #fef3c7; border-radius: 4px; font-size: 11px;">
+              <b>Debate:</b> ${props.debate}
+            </div>`;
+          }
+
+          if (props.archaeology) {
+            popupContent += `<div style="margin-top: 6px; padding: 6px; background: #e0f2fe; border-radius: 4px; font-size: 11px;">
+              <b>Archaeology:</b> ${props.archaeology}
+            </div>`;
+          }
+
+          if (props.link) {
+            popupContent += `<a href="${props.link}" target="_blank" rel="noopener" style="display:block;margin-top:8px;color:#667eea;font-size:12px;font-weight:500;">📖 Read Armstrong Article →</a>`;
+          }
+
+          if (props.video) {
+            popupContent += `<div style="margin-top: 8px;">
+              <iframe width="240" height="135" src="${props.video}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="border-radius:4px;"></iframe>
+            </div>`;
+          }
+
+          popupContent += '</div>';
+          layer.bindPopup(popupContent, { maxWidth: 300, maxHeight: 400 });
+        }
+      }).addTo(bibleMap);
+
+      console.log(`[Maps] Loaded book map with ${geoData.features?.length || 0} pins`);
+
+    } catch (e) {
+      console.error('[Maps] Book map load failed:', e.message);
+      showToast('Could not load map data');
+      closeMapModal();
+    }
+  }, 150);
+}
+
+// Expose openBookMap globally
+window.openBookMap = openBookMap;
 
 // --- QR Cross-Device Sync ---
 const SYNC_KEY_PREFIX = 'yahtsar-unlock-';
@@ -4698,12 +5159,19 @@ function generateQRCode(data) {
     display.appendChild(fallback);
   }
 
+  // Button container for alignment
+  const btnContainer = document.createElement('div');
+  btnContainer.style.display = 'flex';
+  btnContainer.style.gap = '0.5rem';
+  btnContainer.style.justifyContent = 'center';
+  btnContainer.style.marginTop = '1rem';
+  btnContainer.style.flexWrap = 'wrap';
+
   // Add Copy URL button (not text that interferes with scanning)
   const copyBtn = document.createElement('button');
   copyBtn.type = 'button';
   copyBtn.className = 'qr-copy-btn';
   copyBtn.textContent = '📋 Copy URL';
-  copyBtn.style.marginTop = '1rem';
   copyBtn.style.padding = '0.5rem 1rem';
   copyBtn.style.background = 'var(--yt-card-bg)';
   copyBtn.style.color = 'var(--yt-text-main)';
@@ -4718,7 +5186,30 @@ function generateQRCode(data) {
       setTimeout(() => { copyBtn.textContent = '📋 Copy URL'; }, 2000);
     });
   };
-  display.appendChild(copyBtn);
+  btnContainer.appendChild(copyBtn);
+
+  // Add Email URL button - sends to kestes60@gmail.com as fallback
+  const emailBtn = document.createElement('button');
+  emailBtn.type = 'button';
+  emailBtn.className = 'qr-email-btn';
+  emailBtn.textContent = '📧 Email URL';
+  emailBtn.style.padding = '0.5rem 1rem';
+  emailBtn.style.background = 'var(--yt-card-bg)';
+  emailBtn.style.color = 'var(--yt-text-main)';
+  emailBtn.style.border = '1px solid var(--yt-card-border)';
+  emailBtn.style.borderRadius = '6px';
+  emailBtn.style.cursor = 'pointer';
+  emailBtn.style.fontSize = '0.85rem';
+  emailBtn.onclick = () => {
+    const recipient = 'kestes60@gmail.com';
+    const subject = encodeURIComponent('Yahtsar Bible Premium Sync Link');
+    const body = encodeURIComponent(`Open this link on your other device to sync premium:\n\n${data}\n\nTip: Forward this to yourself or use Gmail +aliases (e.g., kestes60+bible@gmail.com) for easy filtering.`);
+    window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
+    showToast('Sending to kestes60@gmail.com - forward to your devices!');
+  };
+  btnContainer.appendChild(emailBtn);
+
+  display.appendChild(btnContainer);
 }
 
 
@@ -4819,9 +5310,28 @@ function showBLBToast(book, chapter, verse) {
   if (!isPremiumUser()) return;
 
   const link = getBLBLink(book, chapter, verse);
+  const openInNewTab = getCompanionsNewTab();
   const toast = document.createElement('div');
   toast.className = 'toast-notification show';
-  toast.innerHTML = `Deep dive with <a href="${link}" target="_blank" rel="noopener" class="blb-toast-link">Blue Letter Bible</a>?`;
+
+  // Create clickable link with proper behavior
+  const anchor = document.createElement('a');
+  anchor.href = link;
+  anchor.className = 'blb-toast-link';
+  anchor.textContent = 'Blue Letter Bible';
+
+  if (openInNewTab) {
+    anchor.target = '_blank';
+    anchor.rel = 'noopener';
+    anchor.onclick = (e) => {
+      e.preventDefault();
+      window.open(link, '_blank');
+    };
+  }
+
+  toast.innerHTML = `Deep dive with `;
+  toast.appendChild(anchor);
+  toast.innerHTML += '?';
   toast.style.cursor = 'pointer';
 
   document.body.appendChild(toast);
@@ -4908,6 +5418,7 @@ function manualSync() {
 // Initialize V2 features
 function initV2Features() {
   updateFolderDropdown();
+  initCompanionSettings();
 
   const urlParams = new URLSearchParams(window.location.search);
 

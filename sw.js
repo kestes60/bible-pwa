@@ -1,5 +1,5 @@
 // Cache version constant - increment this to bust the cache
-const CACHE_VERSION = "bible-pwa-v73";
+const CACHE_VERSION = "bible-pwa-v79";
 
 // Get the base path from the service worker's own location
 // e.g., if SW is at /bible-pwa/sw.js, base is /bible-pwa/
@@ -401,6 +401,8 @@ self.addEventListener("install", (event) => {
         `${BASE_PATH}assets/icons/icon-512x512-maskable.png`,
         // Splash screen video
         `${BASE_PATH}assets/videos/dove-map.mp4`,
+        // Map data files
+        `${BASE_PATH}data/maps/joshua6.json`,
         // Bible data files (WEB)
         ...PRECACHE_FILES,
         // KJV Bible data files
@@ -445,6 +447,7 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
   const pathname = url.pathname;
+  const hostname = url.hostname;
 
   // Determine request type
   const isNavigationRequest = event.request.mode === 'navigate' ||
@@ -454,19 +457,30 @@ self.addEventListener("fetch", (event) => {
 
   const isDataRequest = pathname.includes('/data/') && pathname.endsWith('.json');
 
-  console.log('SW fetch:', pathname, 'nav:', isNavigationRequest, 'data:', isDataRequest);
+  // External CDN scripts (Leaflet, Stripe, QR code) - network-first to avoid stale cache issues
+  const isExternalCDN = hostname === 'unpkg.com' ||
+                        hostname === 'js.stripe.com' ||
+                        hostname === 'cdn.jsdelivr.net' ||
+                        hostname.endsWith('.openstreetmap.org');
 
-  // 1. NAVIGATION REQUESTS (HTML shell) - network-first strategy
-  // Try network first for fresh content, fall back to cache for offline
-  if (isNavigationRequest) {
+  console.log('SW fetch:', pathname, 'nav:', isNavigationRequest, 'data:', isDataRequest, 'cdn:', isExternalCDN);
+
+  // 1. EXTERNAL CDN REQUESTS - network-first to always get fresh scripts
+  // Prevents stale/corrupted cache from breaking Leaflet, Stripe, etc.
+  if (isExternalCDN) {
     event.respondWith(networkFirstStrategy(event.request));
   }
-  // 2. BIBLE DATA REQUESTS - cache-first with network update
+  // 2. NAVIGATION REQUESTS (HTML shell) - network-first strategy
+  // Try network first for fresh content, fall back to cache for offline
+  else if (isNavigationRequest) {
+    event.respondWith(networkFirstStrategy(event.request));
+  }
+  // 3. BIBLE DATA REQUESTS - cache-first with network update
   // Return cached version immediately, update in background
   else if (isDataRequest) {
     event.respondWith(cacheFirstWithNetworkUpdate(event.request));
   }
-  // 3. STATIC ASSETS (images, etc.) - cache-first
+  // 4. STATIC ASSETS (images, etc.) - cache-first
   // Return cached version, no network update
   else {
     event.respondWith(cacheFirstStrategy(event.request));

@@ -1,0 +1,87 @@
+{
+  "type": "FeatureCollection",
+  "book": "Genesis",
+  "chapter": "3",
+  "title": "The Fall of Man",
+  "center": [
+    37,
+    42
+  ],
+  "zoom": 5,
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Garden of Eden - Site of the Fall",
+        "status": "disputed",
+        "popup": "Location of humanity's first sin - Genesis 3:1-7",
+        "description": "The serpent deceived Eve at the tree of knowledge. Adam and Eve ate the forbidden fruit, bringing death into the world.",
+        "verse": "3:6-7",
+        "theory": "Armenian Highlands",
+        "debate": "The exact location remains disputed. Pre-Flood geography was likely altered dramatically by the global Flood.",
+        "link": "https://armstronginstitute.org/126-the-case-for-adam-and-eve"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          46.3,
+          38.1
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tree of Life",
+        "status": "disputed",
+        "popup": "Center of the Garden - Genesis 3:22-24",
+        "description": "God placed cherubim and a flaming sword to guard the way to the tree of life after the expulsion.",
+        "verse": "3:24"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          46,
+          38
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "East of Eden (Expulsion Route)",
+        "status": "disputed",
+        "popup": "Direction of exile - Genesis 3:24",
+        "description": "God drove Adam and Eve out of the garden eastward. Cherubim guarded the eastern entrance.",
+        "verse": "3:24",
+        "theory": "Eastward migration",
+        "debate": "This eastward expulsion set the pattern - Cain later went 'east of Eden' (4:16), and humanity migrated to Babel in the east."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          48,
+          37.5
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Cursed Ground",
+        "status": "confirmed",
+        "popup": "Earth cursed due to sin - Genesis 3:17-19",
+        "description": "God cursed the ground because of Adam's sin. Thorns and thistles would grow; man would toil by the sweat of his brow.",
+        "verse": "3:17-19",
+        "archaeology": "Fossil record shows thorns appear suddenly in geological strata, consistent with the curse narrative."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45,
+          36
+        ]
+      }
+    }
+  ]
+}

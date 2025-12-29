@@ -1,0 +1,136 @@
+{
+  "type": "FeatureCollection",
+  "book": "Judges",
+  "chapter": "1",
+  "title": "Conquest of Canaan After Joshua",
+  "center": [31.7, 35.2],
+  "zoom": 9,
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bezek",
+        "status": "disputed",
+        "popup": "DISPUTED: Adoni-bezek defeated - Judges 1:4-7",
+        "description": "Judah and Simeon defeated 10,000 Canaanites and Perizzites here. They captured Adoni-bezek and cut off his thumbs and great toes.",
+        "verse": "1:4-7",
+        "theory": "Khirbet Ibziq (75% confidence)",
+        "alternateTheories": [
+          {
+            "name": "Khirbet Salhab",
+            "coordinates": [35.372500, 32.354167],
+            "source": "https://www.openbible.info/geo/ancient/a206291/bezek-2"
+          },
+          {
+            "name": "Tell Bezqa (near Jerusalem)",
+            "coordinates": [34.964918, 31.880322],
+            "source": "https://www.openbible.info/geo/ancient/a206291/bezek-2"
+          }
+        ],
+        "debate": "Debate: Northern Bezek vs Southern Bezek? Khirbet Ibziq in the north has stronger textual support, but some argue for a site nearer Judah's territory.",
+        "archaeology": "https://www.openbible.info/geo/ancient/a206291/bezek-2",
+        "video": "https://www.youtube.com/watch?v=mLxE3JmHV2U"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [35.397360, 32.368840]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jerusalem",
+        "status": "confirmed",
+        "popup": "Judah captured Jerusalem - Judges 1:8",
+        "description": "The children of Judah fought against Jerusalem and took it, smiting it with the edge of the sword and setting the city on fire. However, the Jebusites continued to dwell there (v.21).",
+        "verse": "1:8, 1:21",
+        "archaeology": "https://armstronginstitute.org/680-searching-for-egypt-in-israel",
+        "video": "https://www.youtube.com/watch?v=mLxE3JmHV2U"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [35.2137, 31.7683]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Hebron (Tel Rumeida)",
+        "status": "confirmed",
+        "popup": "Caleb drove out the Anakim - Judges 1:10, 20",
+        "description": "Judah went against the Canaanites in Hebron (formerly Kirjath-arba) and slew Sheshai, Ahiman, and Talmai - the three sons of Anak. Caleb received Hebron as his inheritance.",
+        "verse": "1:10, 1:20",
+        "hebrewName": "חֶבְרוֹן",
+        "archaeology": "https://armstronginstitute.org/46-uncovering-the-bibles-buried-cities-hebron",
+        "video": "https://www.youtube.com/watch?v=dlUJxNFyRBM",
+        "archaeologyNote": "Tel Rumeida excavations confirm Bronze Age fortifications and evidence of destruction matching the biblical conquest timeline. The Amarna Letters reference the 'Habiru' invaders in this region."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [35.1040, 31.5240]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Debir (Kirjath-sepher)",
+        "status": "disputed",
+        "popup": "DISPUTED: Othniel captured Debir - Judges 1:11-13",
+        "description": "Caleb offered his daughter Achsah to whoever would smite Kirjath-sepher. Othniel, Caleb's nephew, took it and received Achsah as his wife.",
+        "verse": "1:11-13",
+        "theory": "Khirbet Rabud (80% confidence)",
+        "alternateTheories": [
+          {
+            "name": "Tell Beit Mirsim",
+            "coordinates": [34.909800, 31.455800],
+            "source": "https://www.openbible.info/geo/ancient/ad2048e/debir-1"
+          },
+          {
+            "name": "Khirbet Tarrama",
+            "coordinates": [35.032640, 31.478570],
+            "source": "https://www.openbible.info/geo/ancient/ad2048e/debir-1"
+          }
+        ],
+        "debate": "Debate: Khirbet Rabud vs Tell Beit Mirsim? Albright identified Debir with Tell Beit Mirsim, but Moshe Kochavi's excavations at Khirbet Rabud found Late Bronze destruction evidence matching biblical chronology.",
+        "archaeology": "https://www.openbible.info/geo/ancient/ad2048e/debir-1",
+        "video": "https://www.youtube.com/watch?v=lK7GQxkEkKk"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [35.014850, 31.432090]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bethel (formerly Luz)",
+        "status": "disputed",
+        "popup": "DISPUTED: House of Joseph captured Bethel - Judges 1:22-26",
+        "description": "The house of Joseph sent spies to Bethel (formerly called Luz). A man showed them the entrance, and they smote the city but let the informer go. He built a new city called Luz in the land of the Hittites.",
+        "verse": "1:22-26",
+        "hebrewName": "בֵּית־אֵל",
+        "theory": "Beitin (75% confidence)",
+        "alternateTheories": [
+          {
+            "name": "El-Bireh",
+            "coordinates": [35.214958, 31.905142],
+            "source": "https://biblearchaeology.org/research/founders-corner/2603-location-of-biblical-bethel-and-ai-reconsidered"
+          },
+          {
+            "name": "Burj Beitin",
+            "coordinates": [35.245478, 31.921866],
+            "source": "https://www.openbible.info/geo/ancient/a64f355/bethel-1"
+          }
+        ],
+        "debate": "Debate: Beitin vs El-Bireh? The Bethel location is tied to the Ai controversy. Traditional view (Albright) places Bethel at Beitin, but Associates for Biblical Research argue for El-Bireh to fit Khirbet el-Maqatir as Ai.",
+        "archaeology": "https://armstronginstitute.org/769-uncovering-the-bibles-buried-cities-ai",
+        "video": "https://www.youtube.com/watch?v=8cqBePFD9S4",
+        "archaeologyNote": "The debate over Bethel's location is inseparable from the Ai controversy. If et-Tell is Ai, Beitin is Bethel. If Khirbet el-Maqatir is Ai, El-Bireh may be Bethel."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [35.241389, 31.922778]
+      }
+    }
+  ]
+}

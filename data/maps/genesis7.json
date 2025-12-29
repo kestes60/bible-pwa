@@ -1,0 +1,106 @@
+{
+  "type": "FeatureCollection",
+  "book": "Genesis",
+  "chapter": "7",
+  "title": "The Great Flood",
+  "center": [
+    35,
+    40
+  ],
+  "zoom": 4,
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Noah Enters the Ark",
+        "status": "disputed",
+        "popup": "7 days before the Flood - Genesis 7:1-10",
+        "description": "Noah, his family, and the animals entered the ark. God shut them in 7 days before the Flood began.",
+        "verse": "7:7-10",
+        "debate": "The ark held 8 people and representatives of all land animal 'kinds' - far fewer than modern species."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45,
+          37
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Fountains of the Great Deep",
+        "status": "disputed",
+        "popup": "DISPUTED: Subterranean water release - Genesis 7:11",
+        "description": "All the fountains of the great deep burst forth, and the windows of heaven opened. This was a global cataclysm.",
+        "verse": "7:11",
+        "theory": "Catastrophic plate tectonics",
+        "debate": "Some creation geologists propose massive underground water chambers released during rapid continental drift.",
+        "link": "https://armstronginstitute.org/23-the-great-flood-just-a-bible-story"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          40,
+          30
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Windows of Heaven",
+        "status": "disputed",
+        "popup": "DISPUTED: Atmospheric water release - Genesis 7:11-12",
+        "description": "Rain fell for 40 days and 40 nights. Some propose a pre-Flood vapor canopy collapsed.",
+        "verse": "7:11-12",
+        "theory": "Vapor canopy collapse",
+        "debate": "The 'windows of heaven' may refer to a pre-Flood atmospheric water source now absent."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44,
+          40
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Highest Mountains Covered",
+        "status": "confirmed",
+        "popup": "Global extent of Flood - Genesis 7:19-20",
+        "description": "Waters rose 15 cubits above the highest mountains. All flesh with the breath of life perished.",
+        "verse": "7:19-20",
+        "archaeology": "Marine fossils found on every continent's mountains, including the Himalayas, support a global flood.",
+        "link": "https://www.icr.org/creation-flood/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.9,
+          27.9
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "150 Days of Flooding",
+        "status": "confirmed",
+        "popup": "Peak of the Flood - Genesis 7:24",
+        "description": "Waters prevailed on the earth 150 days. Only those on the ark survived.",
+        "verse": "7:24"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          50,
+          35
+        ]
+      }
+    }
+  ]
+}

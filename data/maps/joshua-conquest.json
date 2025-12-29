@@ -1,0 +1,439 @@
+{
+  "type": "FeatureCollection",
+  "book": "Joshua",
+  "chapters": "1-12",
+  "title": "The Conquest of Canaan",
+  "subtitle": "Joshua's Military Campaign",
+  "center": [
+    31.78,
+    35.25
+  ],
+  "zoom": 9,
+  "legend": {
+    "blue": "Confirmed identification",
+    "orange": "Disputed - multiple theories"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Shittim (Abel-Shittim)",
+        "status": "confirmed",
+        "popup": "Staging area before crossing - Joshua 2-3",
+        "description": "Israel's final camp east of the Jordan. Spies sent to Jericho from here.",
+        "verse": "2:1, 3:1",
+        "chapter": 2
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.618,
+          31.828
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jordan River Crossing",
+        "status": "confirmed",
+        "popup": "Miraculous crossing on dry ground - Joshua 3-4",
+        "description": "The waters stood in a heap as the priests carried the ark across. 12 stones taken as memorial.",
+        "verse": "3:14-17",
+        "chapter": 3
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.545,
+          31.837
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Gilgal",
+        "status": "confirmed",
+        "popup": "Base camp of Israel - Joshua 4-5, 9-10",
+        "description": "12 memorial stones erected. Site of circumcision and first Passover in Canaan. Israel's military headquarters.",
+        "verse": "4:19-20, 5:10",
+        "chapter": 4
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.478,
+          31.852
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jericho",
+        "status": "confirmed",
+        "popup": "Walls fell after 7-day march - Joshua 6",
+        "description": "Tell es-Sultan. First Canaanite city conquered. Walls collapsed on day 7. Only Rahab's family spared.",
+        "verse": "6:20",
+        "chapter": 6,
+        "archaeology": "Kathleen Kenyon excavations (1952-58); Bryant Wood's reanalysis supports Late Bronze destruction",
+        "link": "https://armstronginstitute.org/309-uncovering-the-bibles-buried-cities-jericho"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.443,
+          31.871
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Ai (Theory 1: Khirbet el-Maqatir)",
+        "status": "disputed",
+        "popup": "DISPUTED: ABR excavation site - Joshua 7-8",
+        "description": "Dr. Bryant Wood identified this site as biblical Ai. Fortress destroyed by fire c. 1400 BC matches biblical timeline.",
+        "verse": "8:1-29",
+        "chapter": 7,
+        "theory": "ABR/Wood",
+        "debate": "Ai debate: Wood vs Traditional identification. ABR excavations found Late Bronze destruction matching conquest narrative.",
+        "link": "https://armstronginstitute.org/769-uncovering-the-bibles-buried-cities-ai"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.258,
+          31.914
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Ai (Theory 2: et-Tell)",
+        "status": "disputed",
+        "popup": "DISPUTED: Traditional identification - Joshua 7-8",
+        "description": "Traditional site proposed by Albright, but problematic: no Late Bronze Age occupation. Name means 'the ruin' - may refer to earlier destruction.",
+        "verse": "8:1-29",
+        "chapter": 7,
+        "theory": "Traditional/Albright",
+        "debate": "Site was unoccupied 2400-1200 BC, contradicting conquest narrative. Recent scholarship questions this identification."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.263,
+          31.919
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bethel",
+        "status": "confirmed",
+        "popup": "Near Ai, ambush position - Joshua 8:9,12",
+        "description": "Modern Beitin. The ambush force hid between Bethel and Ai before the attack.",
+        "verse": "8:9",
+        "chapter": 8
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.235,
+          31.928
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Mount Ebal",
+        "status": "confirmed",
+        "popup": "Altar of Joshua & covenant renewal - Joshua 8:30-35",
+        "description": "Adam Zertal discovered a large altar structure (1980s). Law written on plastered stones. Blessings and curses ceremony.",
+        "verse": "8:30-35",
+        "chapter": 8,
+        "archaeology": "Zertal's altar discovery matches Deuteronomy 27 specifications",
+        "link": "https://armstronginstitute.org/679-mount-ebal-and-the-tale-of-two-altars"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.282,
+          32.238
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Mount Gerizim",
+        "status": "confirmed",
+        "popup": "Mountain of blessing - Joshua 8:33",
+        "description": "Half of Israel stood here for blessings. Opposite Mount Ebal across the valley of Shechem.",
+        "verse": "8:33",
+        "chapter": 8
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.273,
+          32.199
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Gibeon",
+        "status": "confirmed",
+        "popup": "Hivite deception & sun stands still - Joshua 9-10",
+        "description": "Modern el-Jib. Gibeonites tricked Israel into a treaty. Later defended when 5 kings attacked. Associated with the Anakim giants.",
+        "verse": "9:3-27, 10:12",
+        "chapter": 9,
+        "archaeology": "Pool of Gibeon discovered with jar handles inscribed 'Gibeon'"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.186,
+          31.846
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Beth Horon (Upper)",
+        "status": "confirmed",
+        "popup": "Chase route & hailstones - Joshua 10:10-11",
+        "description": "Modern Beit 'Ur al-Fauqa. Israel pursued the fleeing Amorite coalition through this pass.",
+        "verse": "10:10",
+        "chapter": 10
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.123,
+          31.881
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Valley of Aijalon",
+        "status": "confirmed",
+        "popup": "Moon stood still - Joshua 10:12",
+        "description": "Modern Yalo. Joshua commanded 'Moon, stand still over the Valley of Aijalon' during the battle.",
+        "verse": "10:12",
+        "chapter": 10
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.012,
+          31.838
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Makkedah",
+        "status": "disputed",
+        "popup": "DISPUTED: Cave of 5 kings - Joshua 10:16-28",
+        "description": "Five Amorite kings hid in cave here. Multiple proposed sites in the Shephelah region.",
+        "verse": "10:16-17",
+        "chapter": 10,
+        "theory": "Multiple candidates",
+        "debate": "Khirbet el-Qom, Tell Bornat, or el-Mughar proposed. No consensus among archaeologists."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.933,
+          31.677
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Libnah (Theory 1: Tel Burna)",
+        "status": "disputed",
+        "popup": "DISPUTED: Recent excavation site - Joshua 10:29-30",
+        "description": "Tel Burna shows Late Bronze destruction layer. Currently excavated by Bar-Ilan University.",
+        "verse": "10:29-30",
+        "chapter": 10,
+        "theory": "Tel Burna",
+        "debate": "Strong candidate with LB destruction evidence"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.869,
+          31.651
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Libnah (Theory 2: Tell Bornat)",
+        "status": "disputed",
+        "popup": "DISPUTED: Alternative identification - Joshua 10:29-30",
+        "description": "Traditional identification, but limited excavation. May be Makkedah instead.",
+        "verse": "10:29-30",
+        "chapter": 10,
+        "theory": "Tell Bornat",
+        "debate": "Less evidence than Tel Burna for LB occupation"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.898,
+          31.663
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Lachish",
+        "status": "confirmed",
+        "popup": "Major Canaanite city destroyed - Joshua 10:31-32",
+        "description": "Tell ed-Duweir. Destruction layer Level VI matches conquest period. Extensive excavations confirm Late Bronze burning.",
+        "verse": "10:31-32",
+        "chapter": 10,
+        "archaeology": "Starkey, Ussishkin excavations. LB destruction c. 1150 BC debated"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.849,
+          31.565
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Eglon",
+        "status": "disputed",
+        "popup": "DISPUTED: Conquered after Lachish - Joshua 10:34-35",
+        "description": "Multiple candidates proposed. Tell Aitun or Tell el-Hesi in Shephelah region.",
+        "verse": "10:34-35",
+        "chapter": 10,
+        "theory": "Tell Aitun favored",
+        "debate": "Tell el-Hesi was earlier candidate but now questioned"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.87,
+          31.518
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Hebron",
+        "status": "confirmed",
+        "popup": "City of Arba (giants) destroyed - Joshua 10:36-37",
+        "description": "Modern el-Khalil. One of the oldest continuously inhabited cities. Later given to Caleb (14:13-14).",
+        "verse": "10:36-37",
+        "chapter": 10
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.095,
+          31.524
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Debir (Theory 1: Khirbet Rabud)",
+        "status": "disputed",
+        "popup": "DISPUTED: Formerly Kiriath-sepher - Joshua 10:38-39",
+        "description": "Moshe Kochavi proposed this site. Has Late Bronze remains and matches geographic description.",
+        "verse": "10:38-39",
+        "chapter": 10,
+        "theory": "Khirbet Rabud",
+        "debate": "Better geographic fit than Tell Beit Mirsim"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.071,
+          31.418
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Debir (Theory 2: Tell Beit Mirsim)",
+        "status": "disputed",
+        "popup": "DISPUTED: Albright's identification - Joshua 10:38-39",
+        "description": "W.F. Albright excavated this site identifying it as Debir. Now largely rejected due to location.",
+        "verse": "10:38-39",
+        "chapter": 10,
+        "theory": "Tell Beit Mirsim",
+        "debate": "Too far west; most scholars now reject this identification"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          34.93,
+          31.42
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Hazor",
+        "status": "confirmed",
+        "popup": "Head of northern kingdoms burned - Joshua 11:1-13",
+        "description": "Tell el-Qedah. Largest Canaanite city (200 acres). Massive destruction layer with burned palace. Yadin & Ben-Tor excavations.",
+        "verse": "11:10-11",
+        "chapter": 11,
+        "archaeology": "Clear Late Bronze destruction c. 1230 BC. Canaanite statues found decapitated.",
+        "link": "https://armstronginstitute.org/105-uncovering-the-bibles-buried-cities-hazor"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.568,
+          33.017
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Waters of Merom",
+        "status": "confirmed",
+        "popup": "Defeat of northern coalition - Joshua 11:5-7",
+        "description": "Near modern Meiron. Combined armies of northern Canaanite kings gathered here and were routed by Joshua.",
+        "verse": "11:5-7",
+        "chapter": 11
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.443,
+          32.987
+        ]
+      }
+    }
+  ]
+}

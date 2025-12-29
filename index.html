@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-title" content="Bible" />
   <meta name="theme-color" content="#D4A84B" />
   <meta name="description" content="Free PWA for Bible reading with multiple translations, reading plans, parallel view, bookmarks, and offline support." />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://js.stripe.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.stripe.com; font-src 'self'; connect-src 'self' https://api.stripe.com https://*.stripe.com; manifest-src 'self'; base-uri 'self'; form-action https://checkout.stripe.com; frame-src https://js.stripe.com https://hooks.stripe.com https://checkout.stripe.com;" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://js.stripe.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://*.stripe.com https://*.tile.openstreetmap.org https://unpkg.com; font-src 'self'; connect-src 'self' https://api.stripe.com https://*.stripe.com; manifest-src 'self'; base-uri 'self'; form-action https://checkout.stripe.com; frame-src https://js.stripe.com https://hooks.stripe.com https://checkout.stripe.com https://www.youtube.com;" />
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
@@ -32,6 +32,9 @@
 
   <!-- External Stylesheet -->
   <link rel="stylesheet" href="styles/main.css" />
+
+  <!-- Leaflet CSS for maps (must be in head) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
 
   <!-- Stripe.js for payments -->
   <script src="https://js.stripe.com/v3/"></script>
@@ -513,6 +516,10 @@
             <div class="setting-group premium-feature" id="studyCompanionsSection">
               <h3 class="setting-section-title">📖 Study Companions</h3>
               <p class="settings-description">Deep dive into Scripture with trusted resources</p>
+              <label class="toggle-label companion-toggle">
+                <input type="checkbox" id="companionsNewTabCheckbox" checked>
+                <span>Open companions in new tab</span>
+              </label>
               <div class="companion-links">
                 <a href="https://www.blueletterbible.org/" target="_blank" rel="noopener" class="companion-link">
                   <span class="companion-icon">📘</span>
@@ -547,7 +554,7 @@
         <!-- App Updates -->
         <div class="setting-group">
           <button type="button" class="settings-update-btn" onclick="checkForUpdates()" aria-label="Check for app updates">
-            🔄 Check for Updates (v73)
+            🔄 Check for Updates (v76)
           </button>
           <small class="setting-hint">Force check for new version if app seems outdated</small>
         </div>
@@ -631,8 +638,7 @@
   <!-- Back to Top Button -->
   <button id="backToTopBtn" class="back-to-top" onclick="scrollToTop()" aria-label="Back to top">↑ Top</button>
 
-  <!-- Leaflet CSS/JS for maps -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+  <!-- Leaflet JS for maps (CSS in head) -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 
   <!-- QR Code generator for cross-device sync -->

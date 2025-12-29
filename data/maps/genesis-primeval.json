@@ -1,0 +1,342 @@
+{
+  "type": "FeatureCollection",
+  "book": "Genesis",
+  "chapters": "1-10",
+  "title": "Primeval History",
+  "subtitle": "Creation to Table of Nations",
+  "center": [
+    36,
+    42
+  ],
+  "zoom": 5,
+  "legend": {
+    "blue": "Confirmed identification",
+    "orange": "Disputed - multiple theories"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Garden of Eden (Theory 1: Armenian Highlands)",
+        "status": "disputed",
+        "popup": "DISPUTED: David Rohl's identification - Genesis 2:8-14",
+        "description": "Egyptologist David Rohl proposes Eden near Tabriz, Iran, where four rivers converge from Armenian highlands.",
+        "verse": "2:8-14",
+        "chapter": 2,
+        "theory": "Rohl/Armenian",
+        "debate": "Eden at headwaters where Tigris and Euphrates originate, with Pishon and Gihon as regional rivers.",
+        "link": "https://armstronginstitute.org/126-the-case-for-adam-and-eve"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          46.3,
+          38.1
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Garden of Eden (Theory 2: Southern Mesopotamia)",
+        "status": "disputed",
+        "popup": "DISPUTED: Traditional Sumerian location - Genesis 2:8-14",
+        "description": "Traditional view places Eden in southern Iraq where Tigris and Euphrates converge before the Persian Gulf.",
+        "verse": "2:8-14",
+        "chapter": 2,
+        "theory": "Traditional/Sumerian",
+        "debate": "Ancient Sumerians called this region 'Dilmun' - a paradise. Pre-Flood geography may have been different."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          47.5,
+          30.5
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tigris River (Hiddekel)",
+        "status": "confirmed",
+        "popup": "Third river of Eden - Genesis 2:14",
+        "description": "The Tigris (Hebrew: Hiddekel) flows east of Assyria. One of the four rivers flowing from Eden.",
+        "verse": "2:14",
+        "chapter": 2
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.4,
+          33.3
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Euphrates River",
+        "status": "confirmed",
+        "popup": "Fourth river of Eden - Genesis 2:14",
+        "description": "The Euphrates is the only river named without description, suggesting it was well-known to original audience.",
+        "verse": "2:14",
+        "chapter": 2
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          40,
+          36
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Land of Nod",
+        "status": "disputed",
+        "popup": "DISPUTED: Cain's exile east of Eden - Genesis 4:16",
+        "description": "Cain dwelt in Nod, east of Eden. 'Nod' means 'wandering' - possibly a region rather than fixed location.",
+        "verse": "4:16",
+        "chapter": 4,
+        "theory": "East of Armenia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          52,
+          36
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "City of Enoch",
+        "status": "disputed",
+        "popup": "DISPUTED: First city built by Cain - Genesis 4:17",
+        "description": "Cain built a city named after his son Enoch. Humanity's first urban settlement, destroyed by the Flood.",
+        "verse": "4:17",
+        "chapter": 4,
+        "theory": "Pre-Flood Mesopotamia"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          46,
+          31
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Land of the Nephilim",
+        "status": "disputed",
+        "popup": "DISPUTED: Giants in the earth - Genesis 6:4",
+        "description": "The Nephilim were mighty men of renown. Identity debated: fallen angels' offspring or tyrannical rulers.",
+        "verse": "6:4",
+        "chapter": 6,
+        "theory": "Multiple interpretations"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          46,
+          34
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Noah's Ark Construction",
+        "status": "disputed",
+        "popup": "DISPUTED: Where ark was built - Genesis 6:14-22",
+        "description": "Noah built the ark of gopher wood, 300x50x30 cubits. The location was destroyed by the Flood itself.",
+        "verse": "6:14-16",
+        "chapter": 6,
+        "link": "https://www.icr.org/creation-flood/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45,
+          37
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Fountains of the Great Deep",
+        "status": "disputed",
+        "popup": "DISPUTED: Subterranean water release - Genesis 7:11",
+        "description": "All fountains of the great deep burst forth. Some propose massive underground water chambers released.",
+        "verse": "7:11",
+        "chapter": 7,
+        "theory": "Catastrophic plate tectonics",
+        "link": "https://armstronginstitute.org/23-the-great-flood-just-a-bible-story"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          40,
+          30
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Mount Ararat (Traditional)",
+        "status": "disputed",
+        "popup": "DISPUTED: Traditional ark landing - Genesis 8:4",
+        "description": "Greater Ararat (Agri Dagi) at 16,854 ft. Text says 'mountains of Ararat' - a region, not specific peak.",
+        "verse": "8:4",
+        "chapter": 8,
+        "theory": "Greater Ararat",
+        "link": "https://armstronginstitute.org/1127-the-imago-mundi-babylonian-directions-to-noahs-ark"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.298,
+          39.702
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Durupinar Site",
+        "status": "disputed",
+        "popup": "DISPUTED: Boat-shaped formation - Genesis 8:4",
+        "description": "Boat-shaped formation 18 miles south of Ararat. Could be geological formation or buried structure.",
+        "verse": "8:4",
+        "chapter": 8,
+        "theory": "Durupinar/Wyatt"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.234,
+          39.44
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Noah's Vineyard",
+        "status": "disputed",
+        "popup": "DISPUTED: First post-Flood agriculture - Genesis 9:20",
+        "description": "Noah planted a vineyard. Armenia has ancient viticulture traditions - possibly birthplace of wine.",
+        "verse": "9:20-21",
+        "chapter": 9,
+        "theory": "Armenian highlands"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.5,
+          40
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Japheth's Territory (Europe/Asia)",
+        "status": "confirmed",
+        "popup": "Japhethites spread north and west - Genesis 10:2-5",
+        "description": "Japheth's sons spread to Europe and Asia Minor. Javan = Greeks; Madai = Medes; Gomer = Cimmerians.",
+        "verse": "10:2-5",
+        "chapter": 10,
+        "archaeology": "These identifications are well-established in ancient Near Eastern studies."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30,
+          45
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Ham's Territory (Africa/Canaan)",
+        "status": "confirmed",
+        "popup": "Hamites spread south - Genesis 10:6-20",
+        "description": "Ham's sons settled Africa and Canaan. Mizraim = Egypt; Cush = Ethiopia; Put = Libya.",
+        "verse": "10:6-20",
+        "chapter": 10
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31,
+          26
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Nimrod's Kingdom - Babel",
+        "status": "confirmed",
+        "popup": "Mighty hunter founded Babel - Genesis 10:8-10",
+        "description": "Nimrod's kingdom: Babel, Erech, Accad, Calneh in Shinar. All archaeologically confirmed cities.",
+        "verse": "10:9-10",
+        "chapter": 10,
+        "archaeology": "Babel = Babylon; Erech = Uruk; Accad = Akkad - confirmed by archaeology.",
+        "link": "https://armstronginstitute.org/116-nimrod-found"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.4,
+          32.5
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Nineveh",
+        "status": "confirmed",
+        "popup": "Nimrod built Nineveh - Genesis 10:11-12",
+        "description": "From Shinar, Nimrod built Nineveh in Assyria. Excavated extensively - massive capital with palaces.",
+        "verse": "10:11-12",
+        "chapter": 10
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          43.15,
+          36.35
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Shem's Territory (Middle East)",
+        "status": "confirmed",
+        "popup": "Semites - ancestors of Israel - Genesis 10:21-31",
+        "description": "Through Arphaxad came Abraham and the Hebrews. Elam = Persia; Asshur = Assyria; Aram = Syria.",
+        "verse": "10:21-31",
+        "chapter": 10
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45,
+          33
+        ]
+      }
+    }
+  ]
+}

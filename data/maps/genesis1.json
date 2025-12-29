@@ -1,0 +1,67 @@
+{
+  "type": "FeatureCollection",
+  "book": "Genesis",
+  "chapter": "1",
+  "title": "Creation Week",
+  "center": [
+    31.78,
+    35.22
+  ],
+  "zoom": 5,
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Ancient Near East",
+        "status": "confirmed",
+        "popup": "Setting of Creation narrative - Genesis 1",
+        "description": "The biblical creation account was given to Israel in the Ancient Near East, contrasting with pagan creation myths of surrounding cultures.",
+        "verse": "1:1",
+        "archaeology": "Creation accounts from Mesopotamia (Enuma Elish) differ significantly from Genesis in theology and cosmology",
+        "link": "https://armstronginstitute.org/91-the-genesis-account-of-creation-just-a-bible-story"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44,
+          33
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Land of Israel (Future Promise)",
+        "status": "confirmed",
+        "popup": "Future Promised Land - Genesis 1:28",
+        "description": "God commanded mankind to fill the earth and subdue it. The land of Canaan would later become central to God's plan.",
+        "verse": "1:28"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.22,
+          31.78
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Mesopotamia (Cradle of Civilization)",
+        "status": "confirmed",
+        "popup": "Region of earliest human civilization - Genesis 1:26-28",
+        "description": "Archaeological evidence shows earliest complex civilizations emerged in the Fertile Crescent, consistent with biblical narrative.",
+        "verse": "1:26-28",
+        "link": "https://www.icr.org/article/meaning-day-genesis/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.4,
+          32.5
+        ]
+      }
+    }
+  ]
+}

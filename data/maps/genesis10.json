@@ -1,0 +1,123 @@
+{
+  "type": "FeatureCollection",
+  "book": "Genesis",
+  "chapter": "10",
+  "title": "Table of Nations",
+  "center": [
+    35,
+    35
+  ],
+  "zoom": 4,
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Japheth's Descendants (Europe/Asia)",
+        "status": "confirmed",
+        "popup": "Japhethites spread north and west - Genesis 10:2-5",
+        "description": "Japheth's sons: Gomer, Magog, Madai, Javan, Tubal, Meshech, Tiras. They spread to Europe and Asia Minor.",
+        "verse": "10:2-5",
+        "archaeology": "Javan = Greeks (Ionians); Madai = Medes; Gomer = Cimmerians; identifications well-established."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          30,
+          45
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Ham's Descendants (Africa/Canaan)",
+        "status": "confirmed",
+        "popup": "Hamites spread south - Genesis 10:6-20",
+        "description": "Ham's sons: Cush, Mizraim, Put, Canaan. They settled Africa and the land of Canaan.",
+        "verse": "10:6-20",
+        "archaeology": "Mizraim = Egypt; Cush = Ethiopia/Nubia; Put = Libya; Canaan = Palestine. Clear ancient attestations."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31,
+          26
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Nimrod's Kingdom - Babel",
+        "status": "confirmed",
+        "popup": "Mighty hunter, founded Babel - Genesis 10:8-10",
+        "description": "Nimrod son of Cush was a mighty one. His kingdom began with Babel, Erech, Accad, and Calneh in Shinar.",
+        "verse": "10:9-10",
+        "archaeology": "Babel = Babylon; Erech = Uruk; Accad = Akkad. These cities are archaeologically confirmed.",
+        "link": "https://armstronginstitute.org/116-nimrod-found"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.4,
+          32.5
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Nineveh (Nimrod's expansion)",
+        "status": "confirmed",
+        "popup": "Nimrod built Nineveh in Assyria - Genesis 10:11-12",
+        "description": "From Shinar, Nimrod went to Assyria and built Nineveh, Rehoboth-Ir, Calah, and Resen.",
+        "verse": "10:11-12",
+        "archaeology": "Nineveh excavated extensively - massive Assyrian capital with palaces and library of Ashurbanipal."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          43.15,
+          36.35
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Shem's Descendants (Middle East)",
+        "status": "confirmed",
+        "popup": "Semites - ancestors of Israel - Genesis 10:21-31",
+        "description": "Shem's descendants: Elam, Asshur, Arphaxad, Lud, Aram. Through Arphaxad came Abraham and the Hebrews.",
+        "verse": "10:21-31",
+        "archaeology": "Elam = Persia; Asshur = Assyria; Aram = Syria. Semitic peoples dominated the ancient Near East.",
+        "link": "https://www.icr.org/content/what-happened-tower-babel"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45,
+          33
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Land of Canaan (Ham's son)",
+        "status": "confirmed",
+        "popup": "Canaanite territory - Genesis 10:15-19",
+        "description": "Canaan's descendants: Sidon, Heth, Jebusites, Amorites, Girgashites, Hivites, and more. They occupied the Promised Land.",
+        "verse": "10:15-19",
+        "archaeology": "These peoples are well-attested in Egyptian and Mesopotamian records as inhabitants of Canaan."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.5,
+          32
+        ]
+      }
+    }
+  ]
+}

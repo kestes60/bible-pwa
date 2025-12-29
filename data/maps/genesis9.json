@@ -1,0 +1,106 @@
+{
+  "type": "FeatureCollection",
+  "book": "Genesis",
+  "chapter": "9",
+  "title": "Noah's Covenant",
+  "center": [
+    39.5,
+    44
+  ],
+  "zoom": 6,
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Noah's Altar",
+        "status": "disputed",
+        "popup": "First post-Flood sacrifice - Genesis 8:20-9:1",
+        "description": "Noah built an altar and offered burnt offerings. God made a covenant never to destroy the earth by flood again.",
+        "verse": "8:20-21",
+        "theory": "Near Ararat",
+        "debate": "The altar would have been built shortly after leaving the ark, somewhere in the Ararat region."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44,
+          39.5
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Rainbow Covenant Location",
+        "status": "confirmed",
+        "popup": "God's promise to all creation - Genesis 9:12-17",
+        "description": "God set His bow in the clouds as a sign of the covenant. Never again would all flesh be cut off by flood waters.",
+        "verse": "9:13-15",
+        "archaeology": "The rainbow is a universal phenomenon, visible to all humanity as a reminder of God's promise."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          43.5,
+          39
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Noah's Vineyard",
+        "status": "disputed",
+        "popup": "DISPUTED: First post-Flood agriculture - Genesis 9:20-21",
+        "description": "Noah, a man of the soil, planted a vineyard. He drank of the wine and became drunk in his tent.",
+        "verse": "9:20-21",
+        "theory": "Armenian highlands",
+        "debate": "Armenia has ancient viticulture traditions. Some consider it the birthplace of wine, consistent with Noah's vineyard.",
+        "link": "https://armstronginstitute.org/23-the-great-flood-just-a-bible-story"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.5,
+          40
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Ham's Sin Location",
+        "status": "disputed",
+        "popup": "Ham saw Noah's nakedness - Genesis 9:22-23",
+        "description": "Ham saw his father's nakedness and told his brothers. Shem and Japheth walked backward to cover Noah.",
+        "verse": "9:22-23",
+        "debate": "Ham's sin may have involved more than merely seeing. His son Canaan was cursed, suggesting deeper transgression."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.3,
+          39.8
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Prophecy over the Nations",
+        "status": "confirmed",
+        "popup": "Blessing and curse pronounced - Genesis 9:24-27",
+        "description": "Noah prophesied: Canaan would be a servant; God would enlarge Japheth; Shem's line would be blessed.",
+        "verse": "9:25-27",
+        "archaeology": "The descendants of Shem (Semites), Ham (Canaanites, Africans), and Japheth (Europeans, Asians) spread as prophesied."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44,
+          40
+        ]
+      }
+    }
+  ]
+}

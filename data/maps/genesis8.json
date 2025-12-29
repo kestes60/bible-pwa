@@ -1,0 +1,106 @@
+{
+  "type": "FeatureCollection",
+  "book": "Genesis",
+  "chapter": "8",
+  "title": "The Ark Lands",
+  "center": [
+    39.7,
+    44
+  ],
+  "zoom": 6,
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Mount Ararat (Traditional Site)",
+        "status": "disputed",
+        "popup": "DISPUTED: Traditional ark landing - Genesis 8:4",
+        "description": "Greater Ararat (Agri Dagi) at 16,854 ft is the traditional identification. Turkish mountain near Armenian border.",
+        "verse": "8:4",
+        "theory": "Greater Ararat",
+        "debate": "The text says 'mountains of Ararat' (plural) - a region, not necessarily this specific peak.",
+        "link": "https://armstronginstitute.org/1127-the-imago-mundi-babylonian-directions-to-noahs-ark"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.298,
+          39.702
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Durupinar Site",
+        "status": "disputed",
+        "popup": "DISPUTED: Boat-shaped formation - Genesis 8:4",
+        "description": "A boat-shaped formation 18 miles south of Ararat. Some claim it matches ark dimensions; others say it's geological.",
+        "verse": "8:4",
+        "theory": "Durupinar/Wyatt",
+        "debate": "Ron Wyatt promoted this site. Scientific analysis inconclusive - could be geological formation or buried structure."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.234,
+          39.44
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Mountains of Ararat Region (Urartu)",
+        "status": "confirmed",
+        "popup": "Biblical Ararat = ancient Urartu - Genesis 8:4",
+        "description": "Ararat refers to the ancient kingdom of Urartu in the Armenian highlands, not a single peak.",
+        "verse": "8:4",
+        "archaeology": "Urartu was a known kingdom in Assyrian records. The Armenian highlands contain many mountains where the ark could have landed.",
+        "link": "https://armstronginstitute.org/304-g-ouml-bekli-tepe-stone-age-zoo-in-the-book-of-genesis"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          43.5,
+          39
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Raven's Flight",
+        "status": "confirmed",
+        "popup": "First bird released - Genesis 8:6-7",
+        "description": "After 40 days, Noah opened the window and sent out a raven. It flew back and forth until waters dried.",
+        "verse": "8:7"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44,
+          39.5
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Olive Branch (Dove Return)",
+        "status": "confirmed",
+        "popup": "Sign of receding waters - Genesis 8:10-11",
+        "description": "The dove returned with an olive leaf, showing vegetation had emerged. Symbol of peace and new beginning.",
+        "verse": "8:11",
+        "archaeology": "Olive trees grow in the Ararat region, consistent with the dove finding vegetation nearby."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.5,
+          39.2
+        ]
+      }
+    }
+  ]
+}

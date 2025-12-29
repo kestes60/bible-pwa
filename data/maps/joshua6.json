@@ -1,0 +1,49 @@
+{
+  "type": "FeatureCollection",
+  "book": "Joshua",
+  "chapter": "6",
+  "title": "The Fall of Jericho",
+  "center": [31.871, 35.443],
+  "zoom": 12,
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jericho",
+        "popup": "Walls fell - Joshua 6",
+        "description": "The Israelites marched around the city for seven days, and on the seventh day the walls collapsed.",
+        "verse": "6:20"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [35.443, 31.871]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Jordan River Crossing",
+        "popup": "Israel crossed here - Joshua 3-4",
+        "description": "The Israelites crossed the Jordan River on dry ground before reaching Jericho.",
+        "verse": "3:17"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [35.545, 31.837]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Gilgal",
+        "popup": "Camp of Israel - Joshua 5",
+        "description": "The Israelites camped at Gilgal before the siege of Jericho.",
+        "verse": "5:10"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [35.478, 31.852]
+      }
+    }
+  ]
+}

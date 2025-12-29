@@ -1,0 +1,107 @@
+{
+  "type": "FeatureCollection",
+  "book": "Genesis",
+  "chapter": "4",
+  "title": "Cain and Abel",
+  "center": [
+    38,
+    44
+  ],
+  "zoom": 5,
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Field of Abel's Murder",
+        "status": "disputed",
+        "popup": "First murder in human history - Genesis 4:8",
+        "description": "Cain killed his brother Abel in the field. Abel's blood cried out from the ground to God.",
+        "verse": "4:8-10",
+        "theory": "Near Eden",
+        "debate": "Location unknown but presumably near Eden where the family lived after the expulsion."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          47,
+          37
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Land of Nod",
+        "status": "disputed",
+        "popup": "DISPUTED: Cain's exile - Genesis 4:16",
+        "description": "Cain went to dwell in the land of Nod, east of Eden. 'Nod' means 'wandering' - possibly a region rather than a fixed location.",
+        "verse": "4:16",
+        "theory": "East of Armenia",
+        "debate": "If Eden was in the Armenian highlands, Nod would be further east, possibly in the Iranian plateau or Central Asia."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          52,
+          36
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "City of Enoch (Theory 1: Pre-Flood Mesopotamia)",
+        "status": "disputed",
+        "popup": "DISPUTED: First city built by Cain - Genesis 4:17",
+        "description": "Cain built a city and named it after his son Enoch. This was humanity's first urban settlement.",
+        "verse": "4:17",
+        "theory": "Mesopotamian Plain",
+        "debate": "Pre-Flood cities were destroyed. Some speculate Eridu (oldest known city) preserves memory of antediluvian settlements."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          46,
+          31
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Lamech's Settlement",
+        "status": "disputed",
+        "popup": "Home of Cain's descendant - Genesis 4:19-24",
+        "description": "Lamech, Cain's descendant, had two wives and boasted of violence. His sons founded metalworking and music.",
+        "verse": "4:22-24",
+        "archaeology": "Early metalworking (Tubal-cain) and musical instruments align with archaeological evidence of rapid early technological development."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          48,
+          33
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Seth's Territory",
+        "status": "disputed",
+        "popup": "Righteous line of Adam - Genesis 4:25-26",
+        "description": "Seth was born to replace Abel. His descendants began to 'call upon the name of the LORD.'",
+        "verse": "4:26",
+        "theory": "Near Eden",
+        "debate": "The godly line of Seth likely remained closer to the original Eden region, maintaining worship of the true God."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.5,
+          38
+        ]
+      }
+    }
+  ]
+}

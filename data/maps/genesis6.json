@@ -1,0 +1,90 @@
+{
+  "type": "FeatureCollection",
+  "book": "Genesis",
+  "chapter": "6",
+  "title": "Corruption and the Ark",
+  "center": [
+    38,
+    42
+  ],
+  "zoom": 5,
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Pre-Flood World",
+        "status": "disputed",
+        "popup": "Corrupt civilization before judgment - Genesis 6:1-7",
+        "description": "The earth was filled with violence and corruption. God determined to destroy all flesh with a flood.",
+        "verse": "6:5-7",
+        "theory": "Global antediluvian civilization",
+        "debate": "The pre-Flood world may have had a single supercontinent and different geography entirely."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44,
+          35
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Land of the Nephilim",
+        "status": "disputed",
+        "popup": "DISPUTED: Giants in the earth - Genesis 6:4",
+        "description": "The Nephilim were on the earth when the 'sons of God' took the 'daughters of men.' These were mighty men of renown.",
+        "verse": "6:4",
+        "theory": "Multiple interpretations",
+        "debate": "Nephilim identity debated: fallen angels' offspring, Sethite/Cainite intermarriage, or tyrannical rulers."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          46,
+          34
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Noah's Ark Construction Site",
+        "status": "disputed",
+        "popup": "DISPUTED: Where the ark was built - Genesis 6:14-22",
+        "description": "Noah built the ark of gopher wood, 300x50x30 cubits. Construction took up to 120 years.",
+        "verse": "6:14-16",
+        "theory": "Unknown pre-Flood location",
+        "debate": "The ark was built somewhere in the pre-Flood world. That location was destroyed by the Flood itself.",
+        "archaeology": "The ark's dimensions (450x75x45 feet) represent ideal ship proportions, confirmed by modern naval architecture.",
+        "link": "https://www.icr.org/creation-flood/"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45,
+          37
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Gopher Wood Forests",
+        "status": "disputed",
+        "popup": "Source of ark's timber - Genesis 6:14",
+        "description": "Noah was commanded to build the ark of 'gopher wood' - a term only used here. Possibly cypress or another resinous wood.",
+        "verse": "6:14",
+        "debate": "Hebrew 'gopher' is uncertain. Cypress, pine, or cedar have been proposed. Pre-Flood forests were likely vast."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          43,
+          38
+        ]
+      }
+    }
+  ]
+}

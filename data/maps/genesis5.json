@@ -1,0 +1,104 @@
+{
+  "type": "FeatureCollection",
+  "book": "Genesis",
+  "chapter": "5",
+  "title": "Genealogy: Adam to Noah",
+  "center": [
+    38,
+    43
+  ],
+  "zoom": 5,
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Adam's Dwelling (930 years)",
+        "status": "disputed",
+        "popup": "First man lived 930 years - Genesis 5:3-5",
+        "description": "Adam lived 930 years outside the Garden. The pre-Flood world had conditions allowing extreme longevity.",
+        "verse": "5:5",
+        "theory": "Near Eden",
+        "debate": "Pre-Flood longevity may relate to genetic vitality, atmospheric conditions, or other factors altered by the Flood."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          46.5,
+          37.5
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Enoch's Walk with God",
+        "status": "disputed",
+        "popup": "Enoch walked with God and was taken - Genesis 5:21-24",
+        "description": "Enoch lived 365 years then 'was not, for God took him.' He did not experience death.",
+        "verse": "5:24",
+        "debate": "Enoch's translation demonstrates God's power over death and foreshadows the resurrection."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45,
+          38.5
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Methuselah's Region (969 years)",
+        "status": "disputed",
+        "popup": "Oldest man in history - Genesis 5:25-27",
+        "description": "Methuselah lived 969 years, the longest recorded lifespan. His name may mean 'when he dies, it shall come' - he died the year of the Flood.",
+        "verse": "5:27",
+        "archaeology": "Ancient king lists from Sumer also record extraordinarily long pre-Flood reigns, preserving memory of antediluvian longevity."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          44.5,
+          36.5
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Lamech (Seth's line)",
+        "status": "disputed",
+        "popup": "Noah's father, man of faith - Genesis 5:28-31",
+        "description": "Lamech named his son Noah ('rest'), prophesying relief from the curse on the ground.",
+        "verse": "5:29"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          45.5,
+          37
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Noah's Birthplace",
+        "status": "disputed",
+        "popup": "Righteous man in corrupt generation - Genesis 5:28-32",
+        "description": "Noah was born when his father Lamech was 182. He would become the preacher of righteousness who built the ark.",
+        "verse": "5:32",
+        "theory": "Pre-Flood Mesopotamia",
+        "debate": "Noah lived somewhere in the pre-Flood world, which was destroyed. Post-Flood geography differs significantly."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          46,
+          36
+        ]
+      }
+    }
+  ]
+}
