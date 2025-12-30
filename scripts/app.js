@@ -4111,7 +4111,7 @@ async function checkForUpdates() {
       // If no update found after 3 seconds, notify user
       setTimeout(() => {
         if (!reg.installing && !reg.waiting) {
-          showToast('You have the latest version (v76)');
+          showToast('You have the latest version (v79)');
         }
       }, 3000);
     } else {
