@@ -4170,6 +4170,36 @@ body.modal-open .parallel-version-modal {
   margin-bottom: 0.75rem;
 }
 
+/* Map Legend - Crisp white on dark modal */
+.map-legend {
+  opacity: 1 !important;
+  z-index: 1000;
+}
+
+.map-legend > div {
+  background: rgba(30, 30, 30, 0.95) !important;
+  color: #fff !important;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Custom Leaflet Popup - Scrollable & Centered */
+.custom-popup .leaflet-popup-content {
+  max-height: 250px;
+  overflow-y: auto;
+  margin: 12px;
+}
+
+.custom-popup .leaflet-popup-content-wrapper {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.custom-popup.leaflet-popup {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 /* BLB Toast Link */
 .blb-toast-link {
   color: var(--yt-accent);

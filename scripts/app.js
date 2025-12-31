@@ -4111,7 +4111,7 @@ async function checkForUpdates() {
       // If no update found after 3 seconds, notify user
       setTimeout(() => {
         if (!reg.installing && !reg.waiting) {
-          showToast('You have the latest version (v79)');
+          showToast('You have the latest version (v80)');
         }
       }, 3000);
     } else {
@@ -4827,16 +4827,30 @@ async function openMapForVerse(book, chapter) {
             }
 
             popupContent += '</div>';
-            layer.bindPopup(popupContent, { maxWidth: 300, maxHeight: 400 });
+            layer.bindPopup(popupContent, {
+              maxWidth: 300,
+              maxHeight: 250,
+              className: 'custom-popup',
+              closeButton: true,
+              autoPan: true,
+              autoPanPadding: [50, 50]
+            });
           }
         }).addTo(bibleMap);
+
+        // Auto-pan to fit popup on open
+        bibleMap.on('popupopen', function(e) {
+          const px = bibleMap.project(e.target._popup._latlng);
+          px.y -= e.target._popup._container.clientHeight / 2;
+          bibleMap.panTo(bibleMap.unproject(px), { animate: true });
+        });
 
         console.log(`[Maps] Loaded geoJSON with ${geoData.features?.length || 0} pins`);
       } else {
         // Fallback to single marker from BIBLE_LOCATIONS
         L.marker([location.lat, location.lon])
           .addTo(bibleMap)
-          .bindPopup(`<b>${location.name}</b><br>${location.description}`)
+          .bindPopup(`<b>${location.name}</b><br>${location.description}`, { className: 'custom-popup', closeButton: true })
           .openPopup();
       }
     } catch (e) {
@@ -4844,7 +4858,7 @@ async function openMapForVerse(book, chapter) {
       console.log('[Maps] No geoJSON found, using fallback marker:', e.message);
       L.marker([location.lat, location.lon])
         .addTo(bibleMap)
-        .bindPopup(`<b>${location.name}</b><br>${location.description}`)
+        .bindPopup(`<b>${location.name}</b><br>${location.description}`, { className: 'custom-popup', closeButton: true })
         .openPopup();
     }
   }, 150);
@@ -4958,9 +4972,9 @@ async function openBookMap(book) {
       legend.onAdd = function() {
         const div = L.DomUtil.create('div', 'map-legend');
         div.innerHTML = `
-          <div style="background: white; padding: 8px 12px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-size: 12px;">
-            <div style="margin-bottom: 4px;"><span style="display:inline-block;width:12px;height:12px;background:#3b82f6;border-radius:50%;margin-right:6px;"></span>Confirmed</div>
-            <div><span style="display:inline-block;width:12px;height:12px;background:#f97316;border-radius:50%;margin-right:6px;"></span>Disputed</div>
+          <div style="background: rgba(30,30,30,0.95); padding: 8px 12px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.3); font-size: 12px; color: #fff; font-weight: 500; border: 1px solid rgba(255,255,255,0.2);">
+            <div style="margin-bottom: 4px;"><span style="display:inline-block;width:12px;height:12px;background:#3b82f6;border-radius:50%;margin-right:6px;vertical-align:middle;"></span>Confirmed</div>
+            <div><span style="display:inline-block;width:12px;height:12px;background:#f97316;border-radius:50%;margin-right:6px;vertical-align:middle;"></span>Disputed</div>
           </div>
         `;
         return div;
@@ -5018,9 +5032,23 @@ async function openBookMap(book) {
           }
 
           popupContent += '</div>';
-          layer.bindPopup(popupContent, { maxWidth: 300, maxHeight: 400 });
+          layer.bindPopup(popupContent, {
+            maxWidth: 300,
+            maxHeight: 250,
+            className: 'custom-popup',
+            closeButton: true,
+            autoPan: true,
+            autoPanPadding: [50, 50]
+          });
         }
       }).addTo(bibleMap);
+
+      // Auto-pan to fit popup on open
+      bibleMap.on('popupopen', function(e) {
+        const px = bibleMap.project(e.target._popup._latlng);
+        px.y -= e.target._popup._container.clientHeight / 2;
+        bibleMap.panTo(bibleMap.unproject(px), { animate: true });
+      });
 
       console.log(`[Maps] Loaded book map with ${geoData.features?.length || 0} pins`);
 

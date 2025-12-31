@@ -1,6 +1,6 @@
 // Cache version constant - increment this to bust the cache
 // ⚠️ ALSO UPDATE: index.html (Settings button) + app.js (checkForUpdates toast)
-const CACHE_VERSION = "bible-pwa-v79";
+const CACHE_VERSION = "bible-pwa-v80";
 
 // Get the base path from the service worker's own location
 // e.g., if SW is at /bible-pwa/sw.js, base is /bible-pwa/
