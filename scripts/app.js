@@ -28,6 +28,39 @@ const THEME_DARK = 'theme-dark';
 const THEME_LIGHT = 'theme-light';
 const COMPANIONS_NEW_TAB_KEY = 'openCompanionsInNewTab';
 
+// ========================================
+// Book Path Normalization
+// ========================================
+// TODO: Paths locked—spaces always → _ via getBookFilename. Audit before data batches.
+// Data Path Rule: All books with spaces use underscores (e.g., '1 Samuel' → '1_Samuel.json')
+
+/**
+ * Normalize book name to filename format for data fetches.
+ * Handles numbered books (1 Samuel → 1_Samuel) and multi-word titles (Song of Solomon → Song_of_Solomon).
+ * Files are stored with underscores, but UI uses spaces.
+ *
+ * @param {string} bookName - Display name (e.g., '1 Samuel', 'Song of Solomon', 'Genesis')
+ * @returns {string} Filename without extension (e.g., '1_Samuel', 'Song_of_Solomon', 'Genesis')
+ */
+function getBookFilename(bookName) {
+  // Replace all spaces with underscores, preserving original casing
+  // e.g., "1 Samuel" → "1_Samuel", "Song of Solomon" → "Song_of_Solomon"
+  return bookName.replace(/\s+/g, '_');
+}
+
+/**
+ * Build full data path for a book JSON file.
+ * Uses version config dataPath + normalized filename.
+ *
+ * @param {string} bookName - Display name (e.g., '1 Samuel')
+ * @param {string} dataPath - Version data path (e.g., 'data/', 'data/kjv/')
+ * @returns {string} Full path (e.g., 'data/kjv/1_Samuel.json')
+ */
+function getBookPath(bookName, dataPath = 'data/') {
+  const filename = getBookFilename(bookName);
+  return `${dataPath}${filename}.json`;
+}
+
 /**
  * Get saved theme from localStorage
  * @returns {string} Theme name or null if not saved
@@ -632,15 +665,16 @@ async function loadVersesToContainer(bookName, chapter, versionId, container) {
       return;
     }
 
-    // Build the data path
+    // Build the data path using normalized filename (spaces → underscores)
+    // TODO: Paths locked—spaces always → _ via getBookPath. Audit before data batches.
     const dataPath = versionConfig.dataPath || `data/`;
-    const bookPath = `${dataPath}${bookName}.json`;
-    console.log('[Parallel] Fetching:', bookPath);
+    const bookPath = getBookPath(bookName, dataPath);
+    console.log('[Parallel] Fetching:', bookPath, '(normalized from:', bookName + ')');
 
     const response = await fetch(bookPath);
 
     if (!response.ok) {
-      console.error('[Parallel] Fetch failed:', response.status);
+      console.error('[Parallel] Fetch failed:', response.status, 'Path:', bookPath);
       container.innerHTML = '<div class="error">Chapter not available in this version</div>';
       return;
     }
@@ -4111,7 +4145,7 @@ async function checkForUpdates() {
       // If no update found after 3 seconds, notify user
       setTimeout(() => {
         if (!reg.installing && !reg.waiting) {
-          showToast('You have the latest version (v80)');
+          showToast('You have the latest version (v81)');
         }
       }, 3000);
     } else {
