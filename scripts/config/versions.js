@@ -59,7 +59,8 @@ const bibleVersions = {
     booksFile: "books.json",
     estimatedSizeMB: 3,
     sourceRepo: null,
-    description: "Modern English translation, public domain"
+    description: "Modern English translation, public domain",
+    credit: "Scripture quotations are from the World English Bible, which is in the public domain. \"World English Bible\" is a trademark of eBible.org."
   },
   "en-kjv": {
     id: "en-kjv",
@@ -73,7 +74,8 @@ const bibleVersions = {
     booksFile: "books.json",
     estimatedSizeMB: 3,
     sourceRepo: null,
-    description: "Classic English translation from 1611"
+    description: "Classic English translation from 1611",
+    credit: "King James Version, public domain in the United States."
   },
 
   // ========================================
@@ -92,7 +94,8 @@ const bibleVersions = {
     estimatedSizeMB: 3,
     sourceUrl: "https://raw.githubusercontent.com/seven1m/open-bibles/master/kor-korean.osis.xml",
     sourceFormat: "osis",
-    description: "Korean translation, public domain"
+    description: "Korean translation, public domain",
+    credit: "성경전서 개역한글판 © 대한성서공회 1961 / Korean Revised Version © Korean Bible Society 1961. Text must not be altered."
   },
 
   // ========================================
@@ -112,7 +115,8 @@ const bibleVersions = {
     sourceUrl: "https://api.getbible.net/v2/modernhebrew.json",
     sourceFormat: "getbible-json",
     direction: "RTL",
-    description: "Modern Hebrew Bible translation"
+    description: "Modern Hebrew Bible translation",
+    credit: "Modern Hebrew Bible, Franz Delitzsch New Testament; public domain."
   },
 
   // ========================================
@@ -131,7 +135,8 @@ const bibleVersions = {
     estimatedSizeMB: 4,
     sourceUrl: "https://raw.githubusercontent.com/seven1m/open-bibles/master/spa-rv1909.usfx.xml",
     sourceFormat: "usfx",
-    description: "Classic Spanish translation from 1909, public domain"
+    description: "Classic Spanish translation from 1909, public domain",
+    credit: "Santa Biblia, Reina Valera 1909. Dominio público / Public Domain."
   },
   "zh-cuv": {
     id: "zh-cuv",
@@ -146,7 +151,8 @@ const bibleVersions = {
     estimatedSizeMB: 2,
     sourceUrl: "https://raw.githubusercontent.com/seven1m/open-bibles/master/chi-cuv.usfx.xml",
     sourceFormat: "usfx",
-    description: "Traditional Chinese translation, public domain"
+    description: "Traditional Chinese translation, public domain",
+    credit: "Chinese Union Version 1919, 神 edition, public domain."
   },
 
   // ========================================
@@ -166,7 +172,8 @@ const bibleVersions = {
     sourceUrl: "https://api.getbible.net/v2/arabicsv.json",
     sourceFormat: "getbible-json",
     direction: "RTL",
-    description: "Arabic Smith Van Dyke translation, public domain"
+    description: "Arabic Smith Van Dyke translation, public domain",
+    credit: "Smith & Van Dyck Arabic Bible 1865, Public Domain."
   },
 
   // ========================================
@@ -185,7 +192,8 @@ const bibleVersions = {
     estimatedSizeMB: 4,
     sourceUrl: "https://api.getbible.net/v2/ls1910.json",
     sourceFormat: "getbible-json",
-    description: "Classic French translation from 1910, public domain"
+    description: "Classic French translation from 1910, public domain",
+    credit: "Louis Segond 1910, public domain."
   },
 
   // ========================================
@@ -204,7 +212,8 @@ const bibleVersions = {
     estimatedSizeMB: 4,
     sourceUrl: "https://api.getbible.net/v2/luther1545.json",
     sourceFormat: "getbible-json",
-    description: "German Luther translation from 1545, public domain"
+    description: "German Luther translation from 1545, public domain",
+    credit: "Lutherbibel 1545, public domain."
   },
 
   // ========================================
@@ -223,7 +232,8 @@ const bibleVersions = {
     estimatedSizeMB: 4,
     sourceUrl: "https://api.getbible.net/v2/japkougo.json",
     sourceFormat: "getbible-json",
-    description: "Japanese Colloquial translation, public domain"
+    description: "Japanese Colloquial translation, public domain",
+    credit: "『聖書』（口語訳） 日本聖書協会 1954, 1955. Text must not be altered."
   },
 
   // ========================================
@@ -242,7 +252,8 @@ const bibleVersions = {
     estimatedSizeMB: 4,
     sourceUrl: "https://api.getbible.net/v2/almeida.json",
     sourceFormat: "getbible-json",
-    description: "Portuguese Almeida translation, public domain"
+    description: "Portuguese Almeida translation, public domain",
+    credit: "João Ferreira de Almeida, reimpressão de 1911, edição de 1900, texto de domínio público."
   },
 
   // ========================================
@@ -261,7 +272,8 @@ const bibleVersions = {
     estimatedSizeMB: 6,
     sourceUrl: "https://api.getbible.net/v2/synodal.json",
     sourceFormat: "getbible-json",
-    description: "Russian Synodal translation, public domain"
+    description: "Russian Synodal translation, public domain",
+    credit: "Синодальный перевод 1876, public domain."
   },
 
   // ========================================
@@ -280,7 +292,7 @@ const bibleVersions = {
     estimatedSizeMB: 3,
     sourceUrl: "https://github.com/shemmjunior/swahili-bible-edition",
     sourceFormat: "swahili-bible-edition-json",
-    description: "Swahili Bible Edition (full OT/NT), MIT license"
+    description: "Swahili edition not yet identified; not cleared for use (coming soon)"
   },
 
   // ========================================
@@ -299,7 +311,8 @@ const bibleVersions = {
     estimatedSizeMB: 4,
     sourceUrl: "https://github.com/godlytalias/Bible-Database",
     sourceFormat: "godlytalias-json",
-    description: "Hindi Indian Revised Version, CC BY-SA 4.0"
+    description: "Hindi Indian Revised Version, CC BY-SA 4.0",
+    credit: "इंडियन रिवाइज्ड वर्जन (IRV) हिंदी - 2019, © 2017, 2018, 2019 Bridge Connectivity Solutions, CC BY-SA 4.0."
   },
   "bn-irv": {
     id: "bn-irv",

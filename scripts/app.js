@@ -1437,6 +1437,14 @@ function initVersionManager() {
     sizeDiv.textContent = `~${version.estimatedSizeMB || 0} MB offline`;
     infoDiv.appendChild(sizeDiv);
 
+    // Add copyright/credit line (must be displayed verbatim)
+    if (version.credit) {
+      const creditDiv = document.createElement('div');
+      creditDiv.className = 'version-size-text';
+      creditDiv.textContent = version.credit;
+      infoDiv.appendChild(creditDiv);
+    }
+
     const badge = document.createElement('span');
     badge.className = 'version-badge' + (isActive ? ' version-badge-active' : '');
     badge.textContent = isActive ? 'Active' : 'Installed';
@@ -4145,7 +4153,7 @@ async function checkForUpdates() {
       // If no update found after 3 seconds, notify user
       setTimeout(() => {
         if (!reg.installing && !reg.waiting) {
-          showToast('You have the latest version (v82)');
+          showToast('You have the latest version (v83)');
         }
       }, 3000);
     } else {
