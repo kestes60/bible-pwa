@@ -10,7 +10,7 @@
  * - estimatedSizeMB: Approximate size for UI display
  * - direction: "RTL" for Arabic/Hebrew, "LTR" for others (default)
  *
- * Currently installed (16 versions):
+ * Currently installed (13 versions):
  * - en-web: World English Bible (English)
  * - en-kjv: King James Version (English)
  * - ko-krv: Korean Revised Version
@@ -23,10 +23,12 @@
  * - jpn-kougo: Kougo-yaku (Japanese)
  * - por-almeida: Almeida (Portuguese)
  * - rus-synodal: Synodal (Russian)
+ * - hi-irv: Hindi Indian Revised Version (CC BY-SA 4.0)
+ *
+ * Coming soon (data removed from deployed site pending licensing):
  * - swa-sbe: Swahili Bible Edition (African)
- * - hi-irv: Hindi Indian Revised Version
- * - bn-irv: Bengali Indian Revised Version
- * - id-tb: Indonesian Terjemahan Baru
+ * - bn-irv: Bengali Indian Revised Version (CC BY-SA 4.0)
+ * - id-tb: Indonesian Terjemahan Baru (copyrighted)
  *
  * Note: Urdu translation not yet available in public domain sources
  *
@@ -271,7 +273,7 @@ const bibleVersions = {
     shortName: "SWA",
     language: "sw",
     languageName: "Swahili",
-    status: "installed",
+    status: "coming-soon",
     storageStrategy: "bundled",
     dataPath: "data/swa-sbe/",
     booksFile: "books.json",
@@ -297,7 +299,7 @@ const bibleVersions = {
     estimatedSizeMB: 4,
     sourceUrl: "https://github.com/godlytalias/Bible-Database",
     sourceFormat: "godlytalias-json",
-    description: "Hindi Indian Revised Version, public domain"
+    description: "Hindi Indian Revised Version, CC BY-SA 4.0"
   },
   "bn-irv": {
     id: "bn-irv",
@@ -305,14 +307,14 @@ const bibleVersions = {
     shortName: "BIR",
     language: "bn",
     languageName: "Bengali",
-    status: "installed",
+    status: "coming-soon",
     storageStrategy: "bundled",
     dataPath: "data/bn-irv/",
     booksFile: "books.json",
     estimatedSizeMB: 5,
     sourceUrl: "https://github.com/godlytalias/Bible-Database",
     sourceFormat: "godlytalias-json",
-    description: "Bengali Indian Revised Version, public domain"
+    description: "Bengali Indian Revised Version, CC BY-SA 4.0"
   },
   "id-tb": {
     id: "id-tb",
@@ -320,14 +322,14 @@ const bibleVersions = {
     shortName: "TB",
     language: "id",
     languageName: "Indonesian",
-    status: "installed",
+    status: "coming-soon",
     storageStrategy: "bundled",
     dataPath: "data/id-tb/",
     booksFile: "books.json",
     estimatedSizeMB: 3,
     sourceUrl: "https://github.com/godlytalias/Bible-Database",
     sourceFormat: "godlytalias-json",
-    description: "Indonesian Terjemahan Baru (New Translation), public domain"
+    description: "Indonesian Terjemahan Baru (New Translation), copyrighted"
   }
 };
 
@@ -383,7 +385,9 @@ function getCurrentVersionId() {
   try {
     const savedVersionId = localStorage.getItem(VERSION_STORAGE_KEY);
     // Validate saved version exists in registry
-    if (savedVersionId && bibleVersions[savedVersionId]) {
+    // Only honor installed versions; a version moved to coming-soon has no data
+    if (savedVersionId && bibleVersions[savedVersionId] &&
+        bibleVersions[savedVersionId].status === "installed") {
       return savedVersionId;
     }
   } catch (e) {
